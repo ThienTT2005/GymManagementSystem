@@ -1,7 +1,8 @@
 <%@ page import="java.io.*" %>
-<%@ page contentType="text/plain;charset=UTF-8" %>
+<%@ page contentType="text/plain; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
+request.setCharacterEncoding("UTF-8");
 String height = request.getParameter("height");
 String weight = request.getParameter("weight");
 String age = request.getParameter("age");

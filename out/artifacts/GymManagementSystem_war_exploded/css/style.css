@@ -12,7 +12,7 @@ body {
 }
 
 .logo {
-    font-size: 24px;
+    width: 40px;
     color: white;
 }
 
@@ -384,3 +384,4 @@ body {
     font-style: italic;
     border-radius: 4px;
 }
+

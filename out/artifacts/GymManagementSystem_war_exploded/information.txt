@@ -5,3 +5,10 @@ Weight: null
 Age: null
 Gender: null
 ---------------------------
+Name: null
+Phone: null
+Height: null
+Weight: null
+Age: null
+Gender: null
+---------------------------
