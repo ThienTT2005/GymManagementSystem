@@ -1,0 +1,2 @@
+@Entity @Table(name = "contacts") @Data
+public class Contact { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer contactId; private String name; private String message; }
