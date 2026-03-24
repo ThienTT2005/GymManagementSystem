@@ -1,0 +1,88 @@
+/* ===== MEMBER MODULE CSS ===== */
+
+body {
+    background-color: #f5f6fa;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #1a1a2e !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,.2);
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,.75);
+    border-radius: 8px;
+    margin: 2px 8px;
+    padding: 10px 14px;
+    transition: all .2s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(255,255,255,.12);
+    color: #fff;
+}
+
+/* Icon box in dashboard cards */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Avatar circle on profile page */
+.avatar-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: .4em .75em;
+    border-radius: 6px;
+}
+
+/* Navbar */
+.navbar-brand {
+    letter-spacing: .05em;
+    font-size: 1.25rem;
+}
+
+/* Package cards – highlight on hover */
+.col-md-3 .card:hover {
+    transform: translateY(-4px);
+    transition: transform .2s;
+}
+
+/* Alert tweaks */
+.alert {
+    border-radius: 10px;
+}
