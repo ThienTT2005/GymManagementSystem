@@ -1,50 +1,30 @@
 package com.gym.GymManagementSystem.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "users")
-@Data               // Lombok: tự tạo getter, setter, toString, equals
-@NoArgsConstructor  // Lombok: tự tạo constructor rỗng (JPA bắt buộc phải có)
+@Entity 
+@Table(name = "users") 
+@Data 
+@NoArgsConstructor 
+@AllArgsConstructor 
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
-    @Column(name = "user_id")
-    private Integer userId;
-
-    @Column(name = "username", nullable = false, unique = true, length = 50)
+    @Id 
     private String username;
 
-    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "full_name", length = 100)
+    @Column(name = "full_name") 
     private String fullName;
 
-    @Column(name = "email", unique = true, length = 100)
     private String email;
 
-    @Column(name = "phone", length = 20)
-    private String phone;
-
-    @Column(name = "address", length = 255)
-    private String address;
-
-    @Column(name = "role_id")
-    private Integer roleId;
-
-    @Column(name = "status", length = 20)
-    private String status = "active";
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @PrePersist // Tự động set thời gian khi INSERT
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
+    @Column(name = "role_id") 
+    private int roleId;
 }
