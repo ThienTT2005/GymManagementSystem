@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gym Website</title>
+    <link rel="stylesheet" href="../css/style.css?v=2">
+</head>
+
+<body>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <header class="header">
+
+        <div class="logo">
+            <img src="../images/logo.png" alt="Logo"
+                style="height: 40px; vertical-align: middle;">
+        </div>
+
+        <nav class="menu">
+
+            <a href="#">CLB</a>
+            <a href="#">Dịch vụ</a>
+            <a href="#">Lịch học</a>
+            <a href="#">Chính sách giá</a>
+            <a href="#">Liên hệ</a>
+            <a href="#">Khuyến mãi</a>
+
+        </nav>
+
+        <div class="actions">
+
+            <button class="trial" onclick="window.location.href='./register.jsp'">Đăng ký tập thử</button>
+            <button class="login" onclick="window.location.href='./login.jsp'">Đăng nhập</button>
+
+        </div>
+
+    </header>
+
+        <div class="banner">
+            <img src="../images/banner.jpg" alt="Banner">
+        </div>
+
+        <div class="clubs-section">
+            <h2>CÂU LẠC BỘ Ở GẦN BẠN</h2>
+            <p>Khám phá hệ thống phòng tập CODEGYM hiện đại, đa dạng, đáp ứng mọi nhu cầu tập luyện của bạn, dù bạn ở
+                bất kỳ đâu tại Hà Nội.</p>
+
+            <div class="grid">
+                <div class="grid-item">
+                    <img src="../images/zumba-8.png" alt="Zumba">
+                    <div class="overlay">ZUMBA</div>
+                </div>
+                <div class="grid-item">
+                    <img src="../images/bodycombat.png" alt="Body Combat">
+                    <div class="overlay">BODY COMBAT</div>
+                </div>
+                <div class="grid-item">
+                    <img src="../images/bodypump-8.png" alt="Body Pump">
+                    <div class="overlay">BODY PUMP</div>
+                </div>
+                <div class="grid-item">
+                    <img src="../images/bums-tums-8.png" alt="Step Tok">
+                    <div class="overlay">STEP TOK</div>
+                </div>
+                <div class="grid-item">
+                    <img src="../images/pilates.jpg" alt="Pilates">
+                    <div class="overlay">PILATES</div>
+                </div>
+                <div class="grid-item">
+                    <img src="../images/aerobic-8.png" alt="Aerobics">
+                    <div class="overlay">AEROBICS</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-section">
+            <h2 style="text-align: center;">CÂU CHUYỆN HỘI VIÊN</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Trải qua hơn 10 năm với hàng ngàn thế hệ hội viên,
+                CODEGYM đã chứng kiến rất nhiều sự thay đổi ngoạn mục.<br>Cùng khám phá các câu chuyện "đằng sau phòng
+                tập" của các hội viên nhé!</p>
+
+            <div class="slider-container">
+                <button class="slider-btn prev-btn" onclick="moveSlide(-1)">❮</button>
+                <div class="slider-track-container">
+                    <div class="slider-track" id="newsSlider">
+                        <!-- Slide 1 -->
+                        <div class="slide">
+                            <img src="../images/1.png" alt="News 1">
+                            <div class="slide-content">
+                                <p>Trong hành trình đem đến không gian tập luyện đẳng cấp CODEGYM tự hào đem đến không
+                                    gian tập luyện đẳng cấp, chúng tôi tự hào được hợp tác với Hoist thương hiệu máy tập
+                                    nổi tiến toàn cầu.đêt tạo một không gina luyện tập hiện dại, ...</p>
+                            </div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="slide">
+                            <img src="../images/2.png" alt="News 2">
+                            <div class="slide-content">
+                                <p>Rèn luyện thể chất không chỉ đơn thuần là nâng cao sức khỏe mà còn là cách để tái tạo
+                                    năng lượng và tinh thần. Group X tại Bluegym sẽ mang đến cho bạn một luồng gió mới!
+                                    Với các lớp tập nhóm sôi động và âm nhạc cuốn hút, Group X không chỉ...</p>
+                            </div>
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="slide">
+                            <img src="../images/3.jpg" alt="News 3">
+                            <div class="slide-content">
+                                <p>Kỷ niệm 10 năm, CODEGYMVõ Thị Sáu hướng tới chặng đường mới với khát vọng kiến tạo
+                                    một thế hệ Việt Nam khỏe mạnh – bền bỉ – tràn đầy năng lượng, sẵn sàng chinh phục kỷ
+                                    nguyên mới.</p>
+                            </div>
+                        </div>
+                        <!-- Slide 4 -->
+                        <div class="slide">
+                            <img src="../images/4.jpg" alt="News 4">
+                            <div class="slide-content">
+                                <p>Năm 2025, CODEGYM tiếp tục khẳng định vị thế là một trong những hệ thống phòng tập
+                                    hàng đầu với bảng giá thẻ tập mới được thiết kế linh hoạt, đáp ứng nhu cầu đa dạng
+                                    của các gymer. Đây chính là thời điểm lý tưởng để bạn bắt đầu hành trình nâng...</p>
+                            </div>
+                        </div>
+                        <!-- Slide 5 -->
+                        <div class="slide">
+                            <img src="../images/5.png" alt="News 5">
+                            <div class="slide-content">
+                                <p>Năm 2025, CODEGYM tiếp tục khẳng định vị thế là một trong những hệ thống phòng tập
+                                    hàng đầu với bảng giá thẻ tập mới được thiết kế linh hoạt, đáp ứng nhu cầu đa dạng
+                                    của các gymer. Đây chính là thời điểm lý tưởng để bạn bắt đầu hành trình nâng...</p>
+                            </div>
+                        </div>
+                        <!-- Slide 6 -->
+                        <div class="slide">
+                            <img src="../images/6.jpg" alt="News 6">
+                            <div class="slide-content">
+                                <p>Chào mừng sinh nhật 10 năm cơ sở Võ Thị Sáu, CODEGYM gửi tới hội viên chương trình
+                                    bốc thăm may mắn với những phần quà giá trị, như một lời tri ân dành cho hành trình
+                                    đồng hành và gắn bó suốt thập kỷ vừa qua. Đây là cơ hội để mỗi hội viên không chỉ...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-btn next-btn" onclick="moveSlide(1)">❯</button>
+            </div>
+        </div>
+
+        <div class="before-after-section">
+            <div class="ba-text">
+                <h2>BEFORE & AFTER</h2>
+                <p>Tập luyện chăm chỉ là yếu tố then chốt để có một<br>thân hình đẹp, nhưng không phải là yếu tố duy
+                    nhất.</p>
+            </div>
+            <div class="ba-slider-container">
+                <div class="ba-images">
+                    <img src="../images/before.png" alt="Before" class="ba-before">
+                    <img src="../images/after.png" alt="After" class="ba-after"
+                        id="baAfterImage">
+                </div>
+                <input type="range" min="0" max="100" value="50" class="ba-slider" id="baSlider"
+                    oninput="updateBeforeAfter(this.value)">
+                <div class="slider-button" id="sliderButton"></div>
+            </div>
+        </div>
+
+        <div class="bmi-section">
+            <div class="bmi-image">
+                <img src="../images/run.png" alt="Run">
+            </div>
+            <div class="bmi-content">
+                <h2>TÍNH BMI (CHỈ SỐ KHỐI CƠ THỂ)</h2>
+                <p>Để lại thông tin và chúng tôi sẽ gửi lại kết quả cho bạn trong thời gian sớm nhất!</p>
+
+                <form id="bmiForm" class="bmi-form">
+                    <input type="text" name="height" placeholder="Chiều cao/ cm" required>
+                    <input type="text" name="weight" placeholder="Cân nặng/ kg" required>
+                    <input type="text" name="age" placeholder="Tuổi" required>
+                    <select name="gender" required>
+                        <option value="" disabled selected>Giới tính</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                    <input type="text" name="fullname" placeholder="Họ và tên" pattern="[A-Za-zÀ-ỹ\s]+"
+                        title="Vui lòng chỉ nhập chữ cái" required>
+                    <input type="text" name="phone" placeholder="Số điện thoại" pattern="[0-9]{10}"
+                        title="Vui lòng nhập đúng 10 số" required>
+                    <div class="bmi-submit">
+                        <button type="submit">Nhận kết quả</button>
+                    </div>
+                </form>
+                <div id="bmiMessage" class="bmi-success-message" style="display:none;">
+                    Cảm ơn bạn, chúng tôi đã nhận thông tin!
+                </div>
+            </div>
+        </div>
+
+
+        <jsp:include page="/components/footer.jsp" />
+
+        <footer class="footer">
+    <div class="footer-container">
+
+        <!-- KHUNG 1: ĐỊA CHỈ -->
+        <div class="footer-col">
+            <h3>CODEGYM</h3>
+
+            <p>📍 CODEGYM VÕ THỊ SÁU<br>
+                Số 101 Võ Thị Sáu, Thanh Nhàn, Hai Bà Trưng, Hà Nội<br>
+                ☎ 0987 562 211
+            </p>
+
+            <p>📍 CODEGYM HÀ ĐÔNG<br>
+                Tòa nhà Ellipse - 112 Trần Phú, Hà Đông<br>
+                ☎ 0987 523 311
+            </p>
+
+            <p>📍 CODEGYM GIẢI PHÓNG<br>
+                Imperial Plaza - 360 Giải Phóng, Thanh Xuân<br>
+                ☎ 0987 503 311
+            </p>
+
+            <p>📍 CODEGYM LONG BIÊN<br>
+                Chung cư One 18 - Ngõ 298 Ngọc Lâm<br>
+                ☎ 0986 452 211
+            </p>
+        </div>
+
+
+        <!-- KHUNG 2: DỊCH VỤ -->
+        <div class="footer-col">
+            <h3>Dịch vụ</h3>
+
+            <ul>
+                <li>Huấn luyện viên cá nhân</li>
+                <li>Gói tập Gym</li>
+                <li>Lịch học</li>
+                <li>Khuyến mãi</li>
+                <li>Chính sách giá</li>
+            </ul>
+
+            <h3>Thời gian hoạt động</h3>
+
+            <p>
+                Thứ 2 - Thứ 6: 5:30 - 21:30<br>
+                Thứ 7: 5:30 - 20:30<br>
+                Chủ nhật: 5:30 - 20:00
+            </p>
+        </div>
+
+
+        <!-- KHUNG 3: LIÊN HỆ -->
+        <div class="footer-col">
+            <h3>Liên hệ</h3>
+
+            <p>📞 Hotline: 0355151178</p>
+
+            <ul>
+                <li>Chính sách giá</li>
+                <li>Chính sách bảo mật</li>
+                <li>Điều khoản dịch vụ</li>
+            </ul>
+
+            <h3>Mạng xã hội</h3>
+
+            <p>
+                Facebook<br>
+                Instagram<br>
+                YouTube
+            </p>
+        </div>
+
+    </div>
+</footer>
+
+        <script>
+            // News Slider Logic
+            let currentSlide = 0;
+            const visibleSlides = 3;
+
+            function moveSlide(direction) {
+                const track = document.getElementById('newsSlider');
+                const slides = document.querySelectorAll('.slide');
+                const totalSlides = slides.length;
+
+                if (totalSlides === 0) return;
+
+                currentSlide += direction;
+
+                // Boundaries
+                if (currentSlide < 0) {
+                    currentSlide = 0;
+                } else if (currentSlide > totalSlides - visibleSlides) {
+                    currentSlide = totalSlides - visibleSlides;
+                }
+
+                // Using percentage translation since flex basis is set with percentages
+                // A single slide takes up a slot + gap. Moving one slide means shifting left by (100% / visibleSlides)
+                // However, since CSS defines flex: 0 0 calc(33.333% - 14px) and a 20px gap:
+                // We shift by the exact width of one slide + gap. 
+                // For better compatibility across different zoom levels, let's calculate based on the first slide's actual rendered width.
+                const singleSlideWidth = slides[0].getBoundingClientRect().width;
+                const gapWidth = 20;
+                const moveAmount = (singleSlideWidth + gapWidth) * currentSlide;
+
+                track.style.transition = 'transform 0.4s ease-in-out';
+                track.style.transform = `translateX(-${moveAmount}px)`;
+            }
+
+            // Before/After Logic
+            function updateBeforeAfter(value) {
+                const afterImage = document.getElementById('baAfterImage');
+                const sliderBtn = document.getElementById('sliderButton');
+                // The after image is clipped using a polygon to reveal the before image
+                afterImage.style.clipPath = `polygon(${value}% 0, 100% 0, 100% 100%, ${value}% 100%)`;
+                sliderBtn.style.left = `${value}%`;
+            }
+
+            // BMI Form AJAX Logic
+            document.getElementById("bmiForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                fetch("${pageContext.request.contextPath}/pages/saveBmi.jsp", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data.trim() === "success") {
+                            document.getElementById("bmiForm").style.display = "none";
+                            document.getElementById("bmiMessage").style.display = "block";
+                        }
+                    });
+            });
+
+            // Form Validation Logic
+            document.addEventListener("DOMContentLoaded", function () {
+                // Validate Tên: Chỉ được nhập chữ và khoảng trắng (bao gồm cả tiếng Việt)
+                const nameInputs = document.querySelectorAll('input[name="name"], input[name="fullName"], input[name="fullname"]');
+                nameInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[^a-zA-Z\u00C0-\u1EF9\s]/.test(this.value)) {
+                            showError(this, 'Tên chỉ được chứa chữ cái!');
+                            this.value = this.value.replace(/[^a-zA-Z\u00C0-\u1EF9\s]/g, ''); 
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate SĐT: Bắt đầu bằng 0 và tối đa 10 số
+                const phoneInputs = document.querySelectorAll('input[name="phone"]');
+                phoneInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        let val = this.value.replace(/[^\d]/g, '');
+                        if (val.length > 0 && val[0] !== '0') {
+                            val = '0' + val.substring(1);
+                            showError(this, 'Số điện thoại phải bắt đầu bằng 0!');
+                        }
+                        if (val.length > 10) {
+                            val = val.substring(0, 10);
+                        }
+                        this.value = val;
+                        if (val.length > 0 && val.length < 10) {
+                            showError(this, 'Số điện thoại phải đủ 10 chữ số!');
+                        } else if (val.length === 10) {
+                            removeError(this);
+                        } else if (val.length === 0) {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate Tuổi, Chiều cao, Cân nặng: Chỉ được nhập số
+                const numInputs = document.querySelectorAll('input[name="age"], input[name="height"], input[name="weight"]');
+                numInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[^\d.]/.test(this.value)) {
+                            showError(this, 'Trường này chỉ được nhập số!');
+                            this.value = this.value.replace(/[^\d.]/g, ''); 
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate Email (không có khoảng trắng, tiếng Việt)
+                const emailInputs = document.querySelectorAll('input[name="email"], input[type="email"]');
+                emailInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[\s\u00C0-\u017F]/.test(this.value)) {
+                            showError(this, 'Email không được chứa khoảng trắng hoặc tiếng Việt!');
+                            this.value = this.value.replace(/[\s\u00C0-\u017F]/g, '');
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                function showError(input, message) {
+                    let errorElement = input.nextElementSibling;
+                    if (!errorElement || !errorElement.classList.contains('input-error-msg')) {
+                        errorElement = document.createElement('span');
+                        errorElement.classList.add('input-error-msg');
+                        errorElement.style.color = 'red';
+                        errorElement.style.fontSize = '12px';
+                        errorElement.style.display = 'block';
+                        errorElement.style.marginTop = '5px';
+                        input.parentNode.insertBefore(errorElement, input.nextSibling);
+                    }
+                    errorElement.innerText = message;
+                    clearTimeout(input.errorTimeout);
+                    input.errorTimeout = setTimeout(() => removeError(input), 3000);
+                }
+
+                function removeError(input) {
+                    let errorElement = input.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('input-error-msg')) {
+                        errorElement.remove();
+                    }
+                }
+            });
+        </script>
+    </body>
+
+    </html>

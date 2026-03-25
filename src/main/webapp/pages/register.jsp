@@ -6,274 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeGym - Đăng ký tập thử</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: white;
-        }
-
-        .container {
-            width: 100%;
-            position: relative;
-            background: white;
-        }
-
-        /* Registration Section */
-        .registration-section {
-            background: #8d1317;
-            width: 100%;
-        }
-
-        .registration-inner {
-            padding: 40px 75px;
-            display: flex;
-            justify-content: space-between;
-            gap: 50px;
-            max-width: 1280px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .form-container {
-            flex: 1;
-            max-width: 456px;
-        }
-
-        .form-title {
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .form-box {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-        }
-
-        .form-description {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 30px;
-            line-height: 1.4;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #D28080;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .submit-btn {
-            background: #8d131c;
-            color: white;
-            padding: 14px 40px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            display: block;
-            margin: 30px auto 0;
-        }
-
-        .submit-btn:hover {
-            background: #6d0f15;
-        }
-
-        .images-gallery {
-            flex: 1;
-            position: relative;
-            max-width: 614px;
-            min-height: 500px;
-        }
-
-        .gallery-bg {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: #d6a7a7;
-            border-radius: 20px;
-            top: 60px;
-            left: 100px;
-            z-index: 0;
-        }
-
-        .gallery-img {
-            border-radius: 20px;
-            position: absolute;
-            object-fit: cover;
-            z-index: 1;
-        }
-
-        .gallery-img-1 {
-            width: 250px;
-            height: 320px;
-            left: 20px;
-            top: 20px;
-        }
-
-        .gallery-img-2 {
-            width: 180px;
-            height: 280px;
-            left: 290px;
-            top: 30px;
-        }
-
-        .gallery-img-3 {
-            width: 300px;
-            height: 200px;
-            left: 150px;
-            top: 320px;
-        }
-
-        /* Introduction Section */
-        .intro-section {
-            padding: 60px;
-            display: flex;
-            justify-content: space-between;
-            gap: 40px;
-            max-width: 1194px;
-            margin: 50px auto;
-        }
-
-        .intro-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .section-title {
-            font-size: 30px;
-            font-weight: bold;
-            color: #1c1b1f;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        .divider {
-            width: 500px;
-            height: 1px;
-            background: #8D1317;
-            margin: 20px 0;
-            max-width: 100%;
-        }
-
-        .intro-images {
-            background: #8d1317;
-            border-radius: 30px;
-            padding: 30px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .intro-img-wrapper {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .intro-img {
-            width: calc(50% - 7.5px);
-            height: 200px;
-            border-radius: 20px;
-            object-fit: cover;
-        }
-
-        /* Location Section */
-        .location-section {
-            padding: 60px;
-            max-width: 1194px;
-            margin: 50px auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .location-grid {
-            display: flex;
-            gap: 30px;
-            flex: 1;
-        }
-
-        .location-card {
-            position: relative;
-            width: calc(50% - 15px);
-            aspect-ratio: 1 / 1;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .location-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .location-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(141, 19, 23, 0.8);
-            padding: 15px;
-            text-align: center;
-        }
-
-        .location-name {
-            color: black;
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        .location-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: right;
-        }
-
-        .location-content .section-title {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .location-content .divider {
-            margin-left: auto;
-            margin-right: 0;
-            width: 500px;
-            max-width: 100%;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../css/register.css">
 </head>
 <body>
     <div class="container">
@@ -382,6 +115,94 @@
                     });
             });
         }
+
+        // Form Validation Logic
+        document.addEventListener("DOMContentLoaded", function () {
+            // Validate Tên: Chỉ được nhập chữ và khoảng trắng (bao gồm cả tiếng Việt)
+            const nameInputs = document.querySelectorAll('input[name="name"], input[name="fullName"], input[name="fullname"]');
+            nameInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    if (/[^a-zA-Z\u00C0-\u1EF9\s]/.test(this.value)) {
+                        showError(this, 'Tên chỉ được chứa chữ cái!');
+                        this.value = this.value.replace(/[^a-zA-Z\u00C0-\u1EF9\s]/g, ''); 
+                    } else {
+                        removeError(this);
+                    }
+                });
+            });
+
+            // Validate SĐT: Bắt đầu bằng 0 và tối đa 10 số
+            const phoneInputs = document.querySelectorAll('input[name="phone"]');
+            phoneInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    let val = this.value.replace(/[^\d]/g, '');
+                    if (val.length > 0 && val[0] !== '0') {
+                        val = '0' + val.substring(1);
+                        showError(this, 'Số điện thoại phải bắt đầu bằng 0!');
+                    }
+                    if (val.length > 10) {
+                        val = val.substring(0, 10);
+                    }
+                    this.value = val;
+                    if (val.length > 0 && val.length < 10) {
+                        showError(this, 'Số điện thoại phải đủ 10 chữ số!');
+                    } else if (val.length === 10) {
+                        removeError(this);
+                    } else if (val.length === 0) {
+                        removeError(this);
+                    }
+                });
+            });
+
+            // Validate Tuổi, Chiều cao, Cân nặng: Chỉ được nhập số
+            const numInputs = document.querySelectorAll('input[name="age"], input[name="height"], input[name="weight"]');
+            numInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    if (/[^\d.]/.test(this.value)) {
+                        showError(this, 'Trường này chỉ được nhập số!');
+                        this.value = this.value.replace(/[^\d.]/g, ''); 
+                    } else {
+                        removeError(this);
+                    }
+                });
+            });
+
+            // Validate Email (không có khoảng trắng, tiếng Việt)
+            const emailInputs = document.querySelectorAll('input[name="email"], input[type="email"]');
+            emailInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    if (/[\s\u00C0-\u017F]/.test(this.value)) {
+                        showError(this, 'Email không được chứa khoảng trắng hoặc tiếng Việt!');
+                        this.value = this.value.replace(/[\s\u00C0-\u017F]/g, '');
+                    } else {
+                        removeError(this);
+                    }
+                });
+            });
+
+            function showError(input, message) {
+                let errorElement = input.nextElementSibling;
+                if (!errorElement || !errorElement.classList.contains('input-error-msg')) {
+                    errorElement = document.createElement('span');
+                    errorElement.classList.add('input-error-msg');
+                    errorElement.style.color = 'red';
+                    errorElement.style.fontSize = '12px';
+                    errorElement.style.display = 'block';
+                    errorElement.style.marginTop = '5px';
+                    input.parentNode.insertBefore(errorElement, input.nextSibling);
+                }
+                errorElement.innerText = message;
+                clearTimeout(input.errorTimeout);
+                input.errorTimeout = setTimeout(() => removeError(input), 3000);
+            }
+
+            function removeError(input) {
+                let errorElement = input.nextElementSibling;
+                if (errorElement && errorElement.classList.contains('input-error-msg')) {
+                    errorElement.remove();
+                }
+            }
+        });
     </script>
 </body>
 </html>

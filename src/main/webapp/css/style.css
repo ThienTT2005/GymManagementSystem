@@ -1,4 +1,4 @@
-body {
+﻿body {
     margin: 0;
     font-family: Arial;
 }
@@ -376,7 +376,8 @@ body {
     height: 40px;
     display: flex;
     align-items: center;
-    background-color: #f8dbdb; /* Light red tint for visibility, matching theme */
+    background-color: #f8dbdb;
+    /* Light red tint for visibility, matching theme */
     color: #A50202;
     padding: 0 15px;
     box-sizing: border-box;
