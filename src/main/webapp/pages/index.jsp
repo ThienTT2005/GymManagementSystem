@@ -1,45 +1,19 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
     <title>Gym Website</title>
-    <link rel="stylesheet" href="../css/style.css?v=2">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=2">
 </head>
 
 <body>
 
-    <link rel="stylesheet" href="../css/style.css">
 
-    <header class="header">
-
-        <div class="logo">
-            <img src="../images/logo.png" alt="Logo"
-                style="height: 40px; vertical-align: middle;">
-        </div>
-
-        <nav class="menu">
-
-            <a href="#">CLB</a>
-            <a href="#">Dịch vụ</a>
-            <a href="#">Lịch học</a>
-            <a href="#">Chính sách giá</a>
-            <a href="#">Liên hệ</a>
-            <a href="#">Khuyến mãi</a>
-
-        </nav>
-
-        <div class="actions">
-
-            <button class="trial" onclick="window.location.href='./register.jsp'">Đăng ký tập thử</button>
-            <button class="login" onclick="window.location.href='./login.jsp'">Đăng nhập</button>
-
-        </div>
-
-    </header>
-
+        <jsp:include page="/components/header.jsp" />
         <div class="banner">
-            <img src="../images/banner.jpg" alt="Banner">
+            <img src="${pageContext.request.contextPath}/images/banner.jpg" alt="Banner">
         </div>
 
         <div class="clubs-section">
@@ -49,27 +23,27 @@
 
             <div class="grid">
                 <div class="grid-item">
-                    <img src="../images/zumba-8.png" alt="Zumba">
+                    <img src="${pageContext.request.contextPath}/images/zumba-8.png" alt="Zumba">
                     <div class="overlay">ZUMBA</div>
                 </div>
                 <div class="grid-item">
-                    <img src="../images/bodycombat.png" alt="Body Combat">
+                    <img src="${pageContext.request.contextPath}/images/bodycombat.png" alt="Body Combat">
                     <div class="overlay">BODY COMBAT</div>
                 </div>
                 <div class="grid-item">
-                    <img src="../images/bodypump-8.png" alt="Body Pump">
+                    <img src="${pageContext.request.contextPath}/images/bodypump-8.png" alt="Body Pump">
                     <div class="overlay">BODY PUMP</div>
                 </div>
                 <div class="grid-item">
-                    <img src="../images/bums-tums-8.png" alt="Step Tok">
+                    <img src="${pageContext.request.contextPath}/images/bums-tums-8.png" alt="Step Tok">
                     <div class="overlay">STEP TOK</div>
                 </div>
                 <div class="grid-item">
-                    <img src="../images/pilates.jpg" alt="Pilates">
+                    <img src="${pageContext.request.contextPath}/images/pilates.jpg" alt="Pilates">
                     <div class="overlay">PILATES</div>
                 </div>
                 <div class="grid-item">
-                    <img src="../images/aerobic-8.png" alt="Aerobics">
+                    <img src="${pageContext.request.contextPath}/images/aerobic-8.png" alt="Aerobics">
                     <div class="overlay">AEROBICS</div>
                 </div>
             </div>
@@ -87,7 +61,7 @@
                     <div class="slider-track" id="newsSlider">
                         <!-- Slide 1 -->
                         <div class="slide">
-                            <img src="../images/1.png" alt="News 1">
+                            <img src="${pageContext.request.contextPath}/images/1.png" alt="News 1">
                             <div class="slide-content">
                                 <p>Trong hành trình đem đến không gian tập luyện đẳng cấp CODEGYM tự hào đem đến không
                                     gian tập luyện đẳng cấp, chúng tôi tự hào được hợp tác với Hoist thương hiệu máy tập
@@ -96,7 +70,7 @@
                         </div>
                         <!-- Slide 2 -->
                         <div class="slide">
-                            <img src="../images/2.png" alt="News 2">
+                            <img src="${pageContext.request.contextPath}/images/2.png" alt="News 2">
                             <div class="slide-content">
                                 <p>Rèn luyện thể chất không chỉ đơn thuần là nâng cao sức khỏe mà còn là cách để tái tạo
                                     năng lượng và tinh thần. Group X tại Bluegym sẽ mang đến cho bạn một luồng gió mới!
@@ -105,7 +79,7 @@
                         </div>
                         <!-- Slide 3 -->
                         <div class="slide">
-                            <img src="../images/3.jpg" alt="News 3">
+                            <img src="${pageContext.request.contextPath}/images/3.jpg" alt="News 3">
                             <div class="slide-content">
                                 <p>Kỷ niệm 10 năm, CODEGYMVõ Thị Sáu hướng tới chặng đường mới với khát vọng kiến tạo
                                     một thế hệ Việt Nam khỏe mạnh – bền bỉ – tràn đầy năng lượng, sẵn sàng chinh phục kỷ
@@ -114,7 +88,7 @@
                         </div>
                         <!-- Slide 4 -->
                         <div class="slide">
-                            <img src="../images/4.jpg" alt="News 4">
+                           <img src="${pageContext.request.contextPath}/images/4.jpg" alt="News 4">
                             <div class="slide-content">
                                 <p>Năm 2025, CODEGYM tiếp tục khẳng định vị thế là một trong những hệ thống phòng tập
                                     hàng đầu với bảng giá thẻ tập mới được thiết kế linh hoạt, đáp ứng nhu cầu đa dạng
@@ -123,7 +97,7 @@
                         </div>
                         <!-- Slide 5 -->
                         <div class="slide">
-                            <img src="../images/5.png" alt="News 5">
+                            <img src="${pageContext.request.contextPath}/images/5.png" alt="News 5">
                             <div class="slide-content">
                                 <p>Năm 2025, CODEGYM tiếp tục khẳng định vị thế là một trong những hệ thống phòng tập
                                     hàng đầu với bảng giá thẻ tập mới được thiết kế linh hoạt, đáp ứng nhu cầu đa dạng
@@ -132,7 +106,7 @@
                         </div>
                         <!-- Slide 6 -->
                         <div class="slide">
-                            <img src="../images/6.jpg" alt="News 6">
+                            <img src="${pageContext.request.contextPath}/images/6.jpg" alt="News 6">
                             <div class="slide-content">
                                 <p>Chào mừng sinh nhật 10 năm cơ sở Võ Thị Sáu, CODEGYM gửi tới hội viên chương trình
                                     bốc thăm may mắn với những phần quà giá trị, như một lời tri ân dành cho hành trình
@@ -154,8 +128,8 @@
             </div>
             <div class="ba-slider-container">
                 <div class="ba-images">
-                    <img src="../images/before.png" alt="Before" class="ba-before">
-                    <img src="../images/after.png" alt="After" class="ba-after"
+                    <img src="${pageContext.request.contextPath}/images/before.png" alt="Before" class="ba-before">
+                    <img src="${pageContext.request.contextPath}/images/after.png" alt="After" class="ba-after"
                         id="baAfterImage">
                 </div>
                 <input type="range" min="0" max="100" value="50" class="ba-slider" id="baSlider"
@@ -166,7 +140,7 @@
 
         <div class="bmi-section">
             <div class="bmi-image">
-                <img src="../images/run.png" alt="Run">
+                <img src="${pageContext.request.contextPath}/images/run.png" alt="Run">
             </div>
             <div class="bmi-content">
                 <h2>TÍNH BMI (CHỈ SỐ KHỐI CƠ THỂ)</h2>
@@ -197,81 +171,6 @@
 
 
         <jsp:include page="/components/footer.jsp" />
-
-        <footer class="footer">
-    <div class="footer-container">
-
-        <!-- KHUNG 1: ĐỊA CHỈ -->
-        <div class="footer-col">
-            <h3>CODEGYM</h3>
-
-            <p>📍 CODEGYM VÕ THỊ SÁU<br>
-                Số 101 Võ Thị Sáu, Thanh Nhàn, Hai Bà Trưng, Hà Nội<br>
-                ☎ 0987 562 211
-            </p>
-
-            <p>📍 CODEGYM HÀ ĐÔNG<br>
-                Tòa nhà Ellipse - 112 Trần Phú, Hà Đông<br>
-                ☎ 0987 523 311
-            </p>
-
-            <p>📍 CODEGYM GIẢI PHÓNG<br>
-                Imperial Plaza - 360 Giải Phóng, Thanh Xuân<br>
-                ☎ 0987 503 311
-            </p>
-
-            <p>📍 CODEGYM LONG BIÊN<br>
-                Chung cư One 18 - Ngõ 298 Ngọc Lâm<br>
-                ☎ 0986 452 211
-            </p>
-        </div>
-
-
-        <!-- KHUNG 2: DỊCH VỤ -->
-        <div class="footer-col">
-            <h3>Dịch vụ</h3>
-
-            <ul>
-                <li>Huấn luyện viên cá nhân</li>
-                <li>Gói tập Gym</li>
-                <li>Lịch học</li>
-                <li>Khuyến mãi</li>
-                <li>Chính sách giá</li>
-            </ul>
-
-            <h3>Thời gian hoạt động</h3>
-
-            <p>
-                Thứ 2 - Thứ 6: 5:30 - 21:30<br>
-                Thứ 7: 5:30 - 20:30<br>
-                Chủ nhật: 5:30 - 20:00
-            </p>
-        </div>
-
-
-        <!-- KHUNG 3: LIÊN HỆ -->
-        <div class="footer-col">
-            <h3>Liên hệ</h3>
-
-            <p>📞 Hotline: 0355151178</p>
-
-            <ul>
-                <li>Chính sách giá</li>
-                <li>Chính sách bảo mật</li>
-                <li>Điều khoản dịch vụ</li>
-            </ul>
-
-            <h3>Mạng xã hội</h3>
-
-            <p>
-                Facebook<br>
-                Instagram<br>
-                YouTube
-            </p>
-        </div>
-
-    </div>
-</footer>
 
         <script>
             // News Slider Logic
