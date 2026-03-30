@@ -1,4 +1,4 @@
-package com.gym.config;
+package config;
 
 import com.gym.filter.AuthInterceptor;
 import com.gym.filter.RoleInterceptor;
