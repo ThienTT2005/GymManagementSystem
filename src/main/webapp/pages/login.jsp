@@ -71,7 +71,7 @@
                             <button class="role-btn" onclick="setRole('staff', this)">Staff</button>
                         </div>
 
-                        <form action="login" method="POST">
+                        <form action="${pageContext.request.contextPath}/login" method="POST">
                             <input type="hidden" id="role" name="role" value="customer">
 
                             <div class="input-group">

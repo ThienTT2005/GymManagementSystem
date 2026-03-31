@@ -37,7 +37,7 @@
             <h1 id="formTitle">ĐĂNG NHẬP</h1>
             <div class="error">${requestScope.error}</div>
 
-            <form id="loginForm" action="login" method="post">
+            <form id="loginForm" action="${pageContext.request.contextPath}/login" method="post">
                 <input type="text" name="user" placeholder="Username" required>
                 <input type="password" name="pass" placeholder="Password" required>
                 <input type="submit" value="LOGIN">
