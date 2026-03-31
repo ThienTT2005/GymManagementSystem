@@ -1,7 +1,7 @@
 package com.gym.GymManagementSystem.controller;
 
 import com.gym.GymManagementSystem.model.User;
-import com.gym.GymManagementSystem.model.UserRepository;
+import com.gym.GymManagementSystem.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

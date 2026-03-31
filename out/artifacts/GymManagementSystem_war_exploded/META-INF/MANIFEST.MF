@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Created-By: IntelliJ IDEA
 Built-By: huyen
-Build-Jdk: Oracle OpenJDK 24.0.2
+Build-Jdk: Microsoft OpenJDK 17.0.16
 Implementation-Title: GymManagementSystem
 Implementation-Version: 0.0.1-SNAPSHOT
 Implementation-Vendor-Id: com.gym
