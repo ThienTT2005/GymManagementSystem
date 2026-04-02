@@ -25,7 +25,7 @@ public class LoginController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping({"/login", "/pages/login"})
+    @PostMapping({ "/login", "/pages/login" })
     public String login(
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "user", required = false) String username,
@@ -69,7 +69,7 @@ public class LoginController {
         return "redirect:/pages/index.jsp";
     }
 
-    @GetMapping({"/logout"})
+    @GetMapping({ "/logout" })
     public String logout(HttpSession session) {
         if (session != null) {
             session.invalidate();
@@ -77,4 +77,3 @@ public class LoginController {
         return "redirect:/pages/index.jsp";
     }
 }
-
