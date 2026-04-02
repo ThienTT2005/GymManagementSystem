@@ -18,8 +18,8 @@ public class AdminDashboardController {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/")
-    public String root() {
+    @GetMapping("/admin")
+    public String adminRoot() {
         return "redirect:/admin/dashboard";
     }
 

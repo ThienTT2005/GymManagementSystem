@@ -75,11 +75,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Provided Tomcat for WAR packaging -->
+        <!-- Embedded Tomcat (needed when running main class) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test -->
@@ -95,6 +94,8 @@
     </dependencies>
 
 	<build>
+        <!-- Deploy as ROOT on external Tomcat (http://localhost:8080/) -->
+        <finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
