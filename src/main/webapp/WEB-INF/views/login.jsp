@@ -37,7 +37,7 @@
             <h1 id="formTitle">ĐĂNG NHẬP</h1>
             <div class="error">${requestScope.error}</div>
 
-            <form id="loginForm" action="login" method="post">
+            <form id="loginForm" action="${pageContext.request.contextPath}/login" method="post">
                 <input type="text" name="user" placeholder="Username" required>
                 <input type="password" name="pass" placeholder="Password" required>
                 <input type="submit" value="LOGIN">
@@ -65,6 +65,94 @@
                 document.getElementById('loginForm').style.display = 'block';
                 document.getElementById('formTitle').innerText = 'ĐĂNG NHẬP';
             }
+
+            // Form Validation Logic
+            document.addEventListener("DOMContentLoaded", function () {
+                // Validate Tên: Chỉ được nhập chữ và khoảng trắng (bao gồm cả tiếng Việt)
+                const nameInputs = document.querySelectorAll('input[name="name"], input[name="fullName"], input[name="fullname"]');
+                nameInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[^a-zA-Z\u00C0-\u1EF9\s]/.test(this.value)) {
+                            showError(this, 'Tên chỉ được chứa chữ cái!');
+                            this.value = this.value.replace(/[^a-zA-Z\u00C0-\u1EF9\s]/g, ''); 
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate SĐT: Bắt đầu bằng 0 và tối đa 10 số
+                const phoneInputs = document.querySelectorAll('input[name="phone"]');
+                phoneInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        let val = this.value.replace(/[^\d]/g, '');
+                        if (val.length > 0 && val[0] !== '0') {
+                            val = '0' + val.substring(1);
+                            showError(this, 'Số điện thoại phải bắt đầu bằng 0!');
+                        }
+                        if (val.length > 10) {
+                            val = val.substring(0, 10);
+                        }
+                        this.value = val;
+                        if (val.length > 0 && val.length < 10) {
+                            showError(this, 'Số điện thoại phải đủ 10 chữ số!');
+                        } else if (val.length === 10) {
+                            removeError(this);
+                        } else if (val.length === 0) {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate Tuổi, Chiều cao, Cân nặng: Chỉ được nhập số
+                const numInputs = document.querySelectorAll('input[name="age"], input[name="height"], input[name="weight"]');
+                numInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[^\d.]/.test(this.value)) {
+                            showError(this, 'Trường này chỉ được nhập số!');
+                            this.value = this.value.replace(/[^\d.]/g, ''); 
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                // Validate Email (không có khoảng trắng, tiếng Việt)
+                const emailInputs = document.querySelectorAll('input[name="email"], input[type="email"]');
+                emailInputs.forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (/[\s\u00C0-\u017F]/.test(this.value)) {
+                            showError(this, 'Email không được chứa khoảng trắng hoặc tiếng Việt!');
+                            this.value = this.value.replace(/[\s\u00C0-\u017F]/g, '');
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                });
+
+                function showError(input, message) {
+                    let errorElement = input.nextElementSibling;
+                    if (!errorElement || !errorElement.classList.contains('input-error-msg')) {
+                        errorElement = document.createElement('span');
+                        errorElement.classList.add('input-error-msg');
+                        errorElement.style.color = 'red';
+                        errorElement.style.fontSize = '12px';
+                        errorElement.style.display = 'block';
+                        errorElement.style.marginTop = '5px';
+                        input.parentNode.insertBefore(errorElement, input.nextSibling);
+                    }
+                    errorElement.innerText = message;
+                    clearTimeout(input.errorTimeout);
+                    input.errorTimeout = setTimeout(() => removeError(input), 3000);
+                }
+
+                function removeError(input) {
+                    let errorElement = input.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('input-error-msg')) {
+                        errorElement.remove();
+                    }
+                }
+            });
         </script>
     </body>
 </html>

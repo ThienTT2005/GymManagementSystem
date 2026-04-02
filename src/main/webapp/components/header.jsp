@@ -5,7 +5,7 @@
     <header class="header">
 
         <div class="logo">
-            <a href="${pageContext.request.contextPath}/pages/index.html">
+            <a href="${pageContext.request.contextPath}/pages/index.jsp">
                 <img src="${pageContext.request.contextPath}/images/logo.png" alt="Logo"
                     style="height: 40px; vertical-align: middle;">
             </a>
@@ -22,8 +22,11 @@
 
         <div class="actions">
 
-            <button class="trial" onclick="window.location.href='${pageContext.request.contextPath}/pages/register.jsp'">Đăng ký tập thử</button>
-            <button class="login" onclick="window.location.href='${pageContext.request.contextPath}/pages/login.jsp'">Đăng nhập</button>
+            <button class="trial"
+                onclick="window.location.href='${pageContext.request.contextPath}/pages/register.jsp'">Đăng ký tập
+                thử</button>
+            <button class="login"
+                onclick="window.location.href='${pageContext.request.contextPath}/pages/login.jsp'">Đăng nhập</button>
 
         </div>
 

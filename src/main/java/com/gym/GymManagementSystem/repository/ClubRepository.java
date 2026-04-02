@@ -1,7 +1,9 @@
 package com.gym.GymManagementSystem.repository;
 
-import com.gym.GymManagementSystem.model.Club;
+import com.gym.GymManagementSystem.entity.Club;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ClubRepository extends JpaRepository<Club, Integer> {
+@Repository
+public interface ClubRepository extends JpaRepository<Club, Long> {
 }

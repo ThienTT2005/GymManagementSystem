@@ -22,18 +22,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String handleLogin(@RequestParam("user") String u, 
-                              @RequestParam("pass") String p, 
-                              HttpSession session, 
-                              Model model) {
-        
+    public String handleLogin(@RequestParam("user") String u,
+            @RequestParam("pass") String p,
+            HttpSession session,
+            Model model) {
+
         User user = userRepository.findByUsernameAndPassword(u, p);
-        
+
         if (user == null) {
             model.addAttribute("error", "Tai khoan hoac mat khau khong dung!");
             return "login";
         } else {
-            session.setAttribute("account", user); 
+            session.setAttribute("account", user);
             if (user.getRoleId() == 1) {
                 return "redirect:/admin-page";
             } else {
@@ -43,12 +43,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String handleRegister(@RequestParam String user, 
-                                 @RequestParam String pass,
-                                 @RequestParam String name, 
-                                 @RequestParam String email, 
-                                 Model model) {
-        
+    public String handleRegister(@RequestParam String user,
+            @RequestParam String pass,
+            @RequestParam String name,
+            @RequestParam String email,
+            Model model) {
+
         if (userRepository.existsByUsername(user)) {
             model.addAttribute("error", "Tai khoan da ton tai!");
             return "login";
@@ -64,7 +64,7 @@ public class AuthController {
         session.invalidate();
         return "redirect:/login";
     }
-    
+
     @GetMapping("/admin-page")
     public String adminPage() {
         return "admin";
@@ -74,6 +74,7 @@ public class AuthController {
     public String memberPage() {
         return "member";
     }
+
     @GetMapping("/")
     public String showIndex() {
         return "home";

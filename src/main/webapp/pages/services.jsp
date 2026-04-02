@@ -1,24 +1,135 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>CodeGym - Dịch Vụ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; min-height: 100vh; background: #fafafa; }
-        .page-content { flex: 1; padding: 80px 20px; text-align: center; }
-        .page-content h1 { color: #8d1317; font-size: 36px; margin-bottom: 20px; }
-        .page-content p { color: #555; font-size: 18px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTIT Gym - Dịch vụ</title>
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/services.css">
 </head>
 <body>
-    <jsp:include page="../components/header.jsp" />
-    <div class="page-content">
-        <h1>DỊCH VỤ</h1>
-        <p>Nội dung trang Dịch Vụ đang được cập nhật...</p>
-    </div>
-    <jsp:include page="../components/footer.jsp" />
+
+<jsp:include page="/components/header.jsp" />
+
+<main class="services-page">
+    <section class="services-banner">
+        <img
+                src="${pageContext.request.contextPath}/images/banner.png"
+                alt="Dịch vụ"
+                class="services-banner-img"
+        >
+        <h1 class="services-banner-title">DỊCH VỤ</h1>
+    </section>
+
+    <section class="services-intro">
+        <h2 class="section-title">CÁC DỊCH VỤ CỦA CHÚNG TÔI</h2>
+        <p class="section-description">
+            Các chương trình luyện tập Body Combat, Body Pump, StepTok, Zumba, Aerobics
+            được thiết kế một cách khoa học và phù hợp bởi các chuyên gia, sẽ hỗ trợ bạn
+            trong việc đạt được mục tiêu về sức khỏe và hình thể.
+        </p>
+    </section>
+
+    <section class="services-list">
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/zumba-8.png"
+                    alt="Zumba"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">ZUMBA</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Bộ môn kết hợp thể dục và âm nhạc sôi động, giúp cơ thể dẻo dai
+                    và đốt cháy năng lượng hiệu quả.
+                </p>
+            </div>
+        </article>
+
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/bodycombat.png"
+                    alt="BodyCombat"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">BODYCOMBAT</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Hình thức luyện tập đầy năng lượng, lấy cảm hứng từ võ thuật,
+                    giúp tăng sức bền và thể lực.
+                </p>
+            </div>
+        </article>
+
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/bodypump-8.png"
+                    alt="Body Pump"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">BODY PUMP</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Lớp tập với tạ giúp cơ thể săn chắc, khỏe mạnh và hỗ trợ giảm mỡ hiệu quả.
+                </p>
+            </div>
+        </article>
+
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/bums-tums-8.png"
+                    alt="Step Tok"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">STEP TOK</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Bộ môn vận động nhịp nhàng, tạo cảm giác mới mẻ và tăng độ linh hoạt cho cơ thể.
+                </p>
+            </div>
+        </article>
+
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/pilates.jpg"
+                    alt="Pilates"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">PILATES</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Phương pháp luyện tập giúp cải thiện tư thế, tăng độ dẻo dai
+                    và kiểm soát cơ thể tốt hơn.
+                </p>
+            </div>
+        </article>
+
+        <article class="service-card">
+            <img
+                    src="${pageContext.request.contextPath}/images/aerobic-8.png"
+                    alt="Aerobics"
+                    class="service-card-image"
+            >
+            <div class="service-card-content">
+                <h3 class="service-card-title">AEROBICS</h3>
+                <div class="service-card-meta">60 phút</div>
+                <p class="service-card-description">
+                    Bài tập sôi động giúp nâng cao sức khỏe tim mạch, đốt calo
+                    và làm tinh thần thoải mái hơn.
+                </p>
+            </div>
+        </article>
+    </section>
+</main>
+
+<jsp:include page="/components/footer.jsp" />
+
 </body>
 </html>

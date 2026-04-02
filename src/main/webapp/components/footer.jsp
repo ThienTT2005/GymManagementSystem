@@ -7,25 +7,13 @@
         <div class="footer-col">
             <h3>CODEGYM</h3>
 
-            <p>📍 CODEGYM VÕ THỊ SÁU<br>
-                Số 101 Võ Thị Sáu, Thanh Nhàn, Hai Bà Trưng, Hà Nội<br>
-                ☎ 0987 562 211
-            </p>
+
 
             <p>📍 CODEGYM HÀ ĐÔNG<br>
                 Tòa nhà Ellipse - 112 Trần Phú, Hà Đông<br>
                 ☎ 0987 523 311
             </p>
 
-            <p>📍 CODEGYM GIẢI PHÓNG<br>
-                Imperial Plaza - 360 Giải Phóng, Thanh Xuân<br>
-                ☎ 0987 503 311
-            </p>
-
-            <p>📍 CODEGYM LONG BIÊN<br>
-                Chung cư One 18 - Ngõ 298 Ngọc Lâm<br>
-                ☎ 0986 452 211
-            </p>
         </div>
 
 

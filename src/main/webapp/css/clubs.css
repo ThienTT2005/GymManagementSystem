@@ -38,6 +38,84 @@ section {
 /* Clubs Grid */
 .clubs-section {
     margin-top: 40px;
+    padding: 0 20px;
+}
+
+.club-featured {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    max-width: 1000px;
+    margin: 0 auto;
+    transition: transform 0.3s;
+}
+
+.club-featured:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .club-featured {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .club-featured-image {
+        width: 60%;
+        flex: none;
+    }
+    .club-featured-info {
+        width: 40%;
+        flex: none;
+        padding: 50px 40px;
+    }
+}
+
+.club-featured-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+.club-featured-info {
+    flex: 1;
+    padding: 30px;
+    text-align: left !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.club-featured-info .club-name {
+    font-size: 32px;
+    color: #8d1317;
+    margin-bottom: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.club-info-details p {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.club-info-details p svg {
+    margin-right: 15px;
+    color: #8d1317;
+    flex-shrink: 0;
 }
 
 .clubs-label {
@@ -77,13 +155,13 @@ section {
     overflow: hidden;
     padding: 20px;
     text-align: left;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
 }
 
 .club-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .club-name {
@@ -116,7 +194,7 @@ section {
     background: #fff;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .registration-title {
@@ -137,7 +215,7 @@ section {
     .registration-form {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .form-group:nth-child(5),
     .form-group:nth-child(6),
     .btn-submit {
@@ -157,8 +235,8 @@ section {
     color: #333;
 }
 
-.form-group input, 
-.form-group select, 
+.form-group input,
+.form-group select,
 .form-group textarea {
     padding: 12px 15px;
     font-size: 15px;
@@ -169,8 +247,8 @@ section {
     background: #fafafa;
 }
 
-.form-group input:focus, 
-.form-group select:focus, 
+.form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
     border-color: #8d1317;
     background: #fff;
@@ -186,7 +264,9 @@ section {
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
-    margin-top: 10px;
+    margin: 20px auto 0 auto;
+    max-width: 350px;
+    width: 100%;
 }
 
 .btn-submit:hover {
@@ -230,12 +310,14 @@ section {
     color: #555;
 }
 
-.schedule, .addresses {
+.schedule,
+.addresses {
     margin-bottom: 40px;
     text-align: left;
 }
 
-.schedule h3, .addresses h3 {
+.schedule h3,
+.addresses h3 {
     font-size: 20px;
     color: #111;
     margin-bottom: 15px;
@@ -266,9 +348,10 @@ section {
     background: #fafafa;
     padding: 15px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 16px;
     color: #444;
     border-left: 4px solid #8d1317;
+    max-width: 450px;
 }
 
 .address-item strong {
