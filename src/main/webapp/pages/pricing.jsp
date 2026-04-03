@@ -79,59 +79,8 @@
     </section>
 
     <!-- Form đăng ký -->
-    <section class="register-section">
-        <div class="register-box">
-            <h2 class="register-title">ĐĂNG KÝ THAM GIA CÂU LẠC BỘ</h2>
-
-            <form class="register-form" id="registerForm">
-                <div class="form-grid">
-                    <input type="text" name="fullName" placeholder="Họ và tên" required>
-                    <input type="tel" name="phone" placeholder="Số điện thoại" required>
-
-                    <select name="gender" required>
-                        <option value="">Giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
-                    </select>
-
-                    <input type="text" name="callTime" placeholder="Giờ nào tôi có thể gọi cho bạn" required>
-
-                    <select name="club" required>
-                        <option value="">Câu lạc bộ bạn muốn tham gia</option>
-                        <option value="classic">Classic</option>
-                        <option value="classic-plus">Classic Plus</option>
-                        <option value="premium">Premium</option>
-                        <option value="signature">Signature</option>
-                    </select>
-
-                    <input type="text" name="address" placeholder="Địa chỉ" required>
-                </div>
-
-                <button type="submit" class="register-btn">ĐĂNG KÝ NGAY</button>
-                <p id="successMessage" class="success-message">Chúng tôi sẽ liên hệ với bạn sớm nhất</p>
-            </form>
-        </div>
-    </section>
-</main>
-
-<jsp:include page="/components/footer.jsp" />
-
-<script>
-    const registerForm = document.getElementById("registerForm");
-    const successMessage = document.getElementById("successMessage");
-
-    registerForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        if (registerForm.checkValidity()) {
-            successMessage.style.display = "block";
-            registerForm.reset();
-        } else {
-            registerForm.reportValidity();
-        }
-    });
-</script>
+    <!-- Form đăng ký -->
+    <jsp:include page="/components/formtuvan.jsp" />
 
 </body>
 </html>

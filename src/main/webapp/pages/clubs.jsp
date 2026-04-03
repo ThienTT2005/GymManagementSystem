@@ -66,78 +66,8 @@
             </section>
 
             <!-- Registration Section -->
-            <section class="registration">
-                <div class="registration-container">
-                    <h2 class="registration-title">ĐĂNG KÝ THAM GIA CÂU LẠC BỘ</h2>
-                    <form class="registration-form" id="clubForm">
-                        <div class="form-group">
-                            <label for="fullname">Họ và tên</label>
-                            <input type="text" id="fullname" name="fullname" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Số điện thoại</label>
-                            <input type="tel" id="phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="time">Giờ nào tôi có thể gọi cho bạn</label>
-                            <input type="time" id="time" name="time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="gender">Giới tính</label>
-                            <select id="gender" name="gender" required>
-                                <option value="">Chọn giới tính</option>
-                                <option value="male">Nam</option>
-                                <option value="female">Nữ</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="club">Câu lạc bộ bạn muốn tham gia</label>
-                            <select id="club" name="club" required>
-                                <option value="ha-dong" selected>CODEGYM HÀ ĐÔNG</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Địa chỉ</label>
-                            <textarea id="address" name="address" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit">ĐĂNG KÝ NGAY</button>
-                    </form>
-                </div>
-            </section>
-
-
-        </main>
-
-        <!-- Footer Component -->
-        <jsp:include page="../components/footer.jsp" />
-
-        <script>
-            document.getElementById("clubForm").addEventListener("submit", function (event) {
-                event.preventDefault(); // Ngăn form tải lại trang
-
-                // Tìm thẻ form
-                const formObj = document.getElementById("clubForm");
-
-                // Lấy container chứa form
-                const container = formObj.parentElement;
-
-                // Gửi dữ liệu đi (tuỳ chọn - hiện tại hệ thống giả lập thành công)
-                // ...
-
-                // Thay thế nội dung bằng thông báo thành công
-                container.innerHTML = `
-                <h2 class="registration-title" style="margin-bottom: 30px;">ĐĂNG KÝ THAM GIA CÂU LẠC BỘ</h2>
-                <div style="text-align: center; padding: 60px 20px; background-color: #fff; border-radius: 12px; border: 1px solid #e0e0e0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.5s;">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px;">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    <h3 style="color: #333; font-size: 24px; margin-bottom: 12px; font-weight: 700;">Đăng ký thành công!</h3>
-                    <p style="color: #555; font-size: 18px; line-height: 1.5;">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
-                </div>
-            `;
-            });
-        </script>
+            <!-- Form đăng ký -->
+            <jsp:include page="/components/formtuvan.jsp" />
     </body>
 
     </html>
