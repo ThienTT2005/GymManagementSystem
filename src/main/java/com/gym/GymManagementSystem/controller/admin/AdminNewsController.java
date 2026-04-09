@@ -1,20 +1,15 @@
 package com.gym.GymManagementSystem.controller.admin;
 
-import com.gym.GymManagementSystem.entity.News;
+import com.gym.GymManagementSystem.model.News;
 import com.gym.GymManagementSystem.service.NewsService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
-import java.util.UUID;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/news")
@@ -27,18 +22,22 @@ public class AdminNewsController {
     }
 
     @GetMapping
-    public String listNews(@RequestParam(value = "keyword", required = false) String keyword,
-                           @RequestParam(value = "page", defaultValue = "0") int page,
-                           @RequestParam(value = "size", defaultValue = "5") int size,
-                           Model model) {
-
-        var newsPage = newsService.searchNews(keyword, page, size);
+    public String listNews(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Model model
+    ) {
+        Page<News> newsPage = newsService.searchNews(keyword, type, status, page, size);
 
         model.addAttribute("pageTitle", "Quản lý tin tức");
-        model.addAttribute("newsList", newsPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", newsPage.getTotalPages());
-        model.addAttribute("size", size);
+        model.addAttribute("activePage", "news");
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("type", type);
+        model.addAttribute("status", status);
+        model.addAttribute("newsPage", newsPage);
 
         return "admin/news/list";
     }
@@ -46,62 +45,89 @@ public class AdminNewsController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         News news = new News();
-        news.setCreatedDate(LocalDate.now());
+        news.setStatus(1);
 
-        model.addAttribute("pageTitle", "Thêm tin tức");
+        model.addAttribute("pageTitle", "Thêm bài viết");
+        model.addAttribute("activePage", "news");
         model.addAttribute("news", news);
+        model.addAttribute("isEdit", false);
+
         return "admin/news/form";
     }
 
-    @PostMapping("/save")
-    public String saveNews(@ModelAttribute("news") News news,
-                           @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-                           @RequestParam(value = "existingImage", required = false) String existingImage) {
-
-        if (news.getCreatedDate() == null) {
-            news.setCreatedDate(LocalDate.now());
+    @PostMapping("/create")
+    public String createNews(
+            @Valid @ModelAttribute("news") News news,
+            BindingResult bindingResult,
+            @RequestParam("imageFile") MultipartFile imageFile,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "Thêm bài viết");
+            model.addAttribute("activePage", "news");
+            model.addAttribute("isEdit", false);
+            return "admin/news/form";
         }
 
-        try {
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String originalFileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
-                String fileName = UUID.randomUUID() + "_" + originalFileName;
-
-                String projectDir = System.getProperty("user.dir");
-                Path uploadDir = Paths.get(projectDir, "src", "main", "webapp", "assets", "images", "news");
-
-                if (!Files.exists(uploadDir)) {
-                    Files.createDirectories(uploadDir);
-                }
-
-                Path filePath = uploadDir.resolve(fileName);
-                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                news.setImage("/assets/images/news/" + fileName);
-            } else {
-                news.setImage(existingImage);
-            }
-
-            newsService.save(news);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        newsService.createNews(news, imageFile);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm bài viết thành công");
         return "redirect:/admin/news";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        News news = newsService.findById(id);
-        model.addAttribute("pageTitle", "Sửa tin tức");
+    public String showEditForm(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        News news = newsService.getNewsById(id);
+        if (news == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bài viết");
+            return "redirect:/admin/news";
+        }
+
+        model.addAttribute("pageTitle", "Cập nhật bài viết");
+        model.addAttribute("activePage", "news");
         model.addAttribute("news", news);
+        model.addAttribute("isEdit", true);
+
         return "admin/news/form";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteNews(@PathVariable Long id) {
-        newsService.deleteById(id);
+    @PostMapping("/edit/{id}")
+    public String updateNews(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("news") News news,
+            BindingResult bindingResult,
+            @RequestParam("imageFile") MultipartFile imageFile,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (newsService.getNewsById(id) == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bài viết");
+            return "redirect:/admin/news";
+        }
+
+        if (bindingResult.hasErrors()) {
+            news.setPostId(id);
+            model.addAttribute("pageTitle", "Cập nhật bài viết");
+            model.addAttribute("activePage", "news");
+            model.addAttribute("isEdit", true);
+            return "admin/news/form";
+        }
+
+        newsService.updateNews(id, news, imageFile);
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật bài viết thành công");
+        return "redirect:/admin/news";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteNews(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean deleted = newsService.softDeleteNews(id);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "Ẩn bài viết thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bài viết");
+        }
+
         return "redirect:/admin/news";
     }
 }

@@ -6,148 +6,127 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin-common.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+<div class="app-shell">
+    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
 
-<%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
-<%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+    <div class="app-body">
+        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
 
-<div class="main-content">
-    <div class="page-box members-page-box">
-        <div class="page-header">
-    <div class="page-title">Quản lý hội viên</div>
-</div>
+        <main class="app-content">
+            <div class="page-header">
+                <div>
+                    <h1>Quản lý hội viên</h1>
+                    <p>Danh sách hồ sơ hội viên</p>
+                </div>
+                <a class="btn-primary" href="${pageContext.request.contextPath}/admin/members/create">
+                    <i class="fa fa-plus"></i> Thêm hội viên
+                </a>
+            </div>
 
-        <form method="get" action="${pageContext.request.contextPath}/admin/members" class="toolbar toolbar-members-one-row">
-            <div class="toolbar-members-group">
-                <div class="search-box members-search-box">
-                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input type="text"
-                            name="keyword"
-                            placeholder="Tìm theo tên hội viên hoặc gói tập"
-                            value="${param.keyword}">
+            <c:if test="${not empty successMessage}">
+                <div class="alert-success">${successMessage}</div>
+            </c:if>
+
+            <c:if test="${not empty errorMessage}">
+                <div class="alert-error">${errorMessage}</div>
+            </c:if>
+
+            <div class="page-card">
+                <form method="get" action="${pageContext.request.contextPath}/admin/members" class="filter-form">
+                    <div class="filter-group">
+                        <input type="text" name="keyword" value="${keyword}" placeholder="Tìm tên / số điện thoại">
+                    </div>
+
+                    <div class="filter-group">
+                        <select name="status">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="1" <c:if test="${status == 1}">selected</c:if>>Hoạt động</option>
+                            <option value="0" <c:if test="${status == 0}">selected</c:if>>Ngừng</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-secondary">
+                        <i class="fa fa-search"></i> Tìm kiếm
+                    </button>
+                </form>
+
+                <div class="table-wrap">
+                    <table class="dashboard-table admin-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Họ tên</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Giới tính</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:choose>
+                            <c:when test="${not empty memberPage.content}">
+                                <c:forEach var="item" items="${memberPage.content}">
+                                    <tr>
+                                        <td>${item.memberId}</td>
+                                        <td>${item.username}</td>
+                                        <td>${item.fullname}</td>
+                                        <td>${item.phone}</td>
+                                        <td>${item.email}</td>
+                                        <td>${item.gender}</td>
+                                        <td>
+                                            <span class="${item.status == 1 ? 'badge-active' : 'badge-inactive'}">
+                                                <c:choose>
+                                                    <c:when test="${item.status == 1}">Hoạt động</c:when>
+                                                    <c:otherwise>Ngừng</c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a class="btn-sm btn-edit"
+                                               href="${pageContext.request.contextPath}/admin/members/edit/${item.memberId}">
+                                                Sửa
+                                            </a>
+
+                                            <form method="post"
+                                                  action="${pageContext.request.contextPath}/admin/members/delete/${item.memberId}"
+                                                  style="display:inline-block"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa hội viên này?');">
+                                                <button type="submit" class="btn-sm btn-delete">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <tr>
+                                    <td colspan="8" class="empty-cell">Không có dữ liệu</td>
+                                </tr>
+                            </c:otherwise>
+                        </c:choose>
+                        </tbody>
+                    </table>
                 </div>
 
-                <select name="status" class="filter-select members-filter-select">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="Đang hoạt động" ${param.status == 'Đang hoạt động' ? 'selected' : ''}>Đang hoạt động</option>
-                    <option value="Tạm dừng" ${param.status == 'Tạm dừng' ? 'selected' : ''}>Tạm dừng</option>
-                    <option value="Hết hạn" ${param.status == 'Hết hạn' ? 'selected' : ''}>Hết hạn</option>
-                </select>
-            </div>
-            <div class="toolbar-members-actions">
-                    <button type="submit" class="btn-filter">
-                        <i class="fa-solid fa-filter"></i> Lọc
-                    </button>
-
-                    <a class="btn-add" href="${pageContext.request.contextPath}/admin/members/create">
-                        <i class="fa-solid fa-plus"></i> Thêm hội viên
-                    </a>
-            </div>
-        </form>
-
-        <div class="table-box">
-            <table class="admin-table members-table">
-                <thead>
-                <tr>
-                    <th>Hội viên</th>
-                    <th>Gói tập</th>
-                    <th>Ngày bắt đầu</th>
-                    <th>Ngày kết thúc</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="item" items="${memberships}">
-                    <tr>
-                        <td class="text-strong">${item.memberName}</td>
-                        <td>${item.packageName}</td>
-                        <td class="small-date">${item.startDate}</td>
-                        <td class="small-date">${item.endDate}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${item.status == 'Đang hoạt động'}">
-                                    <span class="badge badge-success">${item.status}</span>
-                                </c:when>
-                                <c:when test="${item.status == 'Tạm dừng'}">
-                                    <span class="badge badge-warning">${item.status}</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="badge badge-danger">${item.status}</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <a class="btn-edit"
-                                   href="${pageContext.request.contextPath}/admin/members/edit/${item.membershipId}">
-                                    <i class="fa-regular fa-pen-to-square"></i> Sửa
-                                </a>
-
-                                <a class="btn-status-toggle ${item.status == 'Đang hoạt động' ? 'btn-lock' : 'btn-unlock'}"
-                                   href="${pageContext.request.contextPath}/admin/members/toggle-status/${item.membershipId}"
-                                   onclick="return confirm('Bạn có chắc muốn thay đổi trạng thái hội viên này?')">
-                                    <i class="fa-solid ${item.status == 'Đang hoạt động' ? 'fa-pause' : 'fa-play'}"></i>
-                                    <c:choose>
-                                        <c:when test="${item.status == 'Đang hoạt động'}">Tạm dừng</c:when>
-                                        <c:otherwise>Kích hoạt</c:otherwise>
-                                    </c:choose>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                </c:forEach>
-
-                <c:if test="${empty memberships}">
-                    <tr>
-                        <td colspan="6" class="empty-text">Chưa có dữ liệu hội viên</td>
-                    </tr>
+                <c:if test="${memberPage.totalPages > 1}">
+                    <div class="pagination">
+                        <c:forEach begin="0" end="${memberPage.totalPages - 1}" var="p">
+                            <a class="${p + 1 == memberPage.number + 1 ? 'active' : ''}"
+                               href="${pageContext.request.contextPath}/admin/members?keyword=${keyword}&status=${status}&page=${p + 1}&size=${memberPage.size}">
+                                ${p + 1}
+                            </a>
+                        </c:forEach>
+                    </div>
                 </c:if>
-                </tbody>
-            </table>
-        </div>
-
-        <c:if test="${totalPages > 1}">
-            <div class="pagination-box">
-                <c:choose>
-                    <c:when test="${currentPage > 0}">
-                        <a class="page-item"
-                           href="${pageContext.request.contextPath}/admin/members?page=${currentPage - 1}&size=${size}&keyword=${param.keyword}&status=${param.status}">
-                            <i class="fa-solid fa-angle-left"></i>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="page-item disabled"><i class="fa-solid fa-angle-left"></i></span>
-                    </c:otherwise>
-                </c:choose>
-
-                <c:forEach begin="0" end="${totalPages - 1}" var="i">
-                    <a class="page-item ${i == currentPage ? 'active' : ''}"
-                       href="${pageContext.request.contextPath}/admin/members?page=${i}&size=${size}&keyword=${param.keyword}&status=${param.status}">
-                        ${i + 1}
-                    </a>
-                </c:forEach>
-
-                <c:choose>
-                    <c:when test="${currentPage < totalPages - 1}">
-                        <a class="page-item"
-                           href="${pageContext.request.contextPath}/admin/members?page=${currentPage + 1}&size=${size}&keyword=${param.keyword}&status=${param.status}">
-                            <i class="fa-solid fa-angle-right"></i>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="page-item disabled"><i class="fa-solid fa-angle-right"></i></span>
-                    </c:otherwise>
-                </c:choose>
             </div>
-        </c:if>
+        </main>
     </div>
-
-    <%@ include file="/WEB-INF/views/admin/layout/footer.jsp" %>
 </div>
-
 </body>
 </html>

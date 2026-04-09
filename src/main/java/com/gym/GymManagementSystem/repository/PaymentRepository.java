@@ -1,61 +1,53 @@
 package com.gym.GymManagementSystem.repository;
 
-import com.gym.GymManagementSystem.entity.Payment;
+import com.gym.GymManagementSystem.model.Payment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+
+    @Query("""
+        select p from Payment p
+        left join p.membership m
+        left join p.classRegistration cr
+        left join m.member mm
+        left join cr.member cm
+        where lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+    """)
+    Page<Payment> searchByKeyword(String keyword, Pageable pageable);
+
+    @Query("""
+        select p from Payment p
+        left join p.membership m
+        left join p.classRegistration cr
+        left join m.member mm
+        left join cr.member cm
+        where lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+          and p.status = :status
+    """)
+    Page<Payment> searchByKeywordAndStatus(String keyword, String status, Pageable pageable);
+
+    Page<Payment> findByStatus(String status, Pageable pageable);
 
     long countByStatus(String status);
 
-    List<Payment> findTop5ByStatusOrderByPaymentDateDesc(String status);
+    List<Payment> findAll(Sort sort);
 
-    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status = 'Đã duyệt'")
+    @Query("select coalesce(sum(p.amount), 0) from Payment p where p.status = 'PAID'")
     BigDecimal getTotalRevenue();
 
-    @Query("SELECT MONTH(p.paymentDate), SUM(p.amount) " +
-            "FROM Payment p " +
-            "WHERE p.status = 'Đã duyệt' " +
-            "GROUP BY MONTH(p.paymentDate) " +
-            "ORDER BY MONTH(p.paymentDate)")
-    List<Object[]> getMonthlyRevenue();
-
-    @Query("SELECT MONTH(p.paymentDate), " +
-            "COALESCE(SUM(CASE WHEN YEAR(p.paymentDate) = :currentYear THEN p.amount ELSE 0 END), 0), " +
-            "COALESCE(SUM(CASE WHEN YEAR(p.paymentDate) = :previousYear THEN p.amount ELSE 0 END), 0) " +
-            "FROM Payment p " +
-            "WHERE p.status = 'Đã duyệt' " +
-            "AND YEAR(p.paymentDate) IN (:currentYear, :previousYear) " +
-            "GROUP BY MONTH(p.paymentDate) " +
-            "ORDER BY MONTH(p.paymentDate)")
-    List<Object[]> getMonthlyRevenueComparison(@Param("currentYear") int currentYear,
-                                               @Param("previousYear") int previousYear);
-
-    @Query("SELECT p.packageName, COUNT(p) " +
-            "FROM Payment p " +
-            "WHERE p.status = 'Đã duyệt' " +
-            "GROUP BY p.packageName " +
-            "ORDER BY COUNT(p) DESC")
-    List<Object[]> getTopPackages();
-
     @Query("""
-        SELECT p
-        FROM Payment p
-        WHERE
-            (:keyword IS NULL OR :keyword = '' OR
-             LOWER(COALESCE(p.memberName, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-             LOWER(COALESCE(p.packageName, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-             LOWER(COALESCE(p.paymentMethod, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
-        AND
-            (:status IS NULL OR :status = '' OR p.status = :status)
+        select function('DATE_FORMAT', p.paymentDate, '%Y-%m'), coalesce(sum(p.amount), 0)
+        from Payment p
+        where p.status = 'PAID' and p.paymentDate is not null
+        group by function('DATE_FORMAT', p.paymentDate, '%Y-%m')
+        order by function('DATE_FORMAT', p.paymentDate, '%Y-%m')
     """)
-    Page<Payment> searchPayments(@Param("keyword") String keyword,
-                                 @Param("status") String status,
-                                 Pageable pageable);
+    List<Object[]> getMonthlyRevenue();
 }

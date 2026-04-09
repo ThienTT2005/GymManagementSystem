@@ -3,40 +3,71 @@
 
 <div class="admin-header">
     <div class="admin-header-left">
-        <div class="brand-box">
-            <img
-                src="${pageContext.request.contextPath}/assets/images/logo.png"
-                alt="Logo"
-                class="brand-logo">
-            <span class="brand-text">Nhóm 4</span>
-        </div>
+        <a href="${pageContext.request.contextPath}/admin/dashboard" class="brand-box">
+            <img src="${pageContext.request.contextPath}/assets/images/logo-gym.png" alt="Logo" class="brand-logo">
+            <span class="brand-text">Admin</span>
+        </a>
     </div>
 
     <div class="admin-header-right">
-        <button type="button" class="header-icon-btn" title="Tìm kiếm">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+        <div class="admin-search-wrapper">
+            <button type="button" class="header-icon-btn" id="adminSearchToggleBtn" title="Tìm kiếm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
 
-        <button type="button" class="header-icon-btn notification-btn" title="Thông báo">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-dot"></span>
-        </button>
+            <form method="get"
+                  action="${pageContext.request.contextPath}/admin/dashboard"
+                  class="admin-search-dropdown"
+                  id="adminSearchDropdown">
+                <div class="admin-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="keyword" placeholder="Tìm nhanh trong admin..." autocomplete="off">
+                </div>
+                <div class="admin-search-hint">
+                    Ví dụ: người dùng, hội viên, dịch vụ, gói tập, thanh toán
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-notification-wrapper">
+            <button type="button" class="header-icon-btn" id="adminNotificationToggleBtn" title="Thông báo">
+                <i class="fa-solid fa-bell"></i>
+                <c:if test="${not empty headerNotifications}">
+                    <span class="notification-dot"></span>
+                </c:if>
+            </button>
+
+            <div class="admin-notification-dropdown" id="adminNotificationDropdown">
+                <div class="notification-header">Thông báo quản trị</div>
+
+                <c:choose>
+                    <c:when test="${not empty headerNotifications}">
+                        <c:forEach var="n" items="${headerNotifications}">
+                            <a href="${pageContext.request.contextPath}${n.targetUrl}" class="notification-item">
+                                <div class="noti-title">${n.title}</div>
+                                <div class="noti-content">${n.content}</div>
+                            </a>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="notification-empty">Không có thông báo</div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
 
         <div class="admin-user-menu">
             <button type="button" class="admin-user-box" id="userMenuToggle">
-                <img
-                    src="${pageContext.request.contextPath}/assets/images/avatar.png"
-                    alt="Avatar"
-                    class="admin-avatar-img">
+                <img src="${pageContext.request.contextPath}/assets/images/${sessionScope.loggedInUser.avatarOrDefault}"
+                     class="admin-avatar-img"
+                     alt="Avatar">
 
                 <span class="admin-user-name">
                     <c:choose>
-                        <c:when test="${not empty sessionScope.loggedInUser.fullName}">
-                            ${sessionScope.loggedInUser.fullName}
+                        <c:when test="${not empty sessionScope.loggedInUser.displayName}">
+                            ${sessionScope.loggedInUser.displayName}
                         </c:when>
-                        <c:otherwise>
-                            Admin
-                        </c:otherwise>
+                        <c:otherwise>Admin</c:otherwise>
                     </c:choose>
                 </span>
 
@@ -47,12 +78,10 @@
                 <div class="dropdown-user-info">
                     <div class="dropdown-user-name">
                         <c:choose>
-                            <c:when test="${not empty sessionScope.loggedInUser.fullName}">
-                                ${sessionScope.loggedInUser.fullName}
+                            <c:when test="${not empty sessionScope.loggedInUser.displayName}">
+                                ${sessionScope.loggedInUser.displayName}
                             </c:when>
-                            <c:otherwise>
-                                Admin
-                            </c:otherwise>
+                            <c:otherwise>Admin</c:otherwise>
                         </c:choose>
                     </div>
                     <div class="dropdown-user-role">
@@ -60,9 +89,7 @@
                             <c:when test="${not empty sessionScope.loggedInUser.roleName}">
                                 ${sessionScope.loggedInUser.roleName}
                             </c:when>
-                            <c:otherwise>
-                                Quản trị viên
-                            </c:otherwise>
+                            <c:otherwise>ADMIN</c:otherwise>
                         </c:choose>
                     </div>
                 </div>
@@ -85,22 +112,60 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const toggle = document.getElementById("userMenuToggle");
-        const menu = document.getElementById("userDropdownMenu");
+        const userToggle = document.getElementById("userMenuToggle");
+        const userDropdown = document.getElementById("userDropdownMenu");
+        const notificationToggleBtn = document.getElementById("adminNotificationToggleBtn");
+        const notificationDropdown = document.getElementById("adminNotificationDropdown");
+        const searchToggleBtn = document.getElementById("adminSearchToggleBtn");
+        const searchDropdown = document.getElementById("adminSearchDropdown");
 
-        if (toggle && menu) {
-            toggle.addEventListener("click", function (e) {
+        function closeAllDropdowns() {
+            if (userDropdown) userDropdown.classList.remove("show");
+            if (notificationDropdown) notificationDropdown.classList.remove("show");
+            if (searchDropdown) searchDropdown.classList.remove("show");
+        }
+
+        if (userToggle && userDropdown) {
+            userToggle.addEventListener("click", function (e) {
                 e.stopPropagation();
-                menu.classList.toggle("show");
-            });
-
-            document.addEventListener("click", function () {
-                menu.classList.remove("show");
-            });
-
-            menu.addEventListener("click", function (e) {
-                e.stopPropagation();
+                const shown = userDropdown.classList.contains("show");
+                closeAllDropdowns();
+                if (!shown) userDropdown.classList.add("show");
             });
         }
+
+        if (notificationToggleBtn && notificationDropdown) {
+            notificationToggleBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const shown = notificationDropdown.classList.contains("show");
+                closeAllDropdowns();
+                if (!shown) notificationDropdown.classList.add("show");
+            });
+        }
+
+        if (searchToggleBtn && searchDropdown) {
+            searchToggleBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const shown = searchDropdown.classList.contains("show");
+                closeAllDropdowns();
+                if (!shown) {
+                    searchDropdown.classList.add("show");
+                    const input = searchDropdown.querySelector("input[name='keyword']");
+                    if (input) input.focus();
+                }
+            });
+        }
+
+        document.addEventListener("click", function () {
+            closeAllDropdowns();
+        });
+
+        [userDropdown, notificationDropdown, searchDropdown].forEach(function (el) {
+            if (el) {
+                el.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                });
+            }
+        });
     });
 </script>

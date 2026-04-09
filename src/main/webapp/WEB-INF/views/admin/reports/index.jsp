@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin-common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
 </head>
 <body>
 

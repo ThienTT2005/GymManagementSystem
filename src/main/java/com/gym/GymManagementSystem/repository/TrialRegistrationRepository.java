@@ -1,11 +1,17 @@
 package com.gym.GymManagementSystem.repository;
 
-import com.gym.GymManagementSystem.entity.TrialRegistration;
+import com.gym.GymManagementSystem.model.TrialRegistration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+public interface TrialRegistrationRepository extends JpaRepository<TrialRegistration, Integer> {
 
-public interface TrialRegistrationRepository extends JpaRepository<TrialRegistration, Long> {
+    Page<TrialRegistration> findByFullnameContainingIgnoreCaseOrPhoneContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            String fullname, String phone, String email, Pageable pageable
+    );
 
-    List<TrialRegistration> findTop5ByStatusOrderByRegisterDateDesc(String status);
+    Page<TrialRegistration> findByStatus(String status, Pageable pageable);
+
+    long countByStatus(String status);
 }

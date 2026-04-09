@@ -1,94 +1,142 @@
 package com.gym.GymManagementSystem.controller.admin;
 
-import com.gym.GymManagementSystem.entity.Membership;
-import com.gym.GymManagementSystem.service.MembershipService;
+import com.gym.GymManagementSystem.model.Member;
+import com.gym.GymManagementSystem.service.MemberService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/members")
 public class AdminMemberController {
 
-    private final MembershipService membershipService;
+    private final MemberService memberService;
 
-    public AdminMemberController(MembershipService membershipService) {
-        this.membershipService = membershipService;
+    public AdminMemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @GetMapping
-    public String listMembers(@RequestParam(value = "keyword", required = false) String keyword,
-                              @RequestParam(value = "status", required = false) String status,
-                              @RequestParam(value = "page", defaultValue = "0") int page,
-                              @RequestParam(value = "size", defaultValue = "5") int size,
-                              Model model) {
-
-        var membershipPage = membershipService.searchMemberships(keyword, status, page, size);
+    public String listMembers(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Model model
+    ) {
+        Page<Member> memberPage = memberService.searchMembers(keyword, status, page, size);
 
         model.addAttribute("pageTitle", "Quản lý hội viên");
-        model.addAttribute("memberships", membershipPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", membershipPage.getTotalPages());
-        model.addAttribute("size", size);
+        model.addAttribute("activePage", "members");
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("memberPage", memberPage);
 
         return "admin/members/list";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
-        Membership membership = new Membership();
-        membership.setStartDate(LocalDate.now());
-        membership.setEndDate(LocalDate.now().plusMonths(1));
-        membership.setStatus("Đang hoạt động");
+        Member member = new Member();
+        member.setStatus(1);
 
         model.addAttribute("pageTitle", "Thêm hội viên");
-        model.addAttribute("membership", membership);
+        model.addAttribute("activePage", "members");
+        model.addAttribute("member", member);
+        model.addAttribute("users", memberService.getAllUsers());
+        model.addAttribute("isEdit", false);
+
         return "admin/members/form";
     }
 
-    @PostMapping("/save")
-    public String saveMember(@ModelAttribute("membership") Membership membership) {
-
-        LocalDate today = LocalDate.now();
-
-        if (membership.getStartDate() == null) {
-            membership.setStartDate(today);
+    @PostMapping("/create")
+    public String createMember(
+            @Valid @ModelAttribute("member") Member member,
+            BindingResult bindingResult,
+            @RequestParam(required = false) Integer userId,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (userId != null && memberService.existsByUserId(userId, null)) {
+            bindingResult.reject("userId", "Tài khoản này đã được gán cho hội viên khác");
         }
 
-        if (membership.getEndDate() == null) {
-            membership.setEndDate(membership.getStartDate().plusMonths(1));
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "Thêm hội viên");
+            model.addAttribute("activePage", "members");
+            model.addAttribute("users", memberService.getAllUsers());
+            model.addAttribute("isEdit", false);
+            return "admin/members/form";
         }
 
-        // 👇 LOGIC QUAN TRỌNG
-        if (membership.getEndDate().isBefore(today)) {
-            membership.setStatus("Hết hạn");
-        } else if (membership.getStatus() == null || membership.getStatus().isBlank()) {
-            membership.setStatus("Đang hoạt động");
-        }
-
-        membershipService.save(membership);
+        memberService.createMember(member, userId);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm hội viên thành công");
         return "redirect:/admin/members";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Membership membership = membershipService.findById(id);
-        model.addAttribute("pageTitle", "Sửa hội viên");
-        model.addAttribute("membership", membership);
+    public String showEditForm(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        Member member = memberService.getMemberById(id);
+        if (member == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hội viên");
+            return "redirect:/admin/members";
+        }
+
+        model.addAttribute("pageTitle", "Cập nhật hội viên");
+        model.addAttribute("activePage", "members");
+        model.addAttribute("member", member);
+        model.addAttribute("users", memberService.getAllUsers());
+        model.addAttribute("isEdit", true);
+
         return "admin/members/form";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteMember(@PathVariable Long id) {
-        membershipService.deleteById(id);
+    @PostMapping("/edit/{id}")
+    public String updateMember(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("member") Member member,
+            BindingResult bindingResult,
+            @RequestParam(required = false) Integer userId,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (memberService.getMemberById(id) == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hội viên");
+            return "redirect:/admin/members";
+        }
+
+        if (userId != null && memberService.existsByUserId(userId, id)) {
+            bindingResult.reject("userId", "Tài khoản này đã được gán cho hội viên khác");
+        }
+
+        if (bindingResult.hasErrors()) {
+            member.setMemberId(id);
+            model.addAttribute("pageTitle", "Cập nhật hội viên");
+            model.addAttribute("activePage", "members");
+            model.addAttribute("users", memberService.getAllUsers());
+            model.addAttribute("isEdit", true);
+            return "admin/members/form";
+        }
+
+        memberService.updateMember(id, member, userId);
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hội viên thành công");
         return "redirect:/admin/members";
     }
 
-    @GetMapping("/toggle-status/{id}")
-    public String toggleStatus(@PathVariable Long id) {
-        membershipService.toggleStatus(id);
+    @PostMapping("/delete/{id}")
+    public String deleteMember(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean deleted = memberService.softDeleteMember(id);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa hội viên thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hội viên");
+        }
+
         return "redirect:/admin/members";
     }
 }

@@ -1,12 +1,14 @@
 package com.gym.GymManagementSystem.controller.admin;
 
-import com.gym.GymManagementSystem.entity.Schedule;
+import com.gym.GymManagementSystem.model.Schedule;
 import com.gym.GymManagementSystem.service.ScheduleService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/schedules")
@@ -19,46 +21,122 @@ public class AdminScheduleController {
     }
 
     @GetMapping
-    public String listSchedules(Model model) {
-        model.addAttribute("pageTitle", "Quản lý lịch tập");
-        model.addAttribute("schedules", scheduleService.findAll());
+    public String list(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(required = false) String dayOfWeek,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "8") int size,
+            Model model
+    ) {
+        Page<Schedule> schedulePage = scheduleService.searchSchedules(keyword, dayOfWeek, page, size);
+
+        model.addAttribute("pageTitle", "Quản lý lịch học");
+        model.addAttribute("activePage", "schedules");
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("dayOfWeek", dayOfWeek);
+        model.addAttribute("schedulePage", schedulePage);
+
         return "admin/schedules/list";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         Schedule schedule = new Schedule();
-        schedule.setScheduleDate(LocalDate.now());
-        schedule.setStatus("Đang mở");
+        schedule.setStatus(1);
 
-        model.addAttribute("pageTitle", "Thêm lịch tập");
+        model.addAttribute("pageTitle", "Thêm lịch học");
+        model.addAttribute("activePage", "schedules");
         model.addAttribute("schedule", schedule);
+        model.addAttribute("classes", scheduleService.getAllClasses());
+        model.addAttribute("isEdit", false);
+
         return "admin/schedules/form";
     }
 
-    @PostMapping("/save")
-    public String saveSchedule(@ModelAttribute("schedule") Schedule schedule) {
-        if (schedule.getScheduleDate() == null) {
-            schedule.setScheduleDate(LocalDate.now());
+    @PostMapping("/create")
+    public String create(
+            @Valid @ModelAttribute("schedule") Schedule schedule,
+            BindingResult bindingResult,
+            @RequestParam(required = false) Integer classId,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (classId == null) {
+            bindingResult.reject("classId", "Vui lòng chọn lớp học");
         }
-        if (schedule.getStatus() == null || schedule.getStatus().isBlank()) {
-            schedule.setStatus("Đang mở");
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "Thêm lịch học");
+            model.addAttribute("activePage", "schedules");
+            model.addAttribute("classes", scheduleService.getAllClasses());
+            model.addAttribute("isEdit", false);
+            return "admin/schedules/form";
         }
-        scheduleService.save(schedule);
+
+        scheduleService.createSchedule(schedule, classId);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm lịch học thành công");
         return "redirect:/admin/schedules";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Schedule schedule = scheduleService.findById(id);
-        model.addAttribute("pageTitle", "Sửa lịch tập");
+    public String showEditForm(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        Schedule schedule = scheduleService.getScheduleById(id);
+        if (schedule == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
+            return "redirect:/admin/schedules";
+        }
+
+        model.addAttribute("pageTitle", "Cập nhật lịch học");
+        model.addAttribute("activePage", "schedules");
         model.addAttribute("schedule", schedule);
+        model.addAttribute("classes", scheduleService.getAllClasses());
+        model.addAttribute("isEdit", true);
+
         return "admin/schedules/form";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteSchedule(@PathVariable Long id) {
-        scheduleService.deleteById(id);
+    @PostMapping("/edit/{id}")
+    public String update(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("schedule") Schedule schedule,
+            BindingResult bindingResult,
+            @RequestParam(required = false) Integer classId,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (classId == null) {
+            bindingResult.reject("classId", "Vui lòng chọn lớp học");
+        }
+
+        if (bindingResult.hasErrors()) {
+            schedule.setScheduleId(id);
+            model.addAttribute("pageTitle", "Cập nhật lịch học");
+            model.addAttribute("activePage", "schedules");
+            model.addAttribute("classes", scheduleService.getAllClasses());
+            model.addAttribute("isEdit", true);
+            return "admin/schedules/form";
+        }
+
+        Schedule updated = scheduleService.updateSchedule(id, schedule, classId);
+        if (updated == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
+            return "redirect:/admin/schedules";
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch học thành công");
+        return "redirect:/admin/schedules";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean deleted = scheduleService.softDeleteSchedule(id);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "Ngừng lịch học thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
+        }
+
         return "redirect:/admin/schedules";
     }
 }

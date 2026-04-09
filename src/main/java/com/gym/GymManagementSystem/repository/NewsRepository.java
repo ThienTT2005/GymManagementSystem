@@ -1,21 +1,25 @@
 package com.gym.GymManagementSystem.repository;
 
-import com.gym.GymManagementSystem.entity.News;
+import com.gym.GymManagementSystem.model.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-public interface NewsRepository extends JpaRepository<News, Long> {
+public interface NewsRepository extends JpaRepository<News, Integer> {
 
-    @Query("""
-        SELECT n
-        FROM News n
-        WHERE
-            (:keyword IS NULL OR :keyword = '' OR
-             LOWER(COALESCE(n.title, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-             LOWER(COALESCE(n.content, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
-    """)
-    Page<News> searchNews(@Param("keyword") String keyword, Pageable pageable);
+    Page<News> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
+
+    Page<News> findByType(String type, Pageable pageable);
+
+    Page<News> findByStatus(Integer status, Pageable pageable);
+
+    Page<News> findByTypeAndStatus(String type, Integer status, Pageable pageable);
+
+    Page<News> findByTitleContainingIgnoreCaseAndType(String keyword, String type, Pageable pageable);
+
+    Page<News> findByTitleContainingIgnoreCaseAndStatus(String keyword, Integer status, Pageable pageable);
+
+    Page<News> findByTitleContainingIgnoreCaseAndTypeAndStatus(
+            String keyword, String type, Integer status, Pageable pageable
+    );
 }
