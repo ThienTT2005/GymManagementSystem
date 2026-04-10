@@ -1,2 +1,0 @@
-@Entity @Table(name = "memberships") @Data
-public class Membership { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer membershipId; private Integer userId; private Integer packageId; private java.sql.Date startDate; private java.sql.Date endDate; }

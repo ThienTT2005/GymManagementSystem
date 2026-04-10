@@ -1,2 +1,0 @@
-@Entity @Table(name = "news") @Data
-public class News { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer newsId; private String title; private String content; }

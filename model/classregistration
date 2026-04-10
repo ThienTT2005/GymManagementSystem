@@ -1,2 +1,0 @@
-@Entity @Table(name = "class_registrations") @Data
-public class ClassRegistration { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer registrationId; private Integer userId; private Integer scheduleId; }
