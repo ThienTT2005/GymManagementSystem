@@ -1,22 +1,23 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalTime;
+
 @Entity
-@Table(name = "classes")
-public class GymClass {
+@Table(name = "schedules")
+@Data
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int classId;
-
-    private String className;
+    private int scheduleId;
 
     @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Service service;
+    @JoinColumn(name = "class_id")
+    private GymClass gymClass;
 
-    @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
-
-    private int maxMember;
-    private int currentMember;
-    private String description;
+    private String dayOfWeek;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private int status;
 }

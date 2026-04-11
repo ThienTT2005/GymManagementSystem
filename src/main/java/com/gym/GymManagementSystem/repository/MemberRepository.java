@@ -1,6 +1,6 @@
-ackage com.yourname.gym.repository;
+package com.gym.GymManagementSystem.repository;
 
-import com.yourname.gym.model.Member;
+import com.gym.GymManagementSystem.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

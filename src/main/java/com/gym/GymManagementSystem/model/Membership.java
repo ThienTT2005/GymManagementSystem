@@ -1,17 +1,31 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.util.Date;
+
 @Entity
-@Table(name = "notifications")
-public class Notification {
+@Table(name = "memberships")
+@Data
+public class Membership {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int notificationId;
+    private int membershipId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    private String title;
-    private String message;
-    private int isRead;
-    private String content;
-    private String targetUrl;
+    @ManyToOne
+    @JoinColumn(name = "package_id")
+    private PackageEntity packageEntity;
+
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
+
+    private int status;
+    private String note;
 }

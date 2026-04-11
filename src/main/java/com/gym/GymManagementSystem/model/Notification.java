@@ -1,5 +1,11 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
 @Entity
 @Table(name = "notifications")
+@Data
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,6 @@
-package com.yourname.gym.repository;
+package com.gym.GymManagementSystem.repository;
 
-import com.yourname.gym.model.GymClass;
+import com.gym.GymManagementSystem.model.GymClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

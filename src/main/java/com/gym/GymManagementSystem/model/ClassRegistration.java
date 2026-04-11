@@ -1,20 +1,38 @@
+package com.gym.GymManagementSystem.model;
+import jakarta.persistence.*;
+import lombok.Data;
+import java.util.Date;
+
 @Entity
-@Table(name = "memberships")
-public class Membership {
+@Table(name = "class_registrations")
+@Data
+public class ClassRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int membershipId;
+    @Column(name = "class_registration_id")
+    private int classRegistrationId;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "package_id")
-    private PackageEntity packageEntity;
+    @JoinColumn(name = "class_id")
+    private GymClass gymClass;
 
-    private java.util.Date startDate;
-    private java.util.Date endDate;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private Service service;
+
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
+
+    @Temporal(TemporalType.DATE)
+    private Date registrationDate;
+
     private int status;
     private String note;
 }

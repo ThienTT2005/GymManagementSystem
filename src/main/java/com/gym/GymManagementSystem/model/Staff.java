@@ -1,5 +1,12 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.util.Date;
+
 @Entity
 @Table(name = "staff")
+@Data
 public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,11 +22,14 @@ public class Staff {
     private String address;
     private String gender;
 
-    private java.util.Date dob;
+    @Temporal(TemporalType.DATE)
+    private Date dob;
 
     private String position;
     private double salary;
-    private java.util.Date hireDate;
+
+    @Temporal(TemporalType.DATE)
+    private Date hireDate;
 
     private String note;
     private int status;

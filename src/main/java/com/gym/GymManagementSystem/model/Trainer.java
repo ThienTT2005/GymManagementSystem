@@ -1,5 +1,11 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
 @Entity
 @Table(name = "trainers")
+@Data
 public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

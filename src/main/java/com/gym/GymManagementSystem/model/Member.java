@@ -1,5 +1,12 @@
+package com.gym.GymManagementSystem.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.util.Date;
+
 @Entity
 @Table(name = "members")
+@Data
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,7 +18,8 @@ public class Member {
     private String address;
     private String gender;
 
-    private java.util.Date dob;
+    @Temporal(TemporalType.DATE)
+    private Date dob;
 
     private int status;
     private String avatar;
