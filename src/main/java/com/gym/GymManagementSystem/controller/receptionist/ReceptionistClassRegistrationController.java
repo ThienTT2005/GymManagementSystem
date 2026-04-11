@@ -21,14 +21,13 @@ public class ReceptionistClassRegistrationController {
     }
 
     @GetMapping
-    public String list(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Integer classId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "8") int size,
-            Model model
-    ) {
+    public String list(@RequestParam(defaultValue = "") String keyword,
+                       @RequestParam(required = false) String status,
+                       @RequestParam(required = false) Integer classId,
+                       @RequestParam(defaultValue = "1") int page,
+                       @RequestParam(defaultValue = "8") int size,
+                       Model model) {
+
         Page<ClassRegistration> registrationPage =
                 classRegistrationService.searchRegistrations(keyword, status, classId, page, size);
 
@@ -60,15 +59,14 @@ public class ReceptionistClassRegistrationController {
     }
 
     @PostMapping("/create")
-    public String create(
-            @Valid @ModelAttribute("registration") ClassRegistration registration,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer memberId,
-            @RequestParam(required = false) Integer classId,
-            @RequestParam(required = false) Integer serviceId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
+    public String create(@Valid @ModelAttribute("registration") ClassRegistration registration,
+                         BindingResult bindingResult,
+                         @RequestParam(required = false) Integer memberId,
+                         @RequestParam(required = false) Integer classId,
+                         @RequestParam(required = false) Integer serviceId,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
+
         if (memberId == null) {
             bindingResult.reject("memberId", "Vui lòng chọn hội viên");
         }
@@ -86,22 +84,45 @@ public class ReceptionistClassRegistrationController {
             return "receptionist/class-registrations/form";
         }
 
-        classRegistrationService.createRegistration(registration, memberId, classId, serviceId);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm đăng ký lớp thành công");
-        return "redirect:/receptionist/class-registrations";
+        try {
+            classRegistrationService.createRegistration(registration, memberId, classId, serviceId);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm đăng ký lớp thành công");
+            return "redirect:/receptionist/class-registrations";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("pageTitle", "Thêm đăng ký lớp");
+            model.addAttribute("activePage", "class-registrations");
+            model.addAttribute("members", classRegistrationService.getAllMembers());
+            model.addAttribute("classes", classRegistrationService.getAllClasses());
+            model.addAttribute("services", classRegistrationService.getAllServices());
+            model.addAttribute("isEdit", false);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "receptionist/class-registrations/form";
+        }
     }
 
     @PostMapping("/approve/{id}")
     public String approve(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        classRegistrationService.approve(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Duyệt đăng ký lớp thành công");
+        try {
+            classRegistrationService.approve(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Duyệt đăng ký lớp thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể duyệt đăng ký lớp");
+        }
         return "redirect:/receptionist/class-registrations";
     }
 
     @PostMapping("/reject/{id}")
     public String reject(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        classRegistrationService.reject(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Từ chối đăng ký lớp thành công");
+        try {
+            classRegistrationService.reject(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Từ chối đăng ký lớp thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể từ chối đăng ký lớp");
+        }
         return "redirect:/receptionist/class-registrations";
     }
 }

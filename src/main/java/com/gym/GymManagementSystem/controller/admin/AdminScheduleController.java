@@ -127,15 +127,22 @@ public class AdminScheduleController {
         return "redirect:/admin/schedules";
     }
 
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = scheduleService.softDeleteSchedule(id);
+    @PostMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        Schedule schedule = scheduleService.getScheduleById(id);
 
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Ngừng lịch học thành công");
-        } else {
+        if (schedule == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
+            return "redirect:/admin/schedules";
         }
+
+        int newStatus = (schedule.getStatus() != null && schedule.getStatus() == 1) ? 0 : 1;
+        scheduleService.updateStatus(id, newStatus);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                newStatus == 1 ? "Kích hoạt lịch học thành công" : "Ngừng hoạt động lịch học thành công"
+        );
 
         return "redirect:/admin/schedules";
     }

@@ -1,7 +1,12 @@
 package com.gym.GymManagementSystem.controller.receptionist;
 
 import com.gym.GymManagementSystem.model.User;
-import com.gym.GymManagementSystem.service.*;
+import com.gym.GymManagementSystem.service.ClassRegistrationService;
+import com.gym.GymManagementSystem.service.ConsultationService;
+import com.gym.GymManagementSystem.service.MemberService;
+import com.gym.GymManagementSystem.service.MembershipService;
+import com.gym.GymManagementSystem.service.PaymentService;
+import com.gym.GymManagementSystem.service.TrialRegistrationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +54,7 @@ public class ReceptionistController {
         model.addAttribute("pendingConsultations", consultationService.countPending());
 
         model.addAttribute("recentMemberships", membershipService.findPending());
+        model.addAttribute("recentPayments", paymentService.findPending());
         model.addAttribute("recentClassRegistrations", classRegistrationService.findPending());
         model.addAttribute("recentTrials", trialRegistrationService.findPending());
         model.addAttribute("recentConsultations", consultationService.findPending());

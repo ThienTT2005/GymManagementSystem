@@ -19,19 +19,26 @@ public class ReceptionistTrialController {
     }
 
     @GetMapping
-    public String list(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "8") int size,
-            Model model
-    ) {
-        Page<TrialRegistration> trialPage = trialRegistrationService.searchTrials(keyword, status, page, size);
+    public String list(@RequestParam(defaultValue = "") String keyword,
+                       @RequestParam(required = false) String status,
+                       @RequestParam(required = false) String preferredDate,
+                       @RequestParam(defaultValue = "1") int page,
+                       @RequestParam(defaultValue = "8") int size,
+                       Model model) {
+
+        Page<TrialRegistration> trialPage = trialRegistrationService.searchTrials(
+                keyword,
+                status,
+                preferredDate,
+                page,
+                size
+        );
 
         model.addAttribute("pageTitle", "Đăng ký tập thử");
         model.addAttribute("activePage", "trials");
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
+        model.addAttribute("preferredDate", preferredDate);
         model.addAttribute("trialPage", trialPage);
 
         return "receptionist/trials/list";
@@ -41,8 +48,15 @@ public class ReceptionistTrialController {
     public String updateStatus(@PathVariable Integer id,
                                @RequestParam String status,
                                RedirectAttributes redirectAttributes) {
-        trialRegistrationService.updateStatus(id, status);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái tập thử thành công");
+        try {
+            trialRegistrationService.updateStatus(id, status);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái tập thử thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật trạng thái tập thử");
+        }
+
         return "redirect:/receptionist/trials";
     }
 }

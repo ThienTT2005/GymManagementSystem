@@ -1,8 +1,9 @@
 package com.gym.GymManagementSystem.dto;
 
 public class DashboardTopPackageItem {
-    private String packageName;
-    private long totalRegistrations;
+
+    private final String packageName;
+    private final long totalRegistrations;
 
     public DashboardTopPackageItem(String packageName, long totalRegistrations) {
         this.packageName = packageName;
@@ -13,15 +14,7 @@ public class DashboardTopPackageItem {
         return packageName;
     }
 
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
     public long getTotalRegistrations() {
         return totalRegistrations;
-    }
-
-    public void setTotalRegistrations(long totalRegistrations) {
-        this.totalRegistrations = totalRegistrations;
     }
 }

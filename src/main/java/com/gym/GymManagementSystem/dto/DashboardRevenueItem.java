@@ -3,8 +3,9 @@ package com.gym.GymManagementSystem.dto;
 import java.math.BigDecimal;
 
 public class DashboardRevenueItem {
-    private String monthLabel;
-    private BigDecimal totalRevenue;
+
+    private final String monthLabel;
+    private final BigDecimal totalRevenue;
 
     public DashboardRevenueItem(String monthLabel, BigDecimal totalRevenue) {
         this.monthLabel = monthLabel;
@@ -15,15 +16,7 @@ public class DashboardRevenueItem {
         return monthLabel;
     }
 
-    public void setMonthLabel(String monthLabel) {
-        this.monthLabel = monthLabel;
-    }
-
     public BigDecimal getTotalRevenue() {
         return totalRevenue;
-    }
-
-    public void setTotalRevenue(BigDecimal totalRevenue) {
-        this.totalRevenue = totalRevenue;
     }
 }

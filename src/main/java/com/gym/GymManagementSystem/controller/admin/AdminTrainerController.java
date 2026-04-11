@@ -77,9 +77,18 @@ public class AdminTrainerController {
             return "admin/trainers/form";
         }
 
-        trainerService.createTrainer(trainer, staffId, photoFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm huấn luyện viên thành công");
-        return "redirect:/admin/trainers";
+        try {
+            trainerService.createTrainer(trainer, staffId, photoFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm huấn luyện viên thành công");
+            return "redirect:/admin/trainers";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("pageTitle", "Thêm huấn luyện viên");
+            model.addAttribute("activePage", "trainers");
+            model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer());
+            model.addAttribute("isEdit", false);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/trainers/form";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -93,7 +102,7 @@ public class AdminTrainerController {
         model.addAttribute("pageTitle", "Cập nhật huấn luyện viên");
         model.addAttribute("activePage", "trainers");
         model.addAttribute("trainer", trainer);
-        model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer());
+        model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer(id));
         model.addAttribute("isEdit", true);
 
         return "admin/trainers/form";
@@ -124,26 +133,63 @@ public class AdminTrainerController {
             trainer.setTrainerId(id);
             model.addAttribute("pageTitle", "Cập nhật huấn luyện viên");
             model.addAttribute("activePage", "trainers");
-            model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer());
+            model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer(id));
             model.addAttribute("isEdit", true);
             return "admin/trainers/form";
         }
 
-        trainerService.updateTrainer(id, trainer, staffId, photoFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật huấn luyện viên thành công");
+        try {
+            trainerService.updateTrainer(id, trainer, staffId, photoFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật huấn luyện viên thành công");
+            return "redirect:/admin/trainers";
+        } catch (IllegalArgumentException e) {
+            trainer.setTrainerId(id);
+            model.addAttribute("pageTitle", "Cập nhật huấn luyện viên");
+            model.addAttribute("activePage", "trainers");
+            model.addAttribute("staffs", trainerService.getAvailableStaffForTrainer(id));
+            model.addAttribute("isEdit", true);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/trainers/form";
+        }
+    }
+
+    @PostMapping("/toggle-status/{id}")
+    public String deleteTrainer(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+
+        Trainer trainer = trainerService.getTrainerById(id);
+
+        if (trainer == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy huấn luyện viên");
+            return "redirect:/admin/trainers";
+        }
+
+        trainer.setStatus(trainer.getStatus() == 1 ? 0 : 1);
+        trainerService.updateTrainer(
+                id,
+                trainer,
+                trainer.getStaff() != null ? trainer.getStaff().getStaffId() : null,
+                null
+        );
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                trainer.getStatus() == 1 ? "Kích hoạt huấn luyện viên thành công" : "Ngừng huấn luyện viên thành công");
+
         return "redirect:/admin/trainers";
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteTrainer(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = trainerService.softDeleteTrainer(id);
-
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Ngừng huấn luyện viên thành công");
-        } else {
+    @GetMapping("/detail/{id}")
+    public String showDetail(@PathVariable Integer id,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
+        Trainer trainer = trainerService.getTrainerById(id);
+        if (trainer == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy huấn luyện viên");
+            return "redirect:/admin/trainers";
         }
 
-        return "redirect:/admin/trainers";
+        model.addAttribute("pageTitle", "Chi tiết huấn luyện viên");
+        model.addAttribute("activePage", "trainers");
+        model.addAttribute("trainer", trainer);
+        return "admin/trainers/detail";
     }
 }

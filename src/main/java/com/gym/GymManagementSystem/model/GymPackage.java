@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "packages")
@@ -29,8 +30,8 @@ public class GymPackage {
 
     @NotNull(message = "Thời hạn không được để trống")
     @Min(value = 1, message = "Thời hạn phải lớn hơn 0")
-    @Column(name = "duration_days", nullable = false)
-    private Integer durationDays;
+    @Column(name = "duration_months", nullable = false)
+    private Integer durationMonths;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -71,12 +72,12 @@ public class GymPackage {
         this.price = price;
     }
 
-    public Integer getDurationDays() {
-        return durationDays;
+    public Integer getDurationMonths() {
+        return durationMonths;
     }
 
-    public void setDurationDays(Integer durationDays) {
-        this.durationDays = durationDays;
+    public void setDurationMonths(Integer durationMonths) {
+        this.durationMonths = durationMonths;
     }
 
     public String getDescription() {
@@ -109,5 +110,10 @@ public class GymPackage {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getCreatedAtFormatted() {
+        if (createdAt == null) return "";
+        return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 }

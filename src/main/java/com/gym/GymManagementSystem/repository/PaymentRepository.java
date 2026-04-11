@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
@@ -18,7 +19,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
         left join p.classRegistration cr
         left join m.member mm
         left join cr.member cm
-        where lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+        where (
+            cast(p.paymentId as string) like concat('%', :keyword, '%')
+            or lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+            or lower(coalesce(p.note, '')) like lower(concat('%', :keyword, '%'))
+            or (
+                (:keyword = 'membership' or :keyword = 'package')
+                and p.membership is not null
+            )
+            or (
+                (:keyword = 'class' or :keyword = 'class registration')
+                and p.classRegistration is not null
+            )
+        )
     """)
     Page<Payment> searchByKeyword(String keyword, Pageable pageable);
 
@@ -28,10 +41,46 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
         left join p.classRegistration cr
         left join m.member mm
         left join cr.member cm
-        where lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
-          and p.status = :status
+        where (
+            cast(p.paymentId as string) like concat('%', :keyword, '%')
+            or lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+            or lower(coalesce(p.note, '')) like lower(concat('%', :keyword, '%'))
+            or (
+                (:keyword = 'membership' or :keyword = 'package')
+                and p.membership is not null
+            )
+            or (
+                (:keyword = 'class' or :keyword = 'class registration')
+                and p.classRegistration is not null
+            )
+        )
+        and p.status = :status
     """)
     Page<Payment> searchByKeywordAndStatus(String keyword, String status, Pageable pageable);
+
+    @Query("""
+        select p from Payment p
+        left join p.membership m
+        left join p.classRegistration cr
+        left join m.member mm
+        left join cr.member cm
+        where (:keyword is null or
+               cast(p.paymentId as string) like concat('%', :keyword, '%')
+               or lower(coalesce(mm.fullname, cm.fullname, '')) like lower(concat('%', :keyword, '%'))
+               or lower(coalesce(p.note, '')) like lower(concat('%', :keyword, '%'))
+               or ((:keyword = 'membership' or :keyword = 'package') and p.membership is not null)
+               or ((:keyword = 'class' or :keyword = 'class registration') and p.classRegistration is not null))
+          and (:status is null or p.status = :status)
+          and (:paymentMethod is null or lower(p.paymentMethod) = lower(:paymentMethod))
+          and (:fromDate is null or p.paymentDate >= :fromDate)
+          and (:toDate is null or p.paymentDate <= :toDate)
+    """)
+    Page<Payment> searchAdminPayments(String keyword,
+                                      String status,
+                                      String paymentMethod,
+                                      LocalDate fromDate,
+                                      LocalDate toDate,
+                                      Pageable pageable);
 
     Page<Payment> findByStatus(String status, Pageable pageable);
 
@@ -50,4 +99,16 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
         order by function('DATE_FORMAT', p.paymentDate, '%Y-%m')
     """)
     List<Object[]> getMonthlyRevenue();
+
+    @Query("select coalesce(sum(p.amount), 0) from Payment p where p.status = 'PAID'")
+    BigDecimal sumPaidRevenue();
+
+    @Query("""
+        select p.packageName, count(m.membershipId)
+        from Membership m
+        join m.gymPackage p
+        group by p.packageName
+        order by count(m.membershipId) desc
+    """)
+    List<Object[]> getTopPackages();
 }

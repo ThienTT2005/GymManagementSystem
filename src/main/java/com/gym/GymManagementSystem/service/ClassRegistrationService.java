@@ -3,16 +3,19 @@ package com.gym.GymManagementSystem.service;
 import com.gym.GymManagementSystem.model.ClassRegistration;
 import com.gym.GymManagementSystem.model.GymClass;
 import com.gym.GymManagementSystem.model.Member;
+import com.gym.GymManagementSystem.model.Payment;
 import com.gym.GymManagementSystem.model.ServiceGym;
 import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
 import com.gym.GymManagementSystem.repository.GymClassRepository;
 import com.gym.GymManagementSystem.repository.MemberRepository;
+import com.gym.GymManagementSystem.repository.PaymentRepository;
 import com.gym.GymManagementSystem.repository.ServiceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,22 +26,25 @@ public class ClassRegistrationService {
     private final MemberRepository memberRepository;
     private final GymClassRepository gymClassRepository;
     private final ServiceRepository serviceRepository;
+    private final PaymentRepository paymentRepository;
 
     public ClassRegistrationService(ClassRegistrationRepository repository,
                                     MemberRepository memberRepository,
                                     GymClassRepository gymClassRepository,
-                                    ServiceRepository serviceRepository) {
+                                    ServiceRepository serviceRepository,
+                                    PaymentRepository paymentRepository) {
         this.repository = repository;
         this.memberRepository = memberRepository;
         this.gymClassRepository = gymClassRepository;
         this.serviceRepository = serviceRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public Page<ClassRegistration> searchRegistrations(String keyword, String status, Integer classId, int page, int size) {
         PageRequest pageable = PageRequest.of(
                 Math.max(page - 1, 0),
-                size,
-                Sort.by(Sort.Direction.DESC, "registrationId")
+                size > 0 ? size : 8,
+                Sort.by(Sort.Direction.DESC, "registrationDate")
         );
 
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
@@ -96,11 +102,23 @@ public class ClassRegistrationService {
     }
 
     public ClassRegistration createRegistration(ClassRegistration registration, Integer memberId, Integer classId, Integer serviceId) {
+        if (registration == null) {
+            throw new IllegalArgumentException("Thông tin đăng ký lớp không hợp lệ");
+        }
+
         bindRelations(registration, memberId, classId, serviceId);
+        validateRelations(registration);
+        fillDefaultDates(registration);
         validateDates(registration);
 
         if (registration.getStatus() == null || registration.getStatus().isBlank()) {
             registration.setStatus("PENDING");
+        } else {
+            registration.setStatus(normalizeStatus(registration.getStatus()));
+        }
+
+        if ("ACTIVE".equalsIgnoreCase(registration.getStatus())) {
+            throw new IllegalArgumentException("Không được tạo trực tiếp đăng ký lớp ở trạng thái ACTIVE");
         }
 
         return repository.save(registration);
@@ -116,11 +134,17 @@ public class ClassRegistrationService {
         existing.setStartDate(formRegistration.getStartDate());
         existing.setEndDate(formRegistration.getEndDate());
         existing.setRegistrationDate(formRegistration.getRegistrationDate());
-        existing.setStatus(formRegistration.getStatus());
+        existing.setStatus(normalizeStatus(formRegistration.getStatus()));
         existing.setNote(formRegistration.getNote());
 
         bindRelations(existing, memberId, classId, serviceId);
+        validateRelations(existing);
+        fillDefaultDates(existing);
         validateDates(existing);
+
+        if ("ACTIVE".equalsIgnoreCase(existing.getStatus()) && !hasPaidPayment(existing.getRegistrationId())) {
+            throw new IllegalArgumentException("Không thể kích hoạt đăng ký lớp khi thanh toán chưa được xác nhận");
+        }
 
         return repository.save(existing);
     }
@@ -134,11 +158,24 @@ public class ClassRegistrationService {
         ClassRegistration registration = optional.get();
         registration.setStatus("CANCELLED");
         repository.save(registration);
+        syncClassCurrentMember(registration.getGymClass());
         return true;
     }
 
     public List<ClassRegistration> findAll() {
-        return repository.findAll(Sort.by(Sort.Direction.DESC, "registrationId"));
+        return repository.findAll(Sort.by(Sort.Direction.DESC, "registrationDate"));
+    }
+
+    public List<ClassRegistration> findCurrentRegistrationsByMemberId(Integer memberId) {
+        if (memberId == null) {
+            return List.of();
+        }
+
+        return repository.findAll(Sort.by(Sort.Direction.DESC, "registrationDate"))
+                .stream()
+                .filter(item -> item.getMember() != null && memberId.equals(item.getMember().getMemberId()))
+                .filter(item -> "ACTIVE".equalsIgnoreCase(item.getStatus()) || "PENDING".equalsIgnoreCase(item.getStatus()))
+                .toList();
     }
 
     public long countActive() {
@@ -157,28 +194,73 @@ public class ClassRegistrationService {
         return repository.findByGymClass_ClassIdAndStatus(classId, "ACTIVE");
     }
 
+    public boolean isMemberActiveInClass(Integer memberId, Integer classId) {
+        if (memberId == null || classId == null) {
+            return false;
+        }
+
+        return repository.findByGymClass_ClassIdAndStatus(classId, "ACTIVE").stream()
+                .anyMatch(r -> r.getMember() != null && r.getMember().getMemberId().equals(memberId));
+    }
+
     public void approve(int id) {
-        repository.findById(id).ifPresent(registration -> {
-            registration.setStatus("ACTIVE");
-            repository.save(registration);
-        });
+        ClassRegistration registration = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đăng ký lớp"));
+
+        if (!hasPaidPayment(registration.getRegistrationId())) {
+            throw new IllegalArgumentException("Không thể duyệt đăng ký lớp khi chưa có thanh toán PAID");
+        }
+
+        registration.setStatus("ACTIVE");
+        repository.save(registration);
+        syncClassCurrentMember(registration.getGymClass());
     }
 
     public void reject(int id) {
-        repository.findById(id).ifPresent(registration -> {
-            registration.setStatus("REJECTED");
-            repository.save(registration);
-        });
+        ClassRegistration registration = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đăng ký lớp"));
+
+        registration.setStatus("REJECTED");
+        repository.save(registration);
+        syncClassCurrentMember(registration.getGymClass());
+    }
+
+    public void activateFromPaidPayment(Integer registrationId) {
+        // Giữ method này để tránh vỡ code cũ, nhưng không tự ACTIVE nữa.
     }
 
     private void bindRelations(ClassRegistration registration, Integer memberId, Integer classId, Integer serviceId) {
         Member member = memberId != null ? memberRepository.findById(memberId).orElse(null) : null;
         GymClass gymClass = classId != null ? gymClassRepository.findById(classId).orElse(null) : null;
-        ServiceGym service = serviceId != null ? serviceRepository.findById(serviceId).orElse(null) : null;
 
         registration.setMember(member);
         registration.setGymClass(gymClass);
+
+        if (gymClass != null) {
+            registration.setService(gymClass.getService());
+            return;
+        }
+
+        ServiceGym service = serviceId != null ? serviceRepository.findById(serviceId).orElse(null) : null;
         registration.setService(service);
+    }
+
+    private void validateRelations(ClassRegistration registration) {
+        if (registration.getMember() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn hội viên");
+        }
+        if (registration.getGymClass() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn lớp học");
+        }
+        if (registration.getService() == null) {
+            throw new IllegalArgumentException("Không tìm thấy dịch vụ của lớp học");
+        }
+    }
+
+    private void fillDefaultDates(ClassRegistration registration) {
+        if (registration.getRegistrationDate() == null) {
+            registration.setRegistrationDate(LocalDate.now());
+        }
     }
 
     private void validateDates(ClassRegistration registration) {
@@ -187,5 +269,45 @@ public class ClassRegistrationService {
                 && registration.getEndDate().isBefore(registration.getStartDate())) {
             throw new IllegalArgumentException("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu");
         }
+    }
+
+    private boolean hasPaidPayment(Integer registrationId) {
+        if (registrationId == null) {
+            return false;
+        }
+
+        List<Payment> payments = paymentRepository.findAll(Sort.by(Sort.Direction.DESC, "paymentId"));
+        return payments.stream()
+                .anyMatch(p -> p.getClassRegistration() != null
+                        && registrationId.equals(p.getClassRegistration().getRegistrationId())
+                        && "PAID".equalsIgnoreCase(p.getStatus()));
+    }
+
+    private String normalizeStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return "PENDING";
+        }
+
+        String normalized = status.trim().toUpperCase();
+
+        switch (normalized) {
+            case "PENDING":
+            case "ACTIVE":
+            case "REJECTED":
+            case "CANCELLED":
+                return normalized;
+            default:
+                throw new IllegalArgumentException("Trạng thái đăng ký lớp không hợp lệ");
+        }
+    }
+
+    private void syncClassCurrentMember(GymClass gymClass) {
+        if (gymClass == null || gymClass.getClassId() == null) {
+            return;
+        }
+
+        int activeCount = repository.findByGymClass_ClassIdAndStatus(gymClass.getClassId(), "ACTIVE").size();
+        gymClass.setCurrentMember(activeCount);
+        gymClassRepository.save(gymClass);
     }
 }

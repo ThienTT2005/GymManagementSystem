@@ -57,7 +57,7 @@ public class AdminServiceController {
     public String createService(
             @Valid @ModelAttribute("serviceGym") ServiceGym serviceGym,
             BindingResult bindingResult,
-            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
@@ -72,9 +72,23 @@ public class AdminServiceController {
             return "admin/services/form";
         }
 
-        serviceGymService.createService(serviceGym, imageFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm dịch vụ thành công");
-        return "redirect:/admin/services";
+        try {
+            serviceGymService.createService(serviceGym, imageFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm dịch vụ thành công");
+            return "redirect:/admin/services";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("pageTitle", "Thêm dịch vụ");
+            model.addAttribute("activePage", "services");
+            model.addAttribute("isEdit", false);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/services/form";
+        } catch (RuntimeException e) {
+            model.addAttribute("pageTitle", "Thêm dịch vụ");
+            model.addAttribute("activePage", "services");
+            model.addAttribute("isEdit", false);
+            model.addAttribute("errorMessage", "Không thể upload ảnh");
+            return "admin/services/form";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -98,7 +112,7 @@ public class AdminServiceController {
             @PathVariable Integer id,
             @Valid @ModelAttribute("serviceGym") ServiceGym serviceGym,
             BindingResult bindingResult,
-            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
@@ -119,20 +133,43 @@ public class AdminServiceController {
             return "admin/services/form";
         }
 
-        serviceGymService.updateService(id, serviceGym, imageFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật dịch vụ thành công");
-        return "redirect:/admin/services";
+        try {
+            serviceGymService.updateService(id, serviceGym, imageFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật dịch vụ thành công");
+            return "redirect:/admin/services";
+        } catch (IllegalArgumentException e) {
+            serviceGym.setServiceId(id);
+            model.addAttribute("pageTitle", "Cập nhật dịch vụ");
+            model.addAttribute("activePage", "services");
+            model.addAttribute("isEdit", true);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/services/form";
+        } catch (RuntimeException e) {
+            serviceGym.setServiceId(id);
+            model.addAttribute("pageTitle", "Cập nhật dịch vụ");
+            model.addAttribute("activePage", "services");
+            model.addAttribute("isEdit", true);
+            model.addAttribute("errorMessage", "Không thể upload ảnh");
+            return "admin/services/form";
+        }
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteService(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = serviceGymService.softDeleteService(id);
+    @PostMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        ServiceGym serviceGym = serviceGymService.getServiceById(id);
 
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa dịch vụ thành công");
-        } else {
+        if (serviceGym == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy dịch vụ");
+            return "redirect:/admin/services";
         }
+
+        int newStatus = (serviceGym.getStatus() != null && serviceGym.getStatus() == 1) ? 0 : 1;
+        serviceGymService.updateStatus(id, newStatus);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                newStatus == 1 ? "Kích hoạt dịch vụ thành công" : "Ngừng hoạt động dịch vụ thành công"
+        );
 
         return "redirect:/admin/services";
     }

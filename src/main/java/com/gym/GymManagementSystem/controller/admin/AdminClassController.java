@@ -57,6 +57,7 @@ public class AdminClassController {
         model.addAttribute("services", gymClassService.getAllServices());
         model.addAttribute("trainers", gymClassService.getAllTrainers());
         model.addAttribute("isEdit", false);
+        model.addAttribute("viewOnly", false);
 
         return "admin/classes/form";
     }
@@ -80,6 +81,7 @@ public class AdminClassController {
             model.addAttribute("services", gymClassService.getAllServices());
             model.addAttribute("trainers", gymClassService.getAllTrainers());
             model.addAttribute("isEdit", false);
+            model.addAttribute("viewOnly", false);
             return "admin/classes/form";
         }
 
@@ -102,8 +104,26 @@ public class AdminClassController {
         model.addAttribute("services", gymClassService.getAllServices());
         model.addAttribute("trainers", gymClassService.getAllTrainers());
         model.addAttribute("isEdit", true);
+        model.addAttribute("viewOnly", false);
 
         return "admin/classes/form";
+    }
+
+    @GetMapping({"/detail/{id}", "/{id}"})
+    public String showDetail(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        GymClass gymClass = gymClassService.getClassById(id);
+        if (gymClass == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lớp học");
+            return "redirect:/admin/classes";
+        }
+
+        model.addAttribute("pageTitle", "Chi tiết lớp học");
+        model.addAttribute("activePage", "classes");
+        model.addAttribute("gymClass", gymClass);
+        model.addAttribute("memberCount", gymClassService.countActiveMembersByClassId(id));
+        model.addAttribute("schedules", gymClassService.getSchedulesByClassId(id));
+
+        return "admin/classes/detail";
     }
 
     @PostMapping("/edit/{id}")
@@ -127,6 +147,7 @@ public class AdminClassController {
             model.addAttribute("services", gymClassService.getAllServices());
             model.addAttribute("trainers", gymClassService.getAllTrainers());
             model.addAttribute("isEdit", true);
+            model.addAttribute("viewOnly", false);
             return "admin/classes/form";
         }
 
@@ -140,15 +161,22 @@ public class AdminClassController {
         return "redirect:/admin/classes";
     }
 
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = gymClassService.softDeleteClass(id);
+    @PostMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        GymClass gymClass = gymClassService.getClassById(id);
 
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Ngừng lớp học thành công");
-        } else {
+        if (gymClass == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lớp học");
+            return "redirect:/admin/classes";
         }
+
+        int newStatus = (gymClass.getStatus() != null && gymClass.getStatus() == 1) ? 0 : 1;
+        gymClassService.updateStatus(id, newStatus);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                newStatus == 1 ? "Kích hoạt lớp học thành công" : "Ngừng hoạt động lớp học thành công"
+        );
 
         return "redirect:/admin/classes";
     }

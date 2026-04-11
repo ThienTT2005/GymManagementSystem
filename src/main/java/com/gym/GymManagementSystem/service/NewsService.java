@@ -9,8 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,8 +32,8 @@ public class NewsService {
     public Page<News> searchNews(String keyword, String type, Integer status, int page, int size) {
         PageRequest pageable = PageRequest.of(
                 Math.max(page - 1, 0),
-                size,
-                Sort.by(Sort.Direction.DESC, "postId")
+                size > 0 ? size : 8,
+                Sort.by(Sort.Direction.DESC, "createdAt")
         );
 
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
@@ -106,6 +109,22 @@ public class NewsService {
         return newsRepository.save(existing);
     }
 
+    public void updateStatus(Integer id, Integer status) {
+        if (id == null) {
+            throw new IllegalArgumentException("Không tìm thấy bài viết");
+        }
+
+        if (status == null || (status != 0 && status != 1)) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+
+        news.setStatus(status);
+        newsRepository.save(news);
+    }
+
     public boolean softDeleteNews(Integer id) {
         Optional<News> optional = newsRepository.findById(id);
         if (optional.isEmpty()) {
@@ -118,6 +137,7 @@ public class NewsService {
         return true;
     }
 
+    // ✅ FIX CHUẨN 100%
     private String saveImage(MultipartFile imageFile) {
         String originalFilename = imageFile.getOriginalFilename();
         String extension = "";
@@ -128,14 +148,18 @@ public class NewsService {
 
         String fileName = UUID.randomUUID() + extension;
 
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        File dest = new File(dir, fileName);
         try {
-            imageFile.transferTo(dest);
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadPath);
+
+            Path destination = uploadPath.resolve(fileName);
+
+            Files.copy(
+                    imageFile.getInputStream(),
+                    destination,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
         } catch (IOException e) {
             throw new RuntimeException("Không thể upload ảnh bài viết", e);
         }

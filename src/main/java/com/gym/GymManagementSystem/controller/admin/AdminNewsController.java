@@ -118,15 +118,22 @@ public class AdminNewsController {
         return "redirect:/admin/news";
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteNews(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = newsService.softDeleteNews(id);
+    @PostMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        News news = newsService.getNewsById(id);
 
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Ẩn bài viết thành công");
-        } else {
+        if (news == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy bài viết");
+            return "redirect:/admin/news";
         }
+
+        int newStatus = (news.getStatus() != null && news.getStatus() == 1) ? 0 : 1;
+        newsService.updateStatus(id, newStatus);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                newStatus == 1 ? "Hiển thị bài viết thành công" : "Ẩn bài viết thành công"
+        );
 
         return "redirect:/admin/news";
     }

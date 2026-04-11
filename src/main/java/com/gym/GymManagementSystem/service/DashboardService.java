@@ -1,14 +1,19 @@
 package com.gym.GymManagementSystem.service;
 
-import com.gym.GymManagementSystem.dto.DashboardRevenueItem;
-import com.gym.GymManagementSystem.dto.DashboardTopPackageItem;
-import com.gym.GymManagementSystem.model.GymClass;
-import com.gym.GymManagementSystem.repository.*;
-import org.springframework.data.domain.PageRequest;
+import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
+import com.gym.GymManagementSystem.repository.ConsultationRepository;
+import com.gym.GymManagementSystem.repository.GymClassRepository;
+import com.gym.GymManagementSystem.repository.MemberRepository;
+import com.gym.GymManagementSystem.repository.MembershipRepository;
+import com.gym.GymManagementSystem.repository.PackageRepository;
+import com.gym.GymManagementSystem.repository.PaymentRepository;
+import com.gym.GymManagementSystem.repository.StaffRepository;
+import com.gym.GymManagementSystem.repository.TrainerRepository;
+import com.gym.GymManagementSystem.repository.TrialRegistrationRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,32 +21,35 @@ public class DashboardService {
 
     private final MemberRepository memberRepository;
     private final StaffRepository staffRepository;
+    private final TrainerRepository trainerRepository;
     private final GymClassRepository gymClassRepository;
     private final PackageRepository packageRepository;
-    private final MembershipRepository membershipRepository;
-    private final ClassRegistrationRepository classRegistrationRepository;
     private final PaymentRepository paymentRepository;
     private final TrialRegistrationRepository trialRegistrationRepository;
     private final ConsultationRepository consultationRepository;
+    private final MembershipRepository membershipRepository;
+    private final ClassRegistrationRepository classRegistrationRepository;
 
     public DashboardService(MemberRepository memberRepository,
                             StaffRepository staffRepository,
+                            TrainerRepository trainerRepository,
                             GymClassRepository gymClassRepository,
                             PackageRepository packageRepository,
-                            MembershipRepository membershipRepository,
-                            ClassRegistrationRepository classRegistrationRepository,
                             PaymentRepository paymentRepository,
                             TrialRegistrationRepository trialRegistrationRepository,
-                            ConsultationRepository consultationRepository) {
+                            ConsultationRepository consultationRepository,
+                            MembershipRepository membershipRepository,
+                            ClassRegistrationRepository classRegistrationRepository) {
         this.memberRepository = memberRepository;
         this.staffRepository = staffRepository;
+        this.trainerRepository = trainerRepository;
         this.gymClassRepository = gymClassRepository;
         this.packageRepository = packageRepository;
-        this.membershipRepository = membershipRepository;
-        this.classRegistrationRepository = classRegistrationRepository;
         this.paymentRepository = paymentRepository;
         this.trialRegistrationRepository = trialRegistrationRepository;
         this.consultationRepository = consultationRepository;
+        this.membershipRepository = membershipRepository;
+        this.classRegistrationRepository = classRegistrationRepository;
     }
 
     public long countMembers() {
@@ -52,6 +60,10 @@ public class DashboardService {
         return staffRepository.count();
     }
 
+    public long countTrainers() {
+        return trainerRepository.count();
+    }
+
     public long countClasses() {
         return gymClassRepository.count();
     }
@@ -60,16 +72,19 @@ public class DashboardService {
         return packageRepository.count();
     }
 
-    public BigDecimal getTotalRevenue() {
-        BigDecimal revenue = paymentRepository.getTotalRevenue();
-        return revenue != null ? revenue : BigDecimal.ZERO;
+    public long countTrials() {
+        return trialRegistrationRepository.count();
+    }
+
+    public long countConsultations() {
+        return consultationRepository.count();
     }
 
     public long countPendingMemberships() {
         return membershipRepository.countByStatus("PENDING");
     }
 
-    public long countPendingServiceRegistrations() {
+    public long countPendingClassRegistrations() {
         return classRegistrationRepository.countByStatus("PENDING");
     }
 
@@ -82,36 +97,32 @@ public class DashboardService {
     }
 
     public long countPendingConsultations() {
-        return consultationRepository.countByStatus("PENDING");
+        return consultationRepository.countByStatus("NEW");
     }
 
-    public List<GymClass> getTopClasses() {
-        return gymClassRepository.findByStatusOrderByCurrentMemberDesc(1, PageRequest.of(0, 5));
+    public BigDecimal getTotalRevenue() {
+        BigDecimal total = paymentRepository.sumPaidRevenue();
+        return total != null ? total : BigDecimal.ZERO;
     }
 
-    public List<DashboardTopPackageItem> getTopPackages() {
-        return membershipRepository.findTopPackages(PageRequest.of(0, 5));
-    }
-
-    public List<DashboardRevenueItem> getMonthlyRevenue() {
-        List<Object[]> rows = paymentRepository.getMonthlyRevenue();
-        List<DashboardRevenueItem> items = new ArrayList<>();
-
-        for (Object[] row : rows) {
-            String monthLabel = row[0] != null ? row[0].toString() : "";
-            BigDecimal totalRevenue;
-
-            if (row[1] instanceof BigDecimal value) {
-                totalRevenue = value;
-            } else if (row[1] != null) {
-                totalRevenue = new BigDecimal(row[1].toString());
-            } else {
-                totalRevenue = BigDecimal.ZERO;
-            }
-
-            items.add(new DashboardRevenueItem(monthLabel, totalRevenue));
+    public List<Object[]> getMonthlyRevenue() {
+        try {
+            List<Object[]> data = paymentRepository.getMonthlyRevenue();
+            return data != null ? data : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
+    }
 
-        return items;
+    public long countPaidPayments() {
+        return paymentRepository.countByStatus("PAID");
+    }
+
+    public long countRejectedPayments() {
+        return paymentRepository.countByStatus("REJECTED");
+    }
+
+    public long countCancelledPayments() {
+        return paymentRepository.countByStatus("CANCELLED");
     }
 }

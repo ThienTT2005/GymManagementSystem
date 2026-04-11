@@ -78,6 +78,11 @@ public class Trainer {
     }
 
     public String getPhoto() {
+        if (photo == null || photo.isBlank()) {
+            return staff != null && staff.getAvatar() != null && !staff.getAvatar().isBlank()
+                    ? staff.getAvatar()
+                    : "assets/images/default-avatar.png";
+        }
         return photo;
     }
 

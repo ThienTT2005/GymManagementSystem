@@ -6,8 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -26,7 +25,10 @@
             </div>
 
             <div class="page-card">
-                <form method="get" action="${pageContext.request.contextPath}/trainer/class-members" class="filter-form">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/trainer/class-members"
+                      class="filter-form">
+
                     <div class="filter-group">
                         <select name="classId">
                             <option value="">-- Chọn lớp --</option>
@@ -38,16 +40,24 @@
                         </select>
                     </div>
 
-                    <div class="filter-group">
+                    <div class="filter-group filter-group-grow">
                         <input type="text" name="keyword" value="${keyword}" placeholder="Tìm tên / SĐT / email">
                     </div>
 
-                    <button type="submit" class="btn-secondary">
-                        <i class="fa fa-search"></i> Tìm kiếm
-                    </button>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-secondary">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Tìm kiếm</span>
+                        </button>
+
+                        <a href="${pageContext.request.contextPath}/trainer/class-members" class="btn-light">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Đặt lại</span>
+                        </a>
+                    </div>
                 </form>
 
-                <div class="table-wrap">
+                <div class="table-responsive">
                     <table class="dashboard-table">
                         <thead>
                         <tr>
@@ -55,7 +65,7 @@
                             <th>Số điện thoại</th>
                             <th>Email</th>
                             <th>Lớp</th>
-                            <th>Ngày bắt đầu</th>
+                            <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
@@ -66,13 +76,16 @@
                                     <tr>
                                         <td>${item.member.fullname}</td>
                                         <td>${item.member.phone}</td>
-                                        <td>${item.member.email}</td>
+                                        <td>${empty item.member.email ? '-' : item.member.email}</td>
                                         <td>${item.gymClass.className}</td>
-                                        <td>${item.startDate}</td>
+                                        <td>
+                                            <span class="status-badge active">Đang học</span>
+                                        </td>
                                         <td>
                                             <a class="btn-sm btn-edit"
                                                href="${pageContext.request.contextPath}/trainer/student-detail?id=${item.member.memberId}&classId=${item.gymClass.classId}">
-                                                Xem chi tiết
+                                                <i class="fa-solid fa-eye"></i>
+                                                <span>Xem chi tiết</span>
                                             </a>
                                         </td>
                                     </tr>

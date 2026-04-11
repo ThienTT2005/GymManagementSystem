@@ -2,11 +2,9 @@ package com.gym.GymManagementSystem.controller.admin;
 
 import com.gym.GymManagementSystem.model.Membership;
 import com.gym.GymManagementSystem.service.MembershipService;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -40,116 +38,64 @@ public class AdminMembershipController {
     }
 
     @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        Membership membership = new Membership();
-        membership.setStatus("PENDING");
-
-        model.addAttribute("pageTitle", "Thêm đăng ký gói tập");
-        model.addAttribute("activePage", "memberships");
-        model.addAttribute("membership", membership);
-        model.addAttribute("members", membershipService.getAllMembers());
-        model.addAttribute("packages", membershipService.getAllPackages());
-        model.addAttribute("isEdit", false);
-
-        return "admin/memberships/form";
+    public String redirectCreate(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Admin không tạo trực tiếp đăng ký gói tập. Vui lòng tạo từ luồng Member hoặc Receptionist."
+        );
+        return "redirect:/admin/memberships";
     }
 
     @PostMapping("/create")
-    public String createMembership(
-            @Valid @ModelAttribute("membership") Membership membership,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer memberId,
-            @RequestParam(required = false) Integer packageId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
-        if (memberId == null) {
-            bindingResult.reject("memberId", "Vui lòng chọn hội viên");
-        }
-
-        if (packageId == null) {
-            bindingResult.reject("packageId", "Vui lòng chọn gói tập");
-        }
-
-        if (membership.getStartDate() != null && membership.getEndDate() != null
-                && membership.getEndDate().isBefore(membership.getStartDate())) {
-            bindingResult.rejectValue("endDate", "error.endDate",
-                    "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu");
-        }
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("pageTitle", "Thêm đăng ký gói tập");
-            model.addAttribute("activePage", "memberships");
-            model.addAttribute("members", membershipService.getAllMembers());
-            model.addAttribute("packages", membershipService.getAllPackages());
-            model.addAttribute("isEdit", false);
-            return "admin/memberships/form";
-        }
-
-        membershipService.createMembership(membership, memberId, packageId);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm đăng ký gói tập thành công");
+    public String blockCreate(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Admin không tạo trực tiếp đăng ký gói tập. Vui lòng tạo từ luồng Member hoặc Receptionist."
+        );
         return "redirect:/admin/memberships";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
-        Membership membership = membershipService.getMembershipById(id);
-        if (membership == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đăng ký gói tập");
-            return "redirect:/admin/memberships";
-        }
-
-        model.addAttribute("pageTitle", "Cập nhật đăng ký gói tập");
-        model.addAttribute("activePage", "memberships");
-        model.addAttribute("membership", membership);
-        model.addAttribute("members", membershipService.getAllMembers());
-        model.addAttribute("packages", membershipService.getAllPackages());
-        model.addAttribute("isEdit", true);
-
-        return "admin/memberships/form";
+    public String redirectEdit(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Admin không chỉnh sửa trực tiếp đăng ký gói tập. Chỉ được cập nhật trạng thái nghiệp vụ."
+        );
+        return "redirect:/admin/memberships";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateMembership(
-            @PathVariable Integer id,
-            @Valid @ModelAttribute("membership") Membership membership,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer memberId,
-            @RequestParam(required = false) Integer packageId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
-        if (membershipService.getMembershipById(id) == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đăng ký gói tập");
-            return "redirect:/admin/memberships";
-        }
+    public String blockEdit(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Admin không chỉnh sửa trực tiếp đăng ký gói tập. Chỉ được cập nhật trạng thái nghiệp vụ."
+        );
+        return "redirect:/admin/memberships";
+    }
 
-        if (memberId == null) {
-            bindingResult.reject("memberId", "Vui lòng chọn hội viên");
+    @PostMapping("/approve/{id}")
+    public String approve(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            membershipService.approve(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Duyệt đăng ký gói tập thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể duyệt đăng ký gói tập");
         }
+        return "redirect:/admin/memberships";
+    }
 
-        if (packageId == null) {
-            bindingResult.reject("packageId", "Vui lòng chọn gói tập");
+    @PostMapping("/reject/{id}")
+    public String reject(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            membershipService.reject(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Từ chối đăng ký gói tập thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể từ chối đăng ký gói tập");
         }
-
-        if (membership.getStartDate() != null && membership.getEndDate() != null
-                && membership.getEndDate().isBefore(membership.getStartDate())) {
-            bindingResult.rejectValue("endDate", "error.endDate",
-                    "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu");
-        }
-
-        if (bindingResult.hasErrors()) {
-            membership.setMembershipId(id);
-            model.addAttribute("pageTitle", "Cập nhật đăng ký gói tập");
-            model.addAttribute("activePage", "memberships");
-            model.addAttribute("members", membershipService.getAllMembers());
-            model.addAttribute("packages", membershipService.getAllPackages());
-            model.addAttribute("isEdit", true);
-            return "admin/memberships/form";
-        }
-
-        membershipService.updateMembership(id, membership, memberId, packageId);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật đăng ký gói tập thành công");
         return "redirect:/admin/memberships";
     }
 
@@ -158,7 +104,7 @@ public class AdminMembershipController {
         boolean deleted = membershipService.softDeleteMembership(id);
 
         if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái đăng ký thành công");
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa đăng ký gói tập thành công");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đăng ký gói tập");
         }

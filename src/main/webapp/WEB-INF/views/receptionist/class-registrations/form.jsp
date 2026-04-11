@@ -7,48 +7,59 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
     <%@ include file="/WEB-INF/views/layout/receptionist-header.jsp" %>
+
     <div class="app-body">
         <%@ include file="/WEB-INF/views/layout/receptionist-sidebar.jsp" %>
 
         <main class="app-content">
-            <div class="page-card form-card">
-                <h2>Thêm đăng ký lớp</h2>
 
+            <div class="page-header">
+                <div>
+                    <h1>${isEdit ? 'Cập nhật đăng ký lớp' : 'Thêm đăng ký lớp'}</h1>
+                </div>
+            </div>
+
+            <c:if test="${not empty errorMessage}">
+                <div class="alert-error">${errorMessage}</div>
+            </c:if>
+
+            <div class="page-card form-card">
                 <form:form method="post" modelAttribute="registration" class="admin-form">
+
                     <div class="form-grid">
+
                         <div class="form-group full-width">
                             <label>Hội viên</label>
-                            <select name="memberId">
+                            <select name="memberId" required>
                                 <option value="">-- Chọn hội viên --</option>
                                 <c:forEach var="m" items="${members}">
-                                    <option value="${m.memberId}">${m.fullname} - ${m.phone}</option>
+                                    <option value="${m.memberId}"
+                                        <c:if test="${registration.member != null && registration.member.memberId == m.memberId}">selected</c:if>>
+                                            ${m.fullname} - ${m.phone}
+                                    </option>
                                 </c:forEach>
                             </select>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group full-width">
                             <label>Lớp học</label>
-                            <select name="classId">
+                            <select name="classId" required>
                                 <option value="">-- Chọn lớp --</option>
                                 <c:forEach var="c" items="${classes}">
-                                    <option value="${c.classId}">${c.className}</option>
+                                    <option value="${c.classId}"
+                                        <c:if test="${registration.gymClass != null && registration.gymClass.classId == c.classId}">selected</c:if>>
+                                            ${c.className}
+                                            <c:if test="${c.service != null}"> - ${c.service.serviceName}</c:if>
+                                    </option>
                                 </c:forEach>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Dịch vụ</label>
-                            <select name="serviceId">
-                                <option value="">-- Chọn dịch vụ --</option>
-                                <c:forEach var="s" items="${services}">
-                                    <option value="${s.serviceId}">${s.serviceName}</option>
-                                </c:forEach>
-                            </select>
+                            <p class="field-hint">Dịch vụ sẽ tự lấy theo lớp học đã chọn.</p>
                         </div>
 
                         <div class="form-group">
@@ -69,9 +80,8 @@
                         <div class="form-group">
                             <label>Trạng thái</label>
                             <form:select path="status">
-                                <form:option value="PENDING">PENDING</form:option>
-                                <form:option value="ACTIVE">ACTIVE</form:option>
-                                <form:option value="REJECTED">REJECTED</form:option>
+                                <form:option value="PENDING">Chờ xử lý</form:option>
+                                <form:option value="CANCELLED">Đã hủy</form:option>
                             </form:select>
                         </div>
 
@@ -79,14 +89,25 @@
                             <label>Ghi chú</label>
                             <form:textarea path="note" rows="4"/>
                         </div>
+
                     </div>
 
                     <div class="form-actions">
-                        <a href="${pageContext.request.contextPath}/receptionist/class-registrations" class="btn-secondary">Quay lại</a>
-                        <button type="submit" class="btn-primary">Thêm mới</button>
+                        <a href="${pageContext.request.contextPath}/receptionist/class-registrations"
+                           class="btn-light">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Quay lại</span>
+                        </a>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>${isEdit ? 'Cập nhật' : 'Thêm mới'}</span>
+                        </button>
                     </div>
+
                 </form:form>
             </div>
+
         </main>
     </div>
 </div>

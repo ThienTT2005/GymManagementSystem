@@ -6,25 +6,25 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
-    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+    <%@ include file="/WEB-INF/views/layout/admin-header.jsp" %>
 
     <div class="app-body">
-        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+        <%@ include file="/WEB-INF/views/layout/admin-sidebar.jsp" %>
 
         <main class="app-content">
             <div class="page-header">
                 <div>
                     <h1>Quản lý tài khoản</h1>
-                    <p>Danh sách tài khoản đăng nhập hệ thống</p>
                 </div>
+
                 <a class="btn-primary" href="${pageContext.request.contextPath}/admin/users/create">
-                    <i class="fa fa-plus"></i> Thêm tài khoản
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Thêm tài khoản</span>
                 </a>
             </div>
 
@@ -37,86 +37,110 @@
             </c:if>
 
             <div class="page-card">
-                <form method="get" action="${pageContext.request.contextPath}/admin/users" class="filter-form">
-                    <div class="filter-group">
-                        <input type="text" name="keyword" value="${keyword}" placeholder="Tìm username">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/admin/users"
+                      class="filter-form">
+
+                    <div class="filter-group filter-group-grow">
+                        <input type="text"
+                               name="keyword"
+                               value="${keyword}"
+                               placeholder="Tìm theo username">
                     </div>
 
                     <div class="filter-group">
-                        <select name="roleName">
+                        <select name="roleId">
                             <option value="">Tất cả quyền</option>
-                            <option value="ADMIN" <c:if test="${roleName == 'ADMIN'}">selected</c:if>>ADMIN</option>
-                            <option value="RECEPTIONIST" <c:if test="${roleName == 'RECEPTIONIST'}">selected</c:if>>RECEPTIONIST</option>
-                            <option value="TRAINER" <c:if test="${roleName == 'TRAINER'}">selected</c:if>>TRAINER</option>
-                            <option value="MEMBER" <c:if test="${roleName == 'MEMBER'}">selected</c:if>>MEMBER</option>
+                            <c:forEach var="role" items="${roles}">
+                                <option value="${role.roleId}" ${roleId == role.roleId ? 'selected' : ''}>
+                                    ${role.roleName}
+                                </option>
+                            </c:forEach>
                         </select>
                     </div>
 
                     <div class="filter-group">
                         <select name="status">
                             <option value="">Tất cả trạng thái</option>
-                            <option value="1" <c:if test="${status == 1}">selected</c:if>>Hoạt động</option>
-                            <option value="0" <c:if test="${status == 0}">selected</c:if>>Ngừng</option>
+                            <option value="1" ${status == 1 ? 'selected' : ''}>Hoạt động</option>
+                            <option value="0" ${status == 0 ? 'selected' : ''}>Đã khóa</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-secondary">
-                        <i class="fa fa-search"></i> Tìm kiếm
-                    </button>
-                </form>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-secondary">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Tìm kiếm</span>
+                        </button>
 
-                <div class="table-wrap">
+                        <a class="btn-light" href="${pageContext.request.contextPath}/admin/users">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Reset</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="page-card">
+                <div class="table-responsive">
                     <table class="dashboard-table admin-table">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Avatar</th>
+                            <th>STT</th>
                             <th>Username</th>
-                            <th>Role</th>
+                            <th>Quyền</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <c:choose>
-                            <c:when test="${not empty userPage.content}">
-                                <c:forEach var="item" items="${userPage.content}">
+                            <c:when test="${not empty users}">
+                                <c:forEach var="item" items="${users}" varStatus="loop">
                                     <tr>
-                                        <td>${item.userId}</td>
+                                        <td>${userPage.number * userPage.size + loop.index + 1}</td>
+
+                                        <td><strong>${item.username}</strong></td>
+
+                                        <td>${empty item.roleName ? '---' : item.roleName}</td>
+
                                         <td>
-                                            <img class="table-avatar"
-                                                 src="${pageContext.request.contextPath}/uploads/${empty item.avatar ? 'default-avatar.png' : item.avatar}"
-                                                 alt="${item.username}">
-                                        </td>
-                                        <td>${item.username}</td>
-                                        <td>${item.roleName}</td>
-                                        <td>
-                                            <span class="${item.status == 1 ? 'badge-active' : 'badge-inactive'}">
-                                                <c:choose>
-                                                    <c:when test="${item.status == 1}">Hoạt động</c:when>
-                                                    <c:otherwise>Ngừng</c:otherwise>
-                                                </c:choose>
+                                            <span class="status-badge ${item.status == 1 ? 'active' : 'inactive'}">
+                                                ${item.status == 1 ? 'Hoạt động' : 'Đã khóa'}
                                             </span>
                                         </td>
-                                        <td>
-                                            <a class="btn-sm btn-edit"
-                                               href="${pageContext.request.contextPath}/admin/users/edit/${item.userId}">
-                                                Sửa
-                                            </a>
 
-                                            <form method="post"
-                                                  action="${pageContext.request.contextPath}/admin/users/delete/${item.userId}"
-                                                  style="display:inline-block"
-                                                  onsubmit="return confirm('Bạn có chắc muốn ngừng kích hoạt tài khoản này?');">
-                                                <button type="submit" class="btn-sm btn-delete">Ngừng</button>
-                                            </form>
+                                        <td>${empty item.createdAtFormatted ? '---' : item.createdAtFormatted}</td>
+
+                                        <td>
+                                            <div class="table-actions">
+                                                <a class="btn-sm btn-edit"
+                                                   href="${pageContext.request.contextPath}/admin/users/edit/${item.userId}"
+                                                   title="Chỉnh sửa">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
+
+                                                <form method="post"
+                                                      action="${pageContext.request.contextPath}/admin/users/toggle-status/${item.userId}"
+                                                      class="inline-form"
+                                                      onsubmit="return confirm('Xác nhận thay đổi trạng thái tài khoản này?');">
+                                                    <button type="submit"
+                                                            class="btn-sm ${item.status == 1 ? 'btn-delete' : 'btn-primary'}"
+                                                            title="${item.status == 1 ? 'Khóa' : 'Mở khóa'}">
+                                                        <i class="fa-solid ${item.status == 1 ? 'fa-lock' : 'fa-unlock'}"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>
                             </c:when>
+
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="6" class="empty-cell">Không có dữ liệu</td>
+                                    <td colspan="6" class="empty-cell">Không có tài khoản phù hợp</td>
                                 </tr>
                             </c:otherwise>
                         </c:choose>
@@ -127,8 +151,8 @@
                 <c:if test="${userPage.totalPages > 1}">
                     <div class="pagination">
                         <c:forEach begin="0" end="${userPage.totalPages - 1}" var="p">
-                            <a class="${p + 1 == userPage.number + 1 ? 'active' : ''}"
-                               href="${pageContext.request.contextPath}/admin/users?keyword=${keyword}&roleName=${roleName}&status=${status}&page=${p + 1}&size=${userPage.size}">
+                            <a class="${p == userPage.number ? 'active' : ''}"
+                               href="?page=${p + 1}&size=${userPage.size}&keyword=${keyword}&roleId=${roleId}&status=${status}">
                                 ${p + 1}
                             </a>
                         </c:forEach>

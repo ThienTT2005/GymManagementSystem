@@ -19,14 +19,13 @@ public class ReceptionistConsultationController {
     }
 
     @GetMapping
-    public String list(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "8") int size,
-            Model model
-    ) {
-        Page<Consultation> consultationPage = consultationService.searchConsultations(keyword, status, page, size);
+    public String list(@RequestParam(defaultValue = "") String keyword,
+                       @RequestParam(required = false) String status,
+                       @RequestParam(defaultValue = "1") int page,
+                       @RequestParam(defaultValue = "8") int size,
+                       Model model) {
+
+        Page<Consultation> consultationPage = consultationService.searchContacts(keyword, status, page, size);
 
         model.addAttribute("pageTitle", "Yêu cầu tư vấn");
         model.addAttribute("activePage", "consultations");
@@ -41,8 +40,15 @@ public class ReceptionistConsultationController {
     public String updateStatus(@PathVariable Integer id,
                                @RequestParam String status,
                                RedirectAttributes redirectAttributes) {
-        consultationService.updateStatus(id, status);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái tư vấn thành công");
+        try {
+            consultationService.updateStatus(id, status);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái tư vấn thành công");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể cập nhật trạng thái tư vấn");
+        }
+
         return "redirect:/receptionist/consultations";
     }
 }

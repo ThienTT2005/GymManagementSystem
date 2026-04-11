@@ -4,13 +4,18 @@ import com.gym.GymManagementSystem.model.GymPackage;
 import com.gym.GymManagementSystem.repository.PackageRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,51 +33,64 @@ public class PackageService {
     }
 
     public Page<GymPackage> searchPackages(String keyword, Integer status, int page, int size) {
-        PageRequest pageable = PageRequest.of(
-                Math.max(page - 1, 0),
-                size,
-                Sort.by(Sort.Direction.DESC, "packageId")
-        );
+        int safePage = Math.max(page - 1, 0);
+        int safeSize = size > 0 ? size : 8;
+        String normalizedKeyword = trimToNull(keyword);
 
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
+
+        boolean hasKeyword = normalizedKeyword != null;
         boolean hasStatus = status != null;
 
+        Page<GymPackage> rawPage;
+
         if (hasKeyword && hasStatus) {
-            return packageRepository.findByPackageNameContainingIgnoreCaseAndStatus(keyword.trim(), status, pageable);
+            rawPage = packageRepository.findByPackageNameContainingIgnoreCaseAndStatus(normalizedKeyword, status, pageable);
+        } else if (hasKeyword) {
+            rawPage = packageRepository.findByPackageNameContainingIgnoreCase(normalizedKeyword, pageable);
+        } else if (hasStatus) {
+            rawPage = packageRepository.findByStatus(status, pageable);
+        } else {
+            rawPage = packageRepository.findAll(pageable);
         }
 
-        if (hasKeyword) {
-            return packageRepository.findByPackageNameContainingIgnoreCase(keyword.trim(), pageable);
-        }
+        List<GymPackage> sortedContent = rawPage.getContent().stream()
+                .sorted(packageDurationComparator())
+                .toList();
 
-        if (hasStatus) {
-            return packageRepository.findByStatus(status, pageable);
-        }
-
-        return packageRepository.findAll(pageable);
+        return new PageImpl<>(sortedContent, pageable, rawPage.getTotalElements());
     }
 
-    public List<GymPackage> findAll() {
-        return packageRepository.findAll(Sort.by(Sort.Direction.ASC, "packageName"));
+    public List<GymPackage> getAllPackages() {
+        return packageRepository.findAll().stream()
+                .sorted(packageDurationComparator())
+                .toList();
     }
 
     public GymPackage getPackageById(Integer id) {
+        if (id == null) return null;
         return packageRepository.findById(id).orElse(null);
     }
 
     public boolean existsByPackageName(String packageName, Integer excludeId) {
-        if (packageName == null || packageName.trim().isEmpty()) {
-            return false;
-        }
+        String normalizedName = trimToNull(packageName);
+        if (normalizedName == null) return false;
 
         if (excludeId == null) {
-            return packageRepository.existsByPackageNameIgnoreCase(packageName.trim());
+            return packageRepository.existsByPackageNameIgnoreCase(normalizedName);
         }
 
-        return packageRepository.existsByPackageNameIgnoreCaseAndPackageIdNot(packageName.trim(), excludeId);
+        return packageRepository.existsByPackageNameIgnoreCaseAndPackageIdNot(normalizedName, excludeId);
     }
 
     public GymPackage createPackage(GymPackage gymPackage, MultipartFile imageFile) {
+        if (gymPackage == null) {
+            throw new IllegalArgumentException("Thông tin gói tập không hợp lệ");
+        }
+
+        normalizePackage(gymPackage);
+        validatePackage(gymPackage);
+
         if (gymPackage.getStatus() == null) {
             gymPackage.setStatus(1);
         }
@@ -85,15 +103,21 @@ public class PackageService {
     }
 
     public GymPackage updatePackage(Integer id, GymPackage formPackage, MultipartFile imageFile) {
-        Optional<GymPackage> optional = packageRepository.findById(id);
-        if (optional.isEmpty()) {
-            return null;
+        if (id == null || formPackage == null) {
+            throw new IllegalArgumentException("Thông tin cập nhật không hợp lệ");
         }
 
+        Optional<GymPackage> optional = packageRepository.findById(id);
+        if (optional.isEmpty()) return null;
+
         GymPackage existing = optional.get();
+
+        normalizePackage(formPackage);
+        validatePackage(formPackage);
+
         existing.setPackageName(formPackage.getPackageName());
         existing.setPrice(formPackage.getPrice());
-        existing.setDurationDays(formPackage.getDurationDays());
+        existing.setDurationMonths(formPackage.getDurationMonths());
         existing.setDescription(formPackage.getDescription());
         existing.setStatus(formPackage.getStatus());
 
@@ -104,11 +128,13 @@ public class PackageService {
         return packageRepository.save(existing);
     }
 
+    public boolean deletePackage(Integer id) {
+        return softDeletePackage(id);
+    }
+
     public boolean softDeletePackage(Integer id) {
         Optional<GymPackage> optional = packageRepository.findById(id);
-        if (optional.isEmpty()) {
-            return false;
-        }
+        if (optional.isEmpty()) return false;
 
         GymPackage gymPackage = optional.get();
         gymPackage.setStatus(0);
@@ -116,6 +142,59 @@ public class PackageService {
         return true;
     }
 
+    public void updateStatus(Integer id, Integer status) {
+        if (id == null) throw new IllegalArgumentException("Không tìm thấy gói tập");
+
+        if (status == null || (status != 0 && status != 1)) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+
+        GymPackage gymPackage = packageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy gói tập"));
+
+        gymPackage.setStatus(status);
+        packageRepository.save(gymPackage);
+    }
+
+    private Comparator<GymPackage> packageDurationComparator() {
+        return Comparator
+                .comparing(GymPackage::getDurationMonths, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(pkg -> pkg.getPackageName() == null ? "" : pkg.getPackageName().trim().toLowerCase())
+                .thenComparing(GymPackage::getPackageId, Comparator.nullsLast(Comparator.reverseOrder()));
+    }
+
+    private void normalizePackage(GymPackage gymPackage) {
+        gymPackage.setPackageName(trimToNull(gymPackage.getPackageName()));
+        gymPackage.setDescription(trimToNull(gymPackage.getDescription()));
+    }
+
+    private void validatePackage(GymPackage gymPackage) {
+        if (gymPackage.getPackageName() == null) {
+            throw new IllegalArgumentException("Tên gói tập không được để trống");
+        }
+
+        if (gymPackage.getPrice() == null) {
+            throw new IllegalArgumentException("Giá gói tập không được để trống");
+        }
+
+        if (gymPackage.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Giá gói tập phải lớn hơn 0");
+        }
+
+        if (gymPackage.getDurationMonths() == null || gymPackage.getDurationMonths() <= 0) {
+            throw new IllegalArgumentException("Thời hạn gói tập phải lớn hơn 0");
+        }
+
+        if (gymPackage.getStatus() == null) {
+            gymPackage.setStatus(1);
+        }
+
+        if (gymPackage.getStatus() != 0 && gymPackage.getStatus() != 1) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+    }
+
+    // ✅ FIX 100% lỗi 500
     private String saveImage(MultipartFile imageFile) {
         String originalFilename = imageFile.getOriginalFilename();
         String extension = "";
@@ -126,18 +205,28 @@ public class PackageService {
 
         String fileName = UUID.randomUUID() + extension;
 
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        File dest = new File(dir, fileName);
         try {
-            imageFile.transferTo(dest);
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadPath);
+
+            Path destination = uploadPath.resolve(fileName);
+
+            Files.copy(
+                    imageFile.getInputStream(),
+                    destination,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
         } catch (IOException e) {
             throw new RuntimeException("Không thể upload ảnh", e);
         }
 
         return fileName;
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

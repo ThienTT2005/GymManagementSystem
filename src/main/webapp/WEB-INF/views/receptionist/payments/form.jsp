@@ -7,78 +7,110 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
     <%@ include file="/WEB-INF/views/layout/receptionist-header.jsp" %>
+
     <div class="app-body">
         <%@ include file="/WEB-INF/views/layout/receptionist-sidebar.jsp" %>
 
         <main class="app-content">
+            <div class="page-header">
+                <div>
+                    <h1>${isEdit ? 'Cập nhật thanh toán' : 'Thêm thanh toán'}</h1>
+                </div>
+            </div>
+
+            <c:if test="${not empty errorMessage}">
+                <div class="alert-error">${errorMessage}</div>
+            </c:if>
+
             <div class="page-card form-card">
-                <h2>Thêm thanh toán</h2>
+                <form:form method="post"
+                           modelAttribute="payment"
+                           enctype="multipart/form-data"
+                           class="admin-form">
 
-                <form:form method="post" modelAttribute="payment" enctype="multipart/form-data" class="admin-form">
                     <div class="form-grid">
+
                         <div class="form-group full-width">
-                            <label>Membership</label>
-                            <select name="membershipId">
-                                <option value="">-- Chọn membership --</option>
+                            <label for="membershipId">Đăng ký gói tập</label>
+                            <select id="membershipId" name="membershipId">
+                                <option value="">-- Không chọn --</option>
                                 <c:forEach var="m" items="${memberships}">
-                                    <option value="${m.membershipId}">${m.member.fullname} - ${m.gymPackage.packageName}</option>
+                                    <option value="${m.membershipId}">
+                                            ${m.member.fullname} - ${m.gymPackage.packageName} - ${m.status}
+                                    </option>
                                 </c:forEach>
                             </select>
+                            <p class="field-hint">Chỉ chọn một trong hai: gói tập hoặc lớp học.</p>
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Class Registration</label>
-                            <select name="classRegistrationId">
-                                <option value="">-- Chọn class registration --</option>
+                            <label for="classRegistrationId">Đăng ký lớp học</label>
+                            <select id="classRegistrationId" name="classRegistrationId">
+                                <option value="">-- Không chọn --</option>
                                 <c:forEach var="r" items="${classRegistrations}">
-                                    <option value="${r.registrationId}">${r.member.fullname} - ${r.gymClass.className}</option>
+                                    <option value="${r.registrationId}">
+                                            ${r.member.fullname} - ${r.gymClass.className} - ${r.status}
+                                    </option>
                                 </c:forEach>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label>Số tiền</label>
-                            <form:input path="amount" type="number" step="0.01"/>
+                            <label for="amount">Số tiền</label>
+                            <form:input path="amount" id="amount" type="number" step="0.01"/>
+                            <form:errors path="amount" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
-                            <label>Phương thức</label>
-                            <form:input path="paymentMethod"/>
+                            <label for="paymentMethod">Phương thức</label>
+                            <form:select path="paymentMethod" id="paymentMethod">
+                                <form:option value="CASH">Tiền mặt</form:option>
+                                <form:option value="BANK_TRANSFER">Chuyển khoản</form:option>
+                            </form:select>
                         </div>
 
                         <div class="form-group">
-                            <label>Ngày thanh toán</label>
-                            <form:input path="paymentDate" type="date"/>
+                            <label for="paymentDate">Ngày thanh toán</label>
+                            <form:input path="paymentDate" id="paymentDate" type="date"/>
+                            <form:errors path="paymentDate" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
-                            <label>Trạng thái</label>
-                            <form:select path="status">
-                                <form:option value="PENDING">PENDING</form:option>
-                                <form:option value="PAID">PAID</form:option>
-                                <form:option value="REJECTED">REJECTED</form:option>
+                            <label for="status">Trạng thái</label>
+                            <form:select path="status" id="status">
+                                <form:option value="PENDING">Chờ duyệt</form:option>
+                                <form:option value="CANCELLED">Đã hủy</form:option>
                             </form:select>
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Minh chứng</label>
-                            <input type="file" name="proofFile" accept="image/*">
+                            <label for="proofFile">Minh chứng thanh toán</label>
+                            <input id="proofFile" type="file" name="proofFile" accept="image/*">
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Ghi chú</label>
-                            <form:textarea path="note" rows="4"/>
+                            <label for="note">Ghi chú</label>
+                            <form:textarea path="note" id="note" rows="4"/>
                         </div>
+
                     </div>
 
                     <div class="form-actions">
-                        <a href="${pageContext.request.contextPath}/receptionist/payments" class="btn-secondary">Quay lại</a>
-                        <button type="submit" class="btn-primary">Thêm mới</button>
+                        <a href="${pageContext.request.contextPath}/receptionist/payments" class="btn-light">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Quay lại</span>
+                        </a>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>${isEdit ? 'Cập nhật' : 'Thêm mới'}</span>
+                        </button>
                     </div>
                 </form:form>
             </div>

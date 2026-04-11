@@ -1,7 +1,9 @@
 package com.gym.GymManagementSystem.controller.receptionist;
 
 import com.gym.GymManagementSystem.model.Member;
+import com.gym.GymManagementSystem.service.ClassRegistrationService;
 import com.gym.GymManagementSystem.service.MemberService;
+import com.gym.GymManagementSystem.service.MembershipService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -15,20 +17,26 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ReceptionistMemberController {
 
     private final MemberService memberService;
+    private final MembershipService membershipService;
+    private final ClassRegistrationService classRegistrationService;
 
-    public ReceptionistMemberController(MemberService memberService) {
+    public ReceptionistMemberController(MemberService memberService,
+                                        MembershipService membershipService,
+                                        ClassRegistrationService classRegistrationService) {
         this.memberService = memberService;
+        this.membershipService = membershipService;
+        this.classRegistrationService = classRegistrationService;
     }
 
     @GetMapping
-    public String listMembers(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) Integer status,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "8") int size,
-            Model model
-    ) {
+    public String listMembers(@RequestParam(defaultValue = "") String keyword,
+                              @RequestParam(required = false) Integer status,
+                              @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "8") int size,
+                              Model model) {
+
         Page<Member> memberPage = memberService.searchMembers(keyword, status, page, size);
+        memberPage.getContent().forEach(membershipService::attachCurrentMembershipSummary);
 
         model.addAttribute("pageTitle", "Quản lý hội viên");
         model.addAttribute("activePage", "members");
@@ -47,31 +55,39 @@ public class ReceptionistMemberController {
         model.addAttribute("pageTitle", "Thêm hội viên");
         model.addAttribute("activePage", "members");
         model.addAttribute("member", member);
-        model.addAttribute("users", memberService.getAssignableUsers());
         model.addAttribute("isEdit", false);
 
         return "receptionist/members/form";
     }
 
     @PostMapping("/create")
-    public String createMember(
-            @Valid @ModelAttribute("member") Member member,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer userId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
+    public String createMember(@Valid @ModelAttribute("member") Member member,
+                               BindingResult bindingResult,
+                               @RequestParam(required = false) String username,
+                               @RequestParam(required = false) String password,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageTitle", "Thêm hội viên");
             model.addAttribute("activePage", "members");
-            model.addAttribute("users", memberService.getAssignableUsers());
             model.addAttribute("isEdit", false);
+            model.addAttribute("formUsername", username);
             return "receptionist/members/form";
         }
 
-        memberService.createMember(member, userId);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm hội viên thành công");
-        return "redirect:/receptionist/members";
+        try {
+            memberService.createMemberWithAccount(member, username, password);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm hội viên thành công");
+            return "redirect:/receptionist/members";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("pageTitle", "Thêm hội viên");
+            model.addAttribute("activePage", "members");
+            model.addAttribute("isEdit", false);
+            model.addAttribute("formUsername", username);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "receptionist/members/form";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -85,38 +101,43 @@ public class ReceptionistMemberController {
         model.addAttribute("pageTitle", "Cập nhật hội viên");
         model.addAttribute("activePage", "members");
         model.addAttribute("member", member);
-        model.addAttribute("users", memberService.getAllUsers());
         model.addAttribute("isEdit", true);
 
         return "receptionist/members/form";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateMember(
-            @PathVariable Integer id,
-            @Valid @ModelAttribute("member") Member member,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer userId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
+    public String updateMember(@PathVariable Integer id,
+                               @Valid @ModelAttribute("member") Member member,
+                               BindingResult bindingResult,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
             member.setMemberId(id);
             model.addAttribute("pageTitle", "Cập nhật hội viên");
             model.addAttribute("activePage", "members");
-            model.addAttribute("users", memberService.getAllUsers());
             model.addAttribute("isEdit", true);
             return "receptionist/members/form";
         }
 
-        Member updated = memberService.updateMember(id, member, userId);
-        if (updated == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hội viên");
-            return "redirect:/receptionist/members";
-        }
+        try {
+            Member updated = memberService.updateMember(id, member, null);
+            if (updated == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy hội viên");
+                return "redirect:/receptionist/members";
+            }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hội viên thành công");
-        return "redirect:/receptionist/members";
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hội viên thành công");
+            return "redirect:/receptionist/members";
+        } catch (IllegalArgumentException e) {
+            member.setMemberId(id);
+            model.addAttribute("pageTitle", "Cập nhật hội viên");
+            model.addAttribute("activePage", "members");
+            model.addAttribute("isEdit", true);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "receptionist/members/form";
+        }
     }
 
     @GetMapping("/detail/{id}")
@@ -127,9 +148,12 @@ public class ReceptionistMemberController {
             return "redirect:/receptionist/members";
         }
 
+        membershipService.attachCurrentMembershipSummary(member);
+
         model.addAttribute("pageTitle", "Chi tiết hội viên");
         model.addAttribute("activePage", "members");
         model.addAttribute("member", member);
+        model.addAttribute("currentClassRegistrations", classRegistrationService.findCurrentRegistrationsByMemberId(id));
 
         return "receptionist/members/detail";
     }

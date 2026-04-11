@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "news_blogs")
+@Table(name = "news")
 public class News {
 
     @Id
@@ -25,7 +25,7 @@ public class News {
     @Column(name = "image", length = 255)
     private String image;
 
-    @Column(name = "type", length = 50)
+    @Column(name = "category", length = 50)
     private String type;
 
     @Column(name = "status", nullable = false)

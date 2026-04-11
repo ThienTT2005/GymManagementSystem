@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "users")
@@ -18,15 +19,11 @@ public class User {
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
-    @NotBlank(message = "Password không được để trống")
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
     @Column(name = "status", nullable = false)
     private Integer status = 1;
-
-    @Column(name = "avatar", length = 255)
-    private String avatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
@@ -76,14 +73,6 @@ public class User {
         this.status = status;
     }
 
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -116,9 +105,21 @@ public class User {
         return updatedAt;
     }
 
+    public boolean isActive() {
+        return this.status != null && this.status == 1;
+    }
+
+    public String getStatusLabel() {
+        return isActive() ? "Đang hoạt động" : "Đã khóa";
+    }
+
     @Transient
     public Integer getRoleId() {
-        return role != null ? role.getRoleId() : null;
+        try {
+            return role != null ? role.getRoleId() : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void setRoleId(Integer roleId) {
@@ -134,20 +135,11 @@ public class User {
 
     @Transient
     public String getRoleName() {
-        return role != null ? role.getRoleName() : null;
-    }
-
-    public void setRoleName(String roleName) {
-        if (roleName == null || roleName.isBlank()) {
-            if (this.role != null) {
-                this.role.setRoleName(null);
-            }
-            return;
+        try {
+            return role != null ? role.getRoleName() : null;
+        } catch (Exception e) {
+            return null;
         }
-        if (this.role == null) {
-            this.role = new Role();
-        }
-        this.role.setRoleName(roleName.trim().toUpperCase());
     }
 
     @Transient
@@ -201,7 +193,18 @@ public class User {
     }
 
     @Transient
-    public String getAvatarOrDefault() {
-        return (avatar == null || avatar.isBlank()) ? "default-avatar.png" : avatar;
+    public String getAvatar() {
+        if (staff != null && staff.getAvatar() != null && !staff.getAvatar().isBlank()) {
+            return staff.getAvatar();
+        }
+        if (member != null && member.getAvatar() != null && !member.getAvatar().isBlank()) {
+            return member.getAvatar();
+        }
+        return "assets/images/default-avatar.png";
+    }
+
+    public String getCreatedAtFormatted() {
+        if (this.createdAt == null) return "";
+        return this.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 }

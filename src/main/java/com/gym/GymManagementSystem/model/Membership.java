@@ -108,4 +108,48 @@ public class Membership {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    @Transient
+    private String paymentStatusDisplay;
+
+    public String getPaymentStatusDisplay() {
+        return paymentStatusDisplay;
+    }
+
+    public void setPaymentStatusDisplay(String paymentStatusDisplay) {
+        this.paymentStatusDisplay = paymentStatusDisplay;
+    }
+
+    @Transient
+    private String currentPackageName;
+
+    @Transient
+    private String currentMembershipStatus;
+
+    @Transient
+    private String currentMembershipEndDate;
+
+    public String getCurrentPackageName() {
+        return currentPackageName;
+    }
+
+    public void setCurrentPackageName(String currentPackageName) {
+        this.currentPackageName = currentPackageName;
+    }
+
+    public String getCurrentMembershipStatus() {
+        return currentMembershipStatus;
+    }
+
+    public void setCurrentMembershipStatus(String currentMembershipStatus) {
+        this.currentMembershipStatus = currentMembershipStatus;
+    }
+
+    public String getCurrentMembershipEndDate() {
+        return currentMembershipEndDate;
+    }
+
+    public void setCurrentMembershipEndDate(String currentMembershipEndDate) {
+        this.currentMembershipEndDate = currentMembershipEndDate;
+    }
 }

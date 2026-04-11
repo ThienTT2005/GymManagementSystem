@@ -35,6 +35,7 @@ public class AdminPackageController {
         model.addAttribute("activePage", "packages");
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
+        model.addAttribute("packages", packagePage.getContent());
         model.addAttribute("packagePage", packagePage);
 
         return "admin/packages/list";
@@ -57,7 +58,7 @@ public class AdminPackageController {
     public String createPackage(
             @Valid @ModelAttribute("gymPackage") GymPackage gymPackage,
             BindingResult bindingResult,
-            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
@@ -72,13 +73,25 @@ public class AdminPackageController {
             return "admin/packages/form";
         }
 
-        packageService.createPackage(gymPackage, imageFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm gói tập thành công");
-        return "redirect:/admin/packages";
+        try {
+            packageService.createPackage(gymPackage, imageFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Thêm gói tập thành công");
+            return "redirect:/admin/packages";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageTitle", "Thêm gói tập");
+            model.addAttribute("activePage", "packages");
+            model.addAttribute("isEdit", false);
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "admin/packages/form";
+        }
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+    public String showEditForm(
+            @PathVariable Integer id,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
         GymPackage gymPackage = packageService.getPackageById(id);
         if (gymPackage == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy gói tập");
@@ -98,41 +111,66 @@ public class AdminPackageController {
             @PathVariable Integer id,
             @Valid @ModelAttribute("gymPackage") GymPackage gymPackage,
             BindingResult bindingResult,
-            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        if (packageService.getPackageById(id) == null) {
+        GymPackage existingPackage = packageService.getPackageById(id);
+        if (existingPackage == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy gói tập");
             return "redirect:/admin/packages";
         }
 
-        if (packageService.existsByPackageName(gymPackage.getPackageName(), id)) {
+        gymPackage.setPackageId(id);
+
+        String name = gymPackage.getPackageName() != null
+                ? gymPackage.getPackageName().trim()
+                : null;
+
+        if (packageService.existsByPackageName(name, id)) {
             bindingResult.rejectValue("packageName", "error.packageName", "Tên gói tập đã tồn tại");
         }
 
         if (bindingResult.hasErrors()) {
-            gymPackage.setPackageId(id);
             model.addAttribute("pageTitle", "Cập nhật gói tập");
             model.addAttribute("activePage", "packages");
             model.addAttribute("isEdit", true);
+            gymPackage.setImage(existingPackage.getImage());
             return "admin/packages/form";
         }
 
-        packageService.updatePackage(id, gymPackage, imageFile);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật gói tập thành công");
-        return "redirect:/admin/packages";
+        try {
+            packageService.updatePackage(id, gymPackage, imageFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật gói tập thành công");
+            return "redirect:/admin/packages";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("pageTitle", "Cập nhật gói tập");
+            model.addAttribute("activePage", "packages");
+            model.addAttribute("isEdit", true);
+            model.addAttribute("errorMessage", ex.getMessage());
+
+            gymPackage.setImage(existingPackage.getImage());
+
+            return "admin/packages/form";
+        }
     }
 
-    @PostMapping("/delete/{id}")
-    public String deletePackage(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = packageService.softDeletePackage(id);
+    @PostMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        GymPackage gymPackage = packageService.getPackageById(id);
 
-        if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa gói tập thành công");
-        } else {
+        if (gymPackage == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy gói tập");
+            return "redirect:/admin/packages";
         }
+
+        int newStatus = (gymPackage.getStatus() != null && gymPackage.getStatus() == 1) ? 0 : 1;
+        packageService.updateStatus(id, newStatus);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                newStatus == 1 ? "Kích hoạt gói tập thành công" : "Ngừng hoạt động gói tập thành công"
+        );
 
         return "redirect:/admin/packages";
     }

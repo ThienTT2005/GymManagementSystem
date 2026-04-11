@@ -1,6 +1,7 @@
 package com.gym.GymManagementSystem.model;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +48,9 @@ public class Staff {
 
     @Column(name = "note")
     private String note;
+
+    @Column(name = "avatar")
+    private String avatar;
 
     @Column(name = "status")
     private Integer status = 1;
@@ -151,6 +155,14 @@ public class Staff {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Integer getStatus() {

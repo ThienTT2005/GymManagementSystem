@@ -7,40 +7,44 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
 <div class="app-shell">
-    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+
+    <%@ include file="/WEB-INF/views/layout/admin-header.jsp" %>
 
     <div class="app-body">
-        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+
+        <%@ include file="/WEB-INF/views/layout/admin-sidebar.jsp" %>
 
         <main class="app-content">
+
             <div class="page-header">
                 <div>
                     <h1>${isEdit ? 'Cập nhật hội viên' : 'Thêm hội viên'}</h1>
-                    <p>Nhập thông tin hồ sơ hội viên</p>
                 </div>
             </div>
 
+            <c:if test="${not empty errorMessage}">
+                <div class="alert-error">${errorMessage}</div>
+            </c:if>
+
             <div class="page-card form-card">
-                <form:form method="post" modelAttribute="member" class="admin-form">
+
+                <form:form method="post"
+                           modelAttribute="member"
+                           enctype="multipart/form-data"
+                           class="admin-form">
+
+                    <c:if test="${isEdit}">
+                        <form:hidden path="memberId"/>
+                    </c:if>
+
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tài khoản</label>
-                            <select name="userId">
-                                <option value="">-- Chọn tài khoản --</option>
-                                <c:forEach var="u" items="${users}">
-                                    <option value="${u.userId}"
-                                        <c:if test="${member.user != null && member.user.userId == u.userId}">selected</c:if>>
-                                            ${u.username} (${u.roleName})
-                                    </option>
-                                </c:forEach>
-                            </select>
-                        </div>
 
                         <div class="form-group">
                             <label>Họ tên</label>
@@ -49,71 +53,85 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Số điện thoại</label>
+                            <label>SĐT</label>
                             <form:input path="phone"/>
                             <form:errors path="phone" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
                             <label>Email</label>
-                            <form:input path="email" type="email"/>
+                            <form:input path="email"/>
+                            <form:errors path="email" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
                             <label>Giới tính</label>
                             <form:select path="gender">
-                                <form:option value="">-- Chọn giới tính --</form:option>
+                                <form:option value="">-- Chọn --</form:option>
                                 <form:option value="Nam">Nam</form:option>
                                 <form:option value="Nữ">Nữ</form:option>
-                                <form:option value="Khác">Khác</form:option>
                             </form:select>
+                            <form:errors path="gender" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
                             <label>Ngày sinh</label>
                             <form:input path="dob" type="date"/>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Người liên hệ khẩn cấp</label>
-                            <form:input path="emergencyContactName"/>
-                        </div>
-
-                        <div class="form-group">
-                            <label>SĐT liên hệ khẩn cấp</label>
-                            <form:input path="emergencyContactPhone"/>
+                            <form:errors path="dob" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
                             <label>Trạng thái</label>
                             <form:select path="status">
                                 <form:option value="1">Hoạt động</form:option>
-                                <form:option value="0">Ngừng</form:option>
+                                <form:option value="0">Ngừng hoạt động</form:option>
                             </form:select>
+                            <form:errors path="status" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group full-width">
                             <label>Địa chỉ</label>
-                            <form:textarea path="address" rows="3"/>
+                            <form:input path="address"/>
+                            <form:errors path="address" cssClass="error-text"/>
                         </div>
 
-                        <div class="form-group full-width">
-                            <label>Ghi chú</label>
-                            <form:textarea path="note" rows="4"/>
+                        <div class="form-group">
+                            <label>Tài khoản</label>
+                            <select name="userId">
+                                <option value="">-- Chọn tài khoản --</option>
+                                <c:forEach var="u" items="${users}">
+                                    <option value="${u.userId}"
+                                        ${member.user != null && member.user.userId == u.userId ? 'selected' : ''}>
+                                            ${u.username}
+                                    </option>
+                                </c:forEach>
+                            </select>
                         </div>
+
+                        <div class="form-group">
+                            <label>Avatar</label>
+                            <img class="preview-image"
+                                 src="${pageContext.request.contextPath}/uploads/${empty member.avatar ? 'default-avatar.png' : member.avatar}"
+                                 alt="Avatar hội viên">
+                            <input type="file" name="avatarFile">
+                        </div>
+
                     </div>
 
                     <div class="form-actions">
-                        <a href="${pageContext.request.contextPath}/admin/members" class="btn-secondary">Quay lại</a>
+                        <a href="${pageContext.request.contextPath}/admin/members" class="btn-light">
+                            Quay lại
+                        </a>
                         <button type="submit" class="btn-primary">
-                            <c:choose>
-                                <c:when test="${isEdit}">Cập nhật</c:when>
-                                <c:otherwise>Thêm mới</c:otherwise>
-                            </c:choose>
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Lưu</span>
                         </button>
                     </div>
+
                 </form:form>
+
             </div>
+
         </main>
     </div>
 </div>

@@ -6,101 +6,169 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
     <%@ include file="/WEB-INF/views/layout/receptionist-header.jsp" %>
+
     <div class="app-body">
         <%@ include file="/WEB-INF/views/layout/receptionist-sidebar.jsp" %>
 
         <main class="app-content">
+
+            <!-- HEADER -->
             <div class="page-header">
                 <div>
-                    <h1>Quản lý hội viên</h1>
-                    <p>Tra cứu, thêm và cập nhật thông tin hội viên</p>
+                    <h1>Hội viên</h1>
                 </div>
-                <a class="btn-primary" href="${pageContext.request.contextPath}/receptionist/members/create">
-                    <i class="fa fa-plus"></i> Thêm hội viên
+
+                <a class="btn-primary"
+                   href="${pageContext.request.contextPath}/receptionist/members/create">
+                    <i class="fa-solid fa-plus"></i>
                 </a>
             </div>
 
+            <!-- FLASH -->
             <c:if test="${not empty successMessage}">
                 <div class="alert-success">${successMessage}</div>
             </c:if>
+
             <c:if test="${not empty errorMessage}">
                 <div class="alert-error">${errorMessage}</div>
             </c:if>
 
+            <!-- FILTER -->
             <div class="page-card">
-                <form method="get" action="${pageContext.request.contextPath}/receptionist/members" class="filter-form">
-                    <div class="filter-group">
-                        <input type="text" name="keyword" value="${keyword}" placeholder="Tìm họ tên / SĐT / email">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/receptionist/members"
+                      class="filter-form">
+
+                    <div class="filter-group filter-group-grow">
+                        <input type="text"
+                               name="keyword"
+                               value="${keyword}"
+                               placeholder="Tên / SĐT">
                     </div>
 
                     <div class="filter-group">
                         <select name="status">
-                            <option value="">Tất cả trạng thái</option>
-                            <option value="1" <c:if test="${status == 1}">selected</c:if>>Hoạt động</option>
-                            <option value="0" <c:if test="${status == 0}">selected</c:if>>Ngừng</option>
+                            <option value="">Trạng thái</option>
+                            <option value="1" ${status == 1 ? 'selected' : ''}>Hoạt động</option>
+                            <option value="0" ${status == 0 ? 'selected' : ''}>Ngừng</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-secondary">Tìm kiếm</button>
-                </form>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-secondary">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
 
-                <div class="table-wrap">
-                    <table class="dashboard-table">
+                        <a class="btn-light"
+                           href="${pageContext.request.contextPath}/receptionist/members">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TABLE -->
+            <div class="page-card">
+
+                <div class="table-responsive">
+                    <table class="dashboard-table admin-table">
+
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Họ tên</th>
+                            <th>Avatar</th>
+                            <th>Hội viên</th>
                             <th>SĐT</th>
                             <th>Email</th>
-                            <th>Giới tính</th>
+                            <th>Gói</th>
+                            <th>Hết hạn</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th></th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <c:choose>
+
                             <c:when test="${not empty memberPage.content}">
                                 <c:forEach var="item" items="${memberPage.content}">
                                     <tr>
-                                        <td>${item.memberId}</td>
-                                        <td>${item.fullname}</td>
-                                        <td>${item.phone}</td>
-                                        <td>${item.email}</td>
-                                        <td>${item.gender}</td>
+
+                                        <!-- AVATAR -->
                                         <td>
-                                            <span class="${item.status == 1 ? 'badge-active' : 'badge-inactive'}">
+                                            <img class="table-avatar js-image-preview"
+                                                 src="${pageContext.request.contextPath}/${empty item.avatar ? 'assets/images/default-avatar.png' : (item.avatar.startsWith('assets/') ? item.avatar : 'uploads/'.concat(item.avatar))}"
+                                                 data-preview-label="${item.fullname}"
+                                                 alt="${item.fullname}">
+                                        </td>
+
+                                        <!-- NAME -->
+                                        <td>
+                                            <strong>${empty item.fullname ? '---' : item.fullname}</strong>
+                                        </td>
+
+                                        <!-- PHONE -->
+                                        <td>${empty item.phone ? '---' : item.phone}</td>
+
+                                        <!-- EMAIL -->
+                                        <td>${empty item.email ? '---' : item.email}</td>
+
+                                        <!-- PACKAGE -->
+                                        <td>${empty item.currentPackageName ? '---' : item.currentPackageName}</td>
+
+                                        <!-- END DATE -->
+                                        <td>${empty item.currentMembershipEndDate ? '---' : item.currentMembershipEndDate}</td>
+
+                                        <!-- STATUS -->
+                                        <td>
+                                            <span class="status-badge ${item.status == 1 ? 'active' : 'inactive'}">
                                                 ${item.status == 1 ? 'Hoạt động' : 'Ngừng'}
                                             </span>
                                         </td>
+
+                                        <!-- ACTION -->
                                         <td>
-                                            <a class="btn-sm btn-edit"
-                                               href="${pageContext.request.contextPath}/receptionist/members/detail/${item.memberId}">
-                                                Xem
-                                            </a>
-                                            <a class="btn-sm btn-edit"
-                                               href="${pageContext.request.contextPath}/receptionist/members/edit/${item.memberId}">
-                                                Sửa
-                                            </a>
+                                            <div class="table-actions">
+
+                                                <a class="btn-sm btn-light"
+                                                   href="${pageContext.request.contextPath}/receptionist/members/detail/${item.memberId}"
+                                                   title="Xem">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+
+                                                <a class="btn-sm btn-edit"
+                                                   href="${pageContext.request.contextPath}/receptionist/members/edit/${item.memberId}"
+                                                   title="Sửa">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
+
+                                            </div>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </c:when>
+
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="7" class="empty-cell">Không có dữ liệu</td>
+                                    <td colspan="8" class="empty-cell">
+                                        Không có hội viên
+                                    </td>
                                 </tr>
                             </c:otherwise>
+
                         </c:choose>
                         </tbody>
+
                     </table>
                 </div>
 
+                <!-- PAGINATION -->
                 <c:if test="${memberPage.totalPages > 1}">
                     <div class="pagination">
                         <c:forEach begin="0" end="${memberPage.totalPages - 1}" var="p">
@@ -111,7 +179,9 @@
                         </c:forEach>
                     </div>
                 </c:if>
+
             </div>
+
         </main>
     </div>
 </div>

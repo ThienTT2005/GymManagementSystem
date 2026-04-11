@@ -7,146 +7,163 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
-    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+    <%@ include file="/WEB-INF/views/layout/admin-header.jsp" %>
+
     <div class="app-body">
-        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+        <%@ include file="/WEB-INF/views/layout/admin-sidebar.jsp" %>
 
         <main class="app-content">
             <div class="page-header">
                 <div>
                     <h1>Quản lý thanh toán</h1>
-                    <p>Danh sách thanh toán membership và đăng ký lớp</p>
                 </div>
-                <a class="btn-primary" href="${pageContext.request.contextPath}/admin/payments/create">
-                    <i class="fa fa-plus"></i> Thêm thanh toán
-                </a>
             </div>
 
             <c:if test="${not empty successMessage}">
                 <div class="alert-success">${successMessage}</div>
             </c:if>
+
             <c:if test="${not empty errorMessage}">
                 <div class="alert-error">${errorMessage}</div>
             </c:if>
 
             <div class="page-card">
-                <form method="get" action="${pageContext.request.contextPath}/admin/payments" class="filter-form">
-                    <div class="filter-group">
-                        <input type="text" name="keyword" value="${keyword}" placeholder="Tìm tên hội viên">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/admin/payments"
+                      class="filter-form">
+
+                    <div class="filter-group filter-group-grow">
+                        <input type="text"
+                               name="keyword"
+                               value="${keyword}"
+                               placeholder="Tìm theo tên hội viên / ID">
                     </div>
 
                     <div class="filter-group">
                         <select name="status">
-                            <option value="">Tất cả trạng thái</option>
-                            <option value="PENDING" <c:if test="${status == 'PENDING'}">selected</c:if>>PENDING</option>
-                            <option value="PAID" <c:if test="${status == 'PAID'}">selected</c:if>>PAID</option>
-                            <option value="REJECTED" <c:if test="${status == 'REJECTED'}">selected</c:if>>REJECTED</option>
-                            <option value="CANCELLED" <c:if test="${status == 'CANCELLED'}">selected</c:if>>CANCELLED</option>
+                            <option value="">Trạng thái</option>
+                            <option value="PENDING" ${status=='PENDING'?'selected':''}>Chờ duyệt</option>
+                            <option value="PAID" ${status=='PAID'?'selected':''}>Đã thanh toán</option>
+                            <option value="REJECTED" ${status=='REJECTED'?'selected':''}>Từ chối</option>
+                            <option value="CANCELLED" ${status=='CANCELLED'?'selected':''}>Đã hủy</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-secondary">
-                        <i class="fa fa-search"></i> Tìm kiếm
+                    <div class="filter-group">
+                        <select name="paymentMethod">
+                            <option value="">Phương thức</option>
+                            <option value="CASH" ${paymentMethod=='CASH'?'selected':''}>Tiền mặt</option>
+                            <option value="BANK_TRANSFER" ${paymentMethod=='BANK_TRANSFER'?'selected':''}>Chuyển khoản</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <input type="date" name="fromDate" value="${fromDate}">
+                    </div>
+
+                    <div class="filter-group">
+                        <input type="date" name="toDate" value="${toDate}">
+                    </div>
+
+                    <button class="btn-secondary" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Tìm</span>
                     </button>
                 </form>
+            </div>
 
-                <div class="table-wrap">
+            <div class="page-card">
+                <div class="table-responsive">
                     <table class="dashboard-table admin-table">
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Hội viên</th>
                             <th>Loại</th>
                             <th>Số tiền</th>
                             <th>Phương thức</th>
-                            <th>Ngày thanh toán</th>
+                            <th>Ngày</th>
+                            <th>Ảnh</th>
                             <th>Trạng thái</th>
-                            <th>Minh chứng</th>
-                            <th>Thao tác</th>
+                            <th>Hành động</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <c:choose>
-                            <c:when test="${not empty paymentPage.content}">
-                                <c:forEach var="item" items="${paymentPage.content}">
+                            <c:when test="${not empty payments}">
+                                <c:forEach var="p" items="${payments}" varStatus="loop">
                                     <tr>
-                                        <td>${item.paymentId}</td>
+                                        <td>${paymentPage.number * paymentPage.size + loop.index + 1}</td>
+
+                                        <td><strong>${p.displayMemberName}</strong></td>
+
+                                        <td>${p.displayType}</td>
+
+                                        <td>
+                                            <fmt:formatNumber value="${p.amount}" type="number"/> VNĐ
+                                        </td>
+
+                                        <td>${p.paymentMethod}</td>
+                                        <td>${p.paymentDate}</td>
+
                                         <td>
                                             <c:choose>
-                                                <c:when test="${item.membership != null}">
-                                                    ${item.membership.member.fullname}
+                                                <c:when test="${not empty p.proofImage}">
+                                                    <img src="${pageContext.request.contextPath}/uploads/${p.proofImage}"
+                                                         class="thumb-image payment-proof js-image-preview"
+                                                         data-preview-label="Minh chứng thanh toán"
+                                                         alt="Minh chứng thanh toán">
                                                 </c:when>
-                                                <c:when test="${item.classRegistration != null}">
-                                                    ${item.classRegistration.member.fullname}
-                                                </c:when>
-                                                <c:otherwise>-</c:otherwise>
+                                                <c:otherwise>
+                                                    <span class="cell-muted">---</span>
+                                                </c:otherwise>
                                             </c:choose>
                                         </td>
+
                                         <td>
-                                            <c:choose>
-                                                <c:when test="${item.membership != null}">Membership</c:when>
-                                                <c:when test="${item.classRegistration != null}">Class Registration</c:when>
-                                                <c:otherwise>-</c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td><fmt:formatNumber value="${item.amount}" type="number" maxFractionDigits="0"/> đ</td>
-                                        <td>${item.paymentMethod}</td>
-                                        <td>${item.paymentDate}</td>
-                                        <td>
-                                            <span class="
-                                                ${item.status == 'PAID' ? 'badge-active' : ''}
-                                                ${item.status == 'PENDING' ? 'badge-warning' : ''}
-                                                ${item.status == 'REJECTED' || item.status == 'CANCELLED' ? 'badge-inactive' : ''}">
-                                                ${item.status}
+                                            <span class="status-badge ${p.status == 'PAID' ? 'active' : p.status == 'PENDING' ? 'pending' : p.status == 'REJECTED' ? 'rejected' : 'inactive'}">
+                                                <c:choose>
+                                                    <c:when test="${p.status == 'PAID'}">Đã thanh toán</c:when>
+                                                    <c:when test="${p.status == 'PENDING'}">Chờ duyệt</c:when>
+                                                    <c:when test="${p.status == 'REJECTED'}">Từ chối</c:when>
+                                                    <c:otherwise>Đã hủy</c:otherwise>
+                                                </c:choose>
                                             </span>
                                         </td>
+
                                         <td>
-                                            <c:choose>
-                                                <c:when test="${not empty item.proofImage}">
-                                                    <a href="${pageContext.request.contextPath}/uploads/${item.proofImage}" target="_blank">Xem ảnh</a>
-                                                </c:when>
-                                                <c:otherwise>Không có</c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <a class="btn-sm btn-edit"
-                                               href="${pageContext.request.contextPath}/admin/payments/edit/${item.paymentId}">
-                                                Sửa
-                                            </a>
+                                            <div class="table-actions">
+                                                <a class="btn-sm btn-edit"
+                                                   href="${pageContext.request.contextPath}/admin/payments/edit/${p.paymentId}"
+                                                   title="Chỉnh sửa">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
 
-                                            <c:if test="${item.status == 'PENDING'}">
-                                                <form method="post"
-                                                      action="${pageContext.request.contextPath}/admin/payments/approve/${item.paymentId}"
-                                                      style="display:inline-block">
-                                                    <button type="submit" class="btn-sm btn-approve">Duyệt</button>
-                                                </form>
-
-                                                <form method="post"
-                                                      action="${pageContext.request.contextPath}/admin/payments/reject/${item.paymentId}"
-                                                      style="display:inline-block">
-                                                    <button type="submit" class="btn-sm btn-delete">Từ chối</button>
-                                                </form>
-                                            </c:if>
-
-                                            <form method="post"
-                                                  action="${pageContext.request.contextPath}/admin/payments/delete/${item.paymentId}"
-                                                  style="display:inline-block"
-                                                  onsubmit="return confirm('Bạn có chắc muốn xóa mềm thanh toán này?');">
-                                                <button type="submit" class="btn-sm btn-delete">Xóa</button>
-                                            </form>
+                                                <c:if test="${p.status == 'PENDING'}">
+                                                    <form method="post"
+                                                          action="${pageContext.request.contextPath}/admin/payments/approve/${p.paymentId}"
+                                                          class="inline-form"
+                                                          onsubmit="return confirm('Xác nhận duyệt thanh toán này?');">
+                                                        <button class="btn-sm btn-approve" type="submit" title="Duyệt">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                </c:if>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>
                             </c:when>
+
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="9" class="empty-cell">Không có dữ liệu</td>
+                                    <td colspan="9" class="empty-cell">Không có dữ liệu thanh toán phù hợp</td>
                                 </tr>
                             </c:otherwise>
                         </c:choose>
@@ -158,7 +175,7 @@
                     <div class="pagination">
                         <c:forEach begin="0" end="${paymentPage.totalPages - 1}" var="p">
                             <a class="${p + 1 == paymentPage.number + 1 ? 'active' : ''}"
-                               href="${pageContext.request.contextPath}/admin/payments?keyword=${keyword}&status=${status}&page=${p + 1}&size=${paymentPage.size}">
+                               href="${pageContext.request.contextPath}/admin/payments?keyword=${keyword}&status=${status}&paymentMethod=${paymentMethod}&fromDate=${fromDate}&toDate=${toDate}&page=${p + 1}&size=${paymentPage.size}">
                                 ${p + 1}
                             </a>
                         </c:forEach>

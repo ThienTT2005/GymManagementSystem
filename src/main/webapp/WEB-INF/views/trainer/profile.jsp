@@ -1,13 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-shell">
@@ -21,49 +22,152 @@
                 <div class="alert-success">${successMessage}</div>
             </c:if>
 
-            <div class="page-card">
-                <h2>Hồ sơ cá nhân</h2>
+            <div class="page-header">
+                <div>
+                    <h1>Hồ sơ cá nhân</h1>
+                </div>
+            </div>
 
-                <div class="profile-box">
-                    <img class="profile-avatar"
-                         src="${pageContext.request.contextPath}/uploads/${empty user.avatar ? 'default-avatar.png' : user.avatar}"
+            <div class="profile-page-grid">
+                <div class="profile-left-card">
+                    <img class="profile-avatar-large"
+                         src="${pageContext.request.contextPath}/uploads/${not empty trainerProfile.photo ? trainerProfile.photo : (trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.avatar ? trainerProfile.staff.avatar : 'default-avatar.png')}"
                          alt="${user.username}">
 
-                    <div class="profile-info">
-                        <p><strong>Username:</strong> ${user.username}</p>
-                        <p><strong>Vai trò:</strong> ${user.roleName}</p>
+                    <h3>
+                        <c:choose>
+                            <c:when test="${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.fullName}">
+                                ${trainerProfile.staff.fullName}
+                            </c:when>
+                            <c:otherwise>
+                                ${user.username}
+                            </c:otherwise>
+                        </c:choose>
+                    </h3>
 
-                        <c:if test="${trainerProfile != null && trainerProfile.staff != null}">
-                            <p><strong>Họ tên:</strong> ${trainerProfile.staff.fullName}</p>
-                            <p><strong>Số điện thoại:</strong> ${trainerProfile.staff.phone}</p>
-                            <p><strong>Email:</strong> ${trainerProfile.staff.email}</p>
-                            <p><strong>Chức vụ:</strong> ${trainerProfile.staff.position}</p>
-                        </c:if>
-
-                        <p><strong>Trạng thái:</strong> ${user.status == 1 ? 'Hoạt động' : 'Ngừng'}</p>
+                    <div class="profile-role-text">
+                        ${user.roleName}
                     </div>
+
+                    <div class="profile-meta">
+                        <span class="status-badge active">${user.roleName}</span>
+                        <span class="status-badge ${user.status == 1 ? 'active' : 'inactive'}">
+                            ${user.status == 1 ? 'Hoạt động' : 'Ngừng hoạt động'}
+                        </span>
+                    </div>
+
+                    <div class="profile-quick-info">
+                        <div class="profile-quick-item">
+                            <i class="fa-solid fa-user"></i>
+                            <span>${user.username}</span>
+                        </div>
+                        <div class="profile-quick-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.email ? trainerProfile.staff.email : 'Chưa cập nhật'}</span>
+                        </div>
+                        <div class="profile-quick-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.phone ? trainerProfile.staff.phone : 'Chưa cập nhật'}</span>
+                        </div>
+                    </div>
+
+                    <c:if test="${not empty trainerProfile.specialty}">
+                        <div class="profile-specialty-box">
+                            <strong>Chuyên môn</strong>
+                            <span>${trainerProfile.specialty}</span>
+                        </div>
+                    </c:if>
                 </div>
 
-                <c:if test="${trainerProfile != null}">
-                    <div class="detail-section">
-                        <h3>Thông tin chuyên môn</h3>
-                        <p><strong>Chuyên môn:</strong> ${trainerProfile.specialty}</p>
-                        <p><strong>Kinh nghiệm:</strong> ${trainerProfile.experience}</p>
-                        <p><strong>Chứng chỉ:</strong> ${trainerProfile.certifications}</p>
-
-                        <c:if test="${not empty trainerProfile.photo}">
-                            <div style="margin-top: 12px;">
-                                <img class="preview-image"
-                                     src="${pageContext.request.contextPath}/uploads/${trainerProfile.photo}"
-                                     alt="${trainerProfile.staffName}">
-                            </div>
-                        </c:if>
+                <div class="profile-right-card">
+                    <div class="profile-section-title">
+                        <h3>Thông tin chi tiết</h3>
                     </div>
-                </c:if>
 
-                <div class="form-actions">
-                    <a href="${pageContext.request.contextPath}/trainer/edit-profile" class="btn-primary">Cập nhật hồ sơ</a>
-                    <a href="${pageContext.request.contextPath}/trainer/change-password" class="btn-secondary">Đổi mật khẩu</a>
+                    <div class="profile-detail-grid">
+                        <div class="profile-detail-item">
+                            <label>Username</label>
+                            <p>${user.username}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Vai trò</label>
+                            <p>${user.roleName}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Họ tên</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.fullName ? trainerProfile.staff.fullName : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Chức vụ</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.position ? trainerProfile.staff.position : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Email</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.email ? trainerProfile.staff.email : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Số điện thoại</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.phone ? trainerProfile.staff.phone : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Địa chỉ</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.address ? trainerProfile.staff.address : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Giới tính</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.gender ? trainerProfile.staff.gender : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Ngày sinh</label>
+                            <p>${trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.dob ? trainerProfile.staff.dob : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Mức lương</label>
+                            <p>
+                                <c:choose>
+                                    <c:when test="${trainerProfile != null && trainerProfile.staff != null && trainerProfile.staff.salary != null}">
+                                        <fmt:formatNumber value="${trainerProfile.staff.salary}" type="number" groupingUsed="true"/> VNĐ
+                                    </c:when>
+                                    <c:otherwise>Chưa cập nhật</c:otherwise>
+                                </c:choose>
+                            </p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Chuyên môn</label>
+                            <p>${not empty trainerProfile.specialty ? trainerProfile.specialty : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item">
+                            <label>Kinh nghiệm</label>
+                            <p>${not empty trainerProfile.experience ? trainerProfile.experience : 'Chưa cập nhật'}</p>
+                        </div>
+
+                        <div class="profile-detail-item full-row">
+                            <label>Chứng chỉ</label>
+                            <p>${not empty trainerProfile.certifications ? trainerProfile.certifications : 'Chưa cập nhật'}</p>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="${pageContext.request.contextPath}/trainer/edit-profile" class="btn-primary">
+                            <i class="fa-solid fa-pen"></i>
+                            <span>Cập nhật hồ sơ</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/trainer/change-password" class="btn-light">
+                            <i class="fa-solid fa-key"></i>
+                            <span>Đổi mật khẩu</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>

@@ -7,168 +7,155 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
 <div class="app-shell">
-    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+    <%@ include file="/WEB-INF/views/layout/admin-header.jsp" %>
 
     <div class="app-body">
-        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+        <%@ include file="/WEB-INF/views/layout/admin-sidebar.jsp" %>
 
         <main class="app-content">
             <div class="page-header">
                 <div>
-                    <h1>Dashboard Admin</h1>
-                    <p>Trung tâm điều hành và theo dõi hệ thống gym</p>
+                    <h1>Bảng điều khiển quản trị</h1>
                 </div>
             </div>
 
             <section class="stats-grid dashboard-stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div class="stat-content">
-                        <h3>${totalMembers}</h3>
-                        <p>Hội viên</p>
+                <a class="stat-card stat-card-link stat-card-variant-1"
+                   href="${pageContext.request.contextPath}/admin/members">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Tổng hội viên</span>
                     </div>
-                </div>
+                    <div class="stat-value">${totalMembers}</div>
+                </a>
 
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-id-badge"></i></div>
-                    <div class="stat-content">
-                        <h3>${totalStaff}</h3>
-                        <p>Nhân viên</p>
+                <a class="stat-card stat-card-link stat-card-variant-2"
+                   href="${pageContext.request.contextPath}/admin/staff">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Tổng nhân viên</span>
                     </div>
-                </div>
+                    <div class="stat-value">${totalStaff}</div>
+                </a>
 
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-dumbbell"></i></div>
-                    <div class="stat-content">
-                        <h3>${totalClasses}</h3>
-                        <p>Lớp học</p>
+                <a class="stat-card stat-card-link stat-card-variant-3"
+                   href="${pageContext.request.contextPath}/admin/trainers">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        <span>Tổng huấn luyện viên</span>
                     </div>
-                </div>
+                    <div class="stat-value">${totalTrainers}</div>
+                </a>
 
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="stat-content">
-                        <h3>${totalPackages}</h3>
-                        <p>Gói tập</p>
+                <a class="stat-card stat-card-link stat-card-variant-4"
+                   href="${pageContext.request.contextPath}/admin/classes">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-people-group"></i>
+                        <span>Tổng lớp học</span>
                     </div>
-                </div>
+                    <div class="stat-value">${totalClasses}</div>
+                </a>
 
-                <div class="stat-card revenue-card">
-                    <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    <div class="stat-content">
-                        <h3><fmt:formatNumber value="${totalRevenue}" type="number" maxFractionDigits="0"/> đ</h3>
-                        <p>Doanh thu</p>
+                <a class="stat-card stat-card-link stat-card-variant-5"
+                   href="${pageContext.request.contextPath}/admin/packages">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Tổng gói tập</span>
                     </div>
-                </div>
-            </section>
-
-            <section class="alert-grid">
-                <a class="alert-card" href="${pageContext.request.contextPath}/admin/memberships">
-                    <h4>${pendingMembershipCount}</h4>
-                    <p>Gói tập chờ duyệt</p>
+                    <div class="stat-value">${totalPackages}</div>
                 </a>
 
-                <a class="alert-card" href="${pageContext.request.contextPath}/admin/class-registrations">
-                    <h4>${pendingClassRegistrationCount}</h4>
-                    <p>Lớp học chờ duyệt</p>
+                <a class="stat-card stat-card-link stat-card-variant-6"
+                   href="${pageContext.request.contextPath}/admin/trials">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>Tổng đăng ký tập thử</span>
+                    </div>
+                    <div class="stat-value">${totalTrials}</div>
                 </a>
 
-                <a class="alert-card" href="${pageContext.request.contextPath}/admin/payments">
-                    <h4>${pendingPayments}</h4>
-                    <p>Thanh toán chờ duyệt</p>
+                <a class="stat-card stat-card-link stat-card-variant-7"
+                   href="${pageContext.request.contextPath}/admin/contacts">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>Tổng yêu cầu tư vấn</span>
+                    </div>
+                    <div class="stat-value">${totalConsultations}</div>
                 </a>
 
-                <a class="alert-card" href="${pageContext.request.contextPath}/admin/trials">
-                    <h4>${pendingTrialCount}</h4>
-                    <p>Tập thử chờ xử lý</p>
-                </a>
-
-                <a class="alert-card" href="${pageContext.request.contextPath}/admin/contacts">
-                    <h4>${pendingConsultationCount}</h4>
-                    <p>Tư vấn chờ xử lý</p>
-                </a>
-            </section>
-
-            <section class="quick-actions">
-                <a href="${pageContext.request.contextPath}/admin/members/create" class="action-btn">
-                    <i class="fa-solid fa-user-plus"></i> Thêm hội viên
-                </a>
-                <a href="${pageContext.request.contextPath}/admin/staff/create" class="action-btn">
-                    <i class="fa-solid fa-id-card"></i> Thêm nhân viên
-                </a>
-                <a href="${pageContext.request.contextPath}/admin/trainers/create" class="action-btn">
-                    <i class="fa-solid fa-person-running"></i> Thêm trainer
-                </a>
-                <a href="${pageContext.request.contextPath}/admin/classes/create" class="action-btn">
-                    <i class="fa-solid fa-dumbbell"></i> Thêm lớp học
+                <a class="stat-card stat-card-link stat-card-variant-8"
+                   href="${pageContext.request.contextPath}/admin/reports">
+                    <div class="stat-title">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                        <span>Tổng doanh thu</span>
+                    </div>
+                    <div class="stat-value stat-value-money">
+                        <fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0"/>
+                    </div>
                 </a>
             </section>
 
-            <section class="dashboard-charts">
-                <div class="dashboard-panel chart-panel">
-                    <div class="panel-header">
+            <section class="chart-grid dashboard-chart-grid">
+                <div class="chart-box">
+                    <div class="chart-box-header">
                         <h3>Doanh thu theo tháng</h3>
                     </div>
-                    <div class="chart-wrap">
+                    <div class="chart-canvas-wrap chart-canvas-wrap-bar">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
 
-                <div class="dashboard-panel chart-panel">
-                    <div class="panel-header">
-                        <h3>Top gói tập được đăng ký</h3>
+                <div class="chart-box chart-box-pie">
+                    <div class="chart-box-header">
+                        <h3>Phân bố thanh toán</h3>
                     </div>
-                    <div class="chart-wrap">
-                        <canvas id="packageChart"></canvas>
+                    <div class="chart-canvas-wrap chart-canvas-wrap-pie">
+                        <canvas id="paymentStatusChart"></canvas>
                     </div>
                 </div>
             </section>
 
-            <section class="dashboard-panels">
-                <div class="dashboard-panel">
-                    <div class="panel-header">
-                        <h3>Top lớp học đông người</h3>
+            <section class="dashboard-grid">
+                <div class="dashboard-box">
+                    <div class="dashboard-box-header">
+                        <h3>Đăng ký gói gần đây</h3>
+                        <a class="view-all-link" href="${pageContext.request.contextPath}/admin/memberships">Xem tất cả</a>
                     </div>
-                    <div class="table-wrap">
+
+                    <div class="table-responsive">
                         <table class="dashboard-table">
                             <thead>
                             <tr>
-                                <th>Lớp học</th>
-                                <th>Hiện tại</th>
-                                <th>Tối đa</th>
-                                <th>Lấp đầy</th>
+                                <th>Hội viên</th>
+                                <th>Gói tập</th>
+                                <th>Trạng thái</th>
                             </tr>
                             </thead>
                             <tbody>
                             <c:choose>
-                                <c:when test="${not empty topClasses}">
-                                    <c:forEach var="item" items="${topClasses}">
+                                <c:when test="${not empty recentMemberships}">
+                                    <c:forEach var="m" items="${recentMemberships}">
                                         <tr>
-                                            <td>${item.className}</td>
-                                            <td>${item.currentMember}</td>
-                                            <td>${item.maxMember}</td>
+                                            <td>${m.member.fullname}</td>
+                                            <td>${m.gymPackage.packageName}</td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${item.maxMember > 0}">
-                                                        <fmt:formatNumber value="${(item.currentMember * 100.0) / item.maxMember}" maxFractionDigits="0"/>%
-                                                    </c:when>
-                                                    <c:otherwise>0%</c:otherwise>
-                                                </c:choose>
+                                                <span class="status-badge ${m.status eq 'ACTIVE' or m.status eq 'Hoạt động' ? 'active' :
+                                                                             (m.status eq 'INACTIVE' or m.status eq 'Ngừng hoạt động' ? 'inactive' : 'pending')}">
+                                                    ${m.status}
+                                                </span>
                                             </td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="4" class="empty-cell">Chưa có dữ liệu</td>
+                                        <td colspan="3" class="empty-cell">Không có dữ liệu gần đây</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -177,31 +164,126 @@
                     </div>
                 </div>
 
-                <div class="dashboard-panel">
-                    <div class="panel-header">
-                        <h3>Top gói tập phổ biến</h3>
+                <div class="dashboard-box">
+                    <div class="dashboard-box-header">
+                        <h3>Đăng ký lớp gần đây</h3>
+                        <a class="view-all-link" href="${pageContext.request.contextPath}/admin/class-registrations">Xem tất cả</a>
                     </div>
-                    <div class="table-wrap">
+
+                    <div class="table-responsive">
                         <table class="dashboard-table">
                             <thead>
                             <tr>
-                                <th>Gói tập</th>
-                                <th>Lượt đăng ký</th>
+                                <th>Hội viên</th>
+                                <th>Lớp học</th>
+                                <th>Trạng thái</th>
                             </tr>
                             </thead>
                             <tbody>
                             <c:choose>
-                                <c:when test="${not empty topPackages}">
-                                    <c:forEach var="item" items="${topPackages}">
+                                <c:when test="${not empty recentClassRegistrations}">
+                                    <c:forEach var="r" items="${recentClassRegistrations}">
                                         <tr>
-                                            <td>${item.packageName}</td>
-                                            <td>${item.totalRegistrations}</td>
+                                            <td>${r.member.fullname}</td>
+                                            <td>${r.gymClass.className}</td>
+                                            <td>
+                                                <span class="status-badge ${r.status eq 'ACTIVE' or r.status eq 'Hoạt động' ? 'active' :
+                                                                             (r.status eq 'INACTIVE' or r.status eq 'Ngừng hoạt động' ? 'inactive' : 'pending')}">
+                                                    ${r.status}
+                                                </span>
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="2" class="empty-cell">Chưa có dữ liệu</td>
+                                        <td colspan="3" class="empty-cell">Không có dữ liệu gần đây</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="dashboard-box">
+                    <div class="dashboard-box-header">
+                        <h3>Đăng ký tập thử gần đây</h3>
+                        <a class="view-all-link" href="${pageContext.request.contextPath}/admin/trials">Xem tất cả</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>SĐT</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:choose>
+                                <c:when test="${not empty recentTrials}">
+                                    <c:forEach var="t" items="${recentTrials}">
+                                        <tr>
+                                            <td>${t.fullname}</td>
+                                            <td>${t.phone}</td>
+                                            <td>
+                                                <span class="status-badge ${t.status eq 'Đã liên hệ' ? 'contacted' : 'pending'}">
+                                                    ${t.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="3" class="empty-cell">Không có dữ liệu gần đây</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="dashboard-box">
+                    <div class="dashboard-box-header">
+                        <h3>Thanh toán gần đây</h3>
+                        <a class="view-all-link" href="${pageContext.request.contextPath}/admin/payments">Xem tất cả</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>Số tiền</th>
+                                <th>Phương thức</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:choose>
+                                <c:when test="${not empty recentPayments}">
+                                    <c:forEach var="p" items="${recentPayments}">
+                                        <tr>
+                                            <td>
+                                                <fmt:formatNumber value="${p.amount}" type="number" groupingUsed="true" maxFractionDigits="0"/>
+                                                VNĐ
+                                            </td>
+                                            <td>${p.paymentMethod}</td>
+                                            <td>
+                                                <span class="status-badge ${p.status eq 'SUCCESS' or p.status eq 'Đã thanh toán' ? 'active' :
+                                                                             (p.status eq 'FAILED' or p.status eq 'Từ chối' or p.status eq 'Đã hủy' ? 'inactive' : 'pending')}">
+                                                    ${p.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="3" class="empty-cell">Không có dữ liệu gần đây</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -216,27 +298,50 @@
 
 <script>
     const revenueLabels = [
-        <c:forEach var="item" items="${monthlyRevenue}" varStatus="loop">
-            '${item.monthLabel}'<c:if test="${!loop.last}">,</c:if>
+        <c:forEach var="label" items="${monthlyRevenueLabels}" varStatus="loop">
+            '${label}'<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
     ];
 
-    const revenueValues = [
-        <c:forEach var="item" items="${monthlyRevenue}" varStatus="loop">
-            ${item.totalRevenue}<c:if test="${!loop.last}">,</c:if>
+    const revenueData = [
+        <c:forEach var="value" items="${monthlyRevenueValues}" varStatus="loop">
+            ${value}<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
     ];
 
-    const packageLabels = [
-        <c:forEach var="item" items="${topPackages}" varStatus="loop">
-            '${item.packageName}'<c:if test="${!loop.last}">,</c:if>
+    const paymentStatusLabels = [
+        <c:forEach var="label" items="${paymentStatusLabels}" varStatus="loop">
+            '${label}'<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
     ];
 
-    const packageValues = [
-        <c:forEach var="item" items="${topPackages}" varStatus="loop">
-            ${item.totalRegistrations}<c:if test="${!loop.last}">,</c:if>
+    const paymentStatusData = [
+        <c:forEach var="value" items="${paymentStatusValues}" varStatus="loop">
+            ${value}<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
+    ];
+
+    const revenueBarColors = [
+        '#9f1239',
+        '#b30000',
+        '#d9480f',
+        '#f97316',
+        '#be123c',
+        '#dc2626',
+        '#fb7185',
+        '#7f1d1d',
+        '#b91c1c',
+        '#ea580c',
+        '#c2410c',
+        '#881337'
+    ];
+
+    const paymentPieColors = [
+        '#b30000',
+        '#f97316',
+        '#9f1239',
+        '#7f1d1d',
+        '#fb7185'
     ];
 
     const revenueCtx = document.getElementById('revenueChart');
@@ -247,35 +352,91 @@
                 labels: revenueLabels,
                 datasets: [{
                     label: 'Doanh thu',
-                    data: revenueValues,
-                    borderWidth: 1
+                    data: revenueData,
+                    borderRadius: 12,
+                    maxBarThickness: 42,
+                    backgroundColor: revenueData.map(function (_, index) {
+                        return revenueBarColors[index % revenueBarColors.length];
+                    }),
+                    hoverBackgroundColor: revenueData.map(function (_, index) {
+                        return revenueBarColors[index % revenueBarColors.length];
+                    })
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + new Intl.NumberFormat('vi-VN').format(context.raw) + ' VNĐ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return new Intl.NumberFormat('vi-VN').format(value);
+                            }
+                        }
+                    }
+                }
             }
         });
     }
 
-    const packageCtx = document.getElementById('packageChart');
-    if (packageCtx) {
-        new Chart(packageCtx, {
+    const paymentCtx = document.getElementById('paymentStatusChart');
+    if (paymentCtx) {
+        new Chart(paymentCtx, {
             type: 'doughnut',
             data: {
-                labels: packageLabels,
+                labels: paymentStatusLabels,
                 datasets: [{
-                    data: packageValues,
-                    borderWidth: 1
+                    data: paymentStatusData,
+                    backgroundColor: paymentStatusData.map(function (_, index) {
+                        return paymentPieColors[index % paymentPieColors.length];
+                    }),
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 6
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                cutout: '64%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 14,
+                            boxHeight: 14,
+                            padding: 16
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + context.label + ': ' + context.raw;
+                            }
+                        }
+                    }
+                }
             }
         });
     }
 </script>
-
 </body>
 </html>

@@ -29,7 +29,7 @@ public class Consultation {
     private String message;
 
     @Column(name = "status", nullable = false, length = 50)
-    private String status = "PENDING";
+    private String status = "NEW";
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -73,8 +73,8 @@ public class Consultation {
         return message;
     }
 
-    public void setMessage(String note) {
-        this.message = note;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getStatus() {

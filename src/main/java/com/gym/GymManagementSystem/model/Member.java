@@ -39,14 +39,8 @@ public class Member {
     @Column(name = "dob")
     private LocalDate dob;
 
-    @Column(name = "emergency_contact_name", length = 150)
-    private String emergencyContactName;
-
-    @Column(name = "emergency_contact_phone", length = 20)
-    private String emergencyContactPhone;
-
-    @Column(name = "note", columnDefinition = "TEXT")
-    private String note;
+    @Column(name = "avatar")
+    private String avatar;
 
     @Column(name = "status", nullable = false)
     private Integer status = 1;
@@ -133,30 +127,6 @@ public class Member {
         this.dob = dob;
     }
 
-    public String getEmergencyContactName() {
-        return emergencyContactName;
-    }
-
-    public void setEmergencyContactName(String emergencyContactName) {
-        this.emergencyContactName = emergencyContactName;
-    }
-
-    public String getEmergencyContactPhone() {
-        return emergencyContactPhone;
-    }
-
-    public void setEmergencyContactPhone(String emergencyContactPhone) {
-        this.emergencyContactPhone = emergencyContactPhone;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -171,5 +141,46 @@ public class Member {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    @Transient
+    private String currentPackageName;
+
+    @Transient
+    private String currentMembershipStatus;
+
+    @Transient
+    private String currentMembershipEndDate;
+
+    public String getCurrentPackageName() {
+        return currentPackageName;
+    }
+
+    public void setCurrentPackageName(String currentPackageName) {
+        this.currentPackageName = currentPackageName;
+    }
+
+    public String getCurrentMembershipStatus() {
+        return currentMembershipStatus;
+    }
+
+    public void setCurrentMembershipStatus(String currentMembershipStatus) {
+        this.currentMembershipStatus = currentMembershipStatus;
+    }
+
+    public String getCurrentMembershipEndDate() {
+        return currentMembershipEndDate;
+    }
+
+    public void setCurrentMembershipEndDate(String currentMembershipEndDate) {
+        this.currentMembershipEndDate = currentMembershipEndDate;
     }
 }

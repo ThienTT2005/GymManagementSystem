@@ -4,14 +4,14 @@ import com.gym.GymManagementSystem.model.Role;
 import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.repository.RoleRepository;
 import com.gym.GymManagementSystem.repository.UserRepository;
+import com.gym.GymManagementSystem.util.PasswordUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -25,77 +25,111 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public Page<User> searchUsers(String keyword, String roleName, Integer status, int page, int size) {
-        PageRequest pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(Sort.Direction.DESC, "userId"));
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        boolean hasRole = roleName != null && !roleName.trim().isEmpty();
-        boolean hasStatus = status != null;
+    public Page<User> searchUsers(String keyword, Integer roleId, Integer status, int page, int size) {
+        int safePage = Math.max(page - 1, 0);
+        int safeSize = size > 0 ? size : 8;
 
-        if (hasKeyword && hasRole && hasStatus) {
-            return userRepository.findByUsernameContainingIgnoreCaseAndRole_RoleNameAndStatus(
-                    keyword.trim(), roleName.trim(), status, pageable
-            );
-        }
+        PageRequest pageable = PageRequest.of(safePage, safeSize);
 
-        if (hasKeyword && hasRole) {
-            return userRepository.findByUsernameContainingIgnoreCaseAndRole_RoleName(
-                    keyword.trim(), roleName.trim(), pageable
-            );
-        }
+        String normalizedKeyword = keyword != null ? keyword.trim() : "";
 
-        if (hasKeyword && hasStatus) {
-            return userRepository.findByUsernameContainingIgnoreCaseAndStatus(keyword.trim(), status, pageable);
-        }
-
-        if (hasKeyword) {
-            return userRepository.findByUsernameContainingIgnoreCase(keyword.trim(), pageable);
-        }
-
-        if (hasRole) {
-            return userRepository.findByRole_RoleName(roleName.trim(), pageable);
-        }
-
-        if (hasStatus) {
-            return userRepository.findByStatus(status, pageable);
-        }
-
-        return userRepository.findAll(pageable);
+        return userRepository.searchUsersSorted(
+                normalizedKeyword,
+                roleId,
+                status,
+                pageable
+        );
     }
 
     public boolean existsByUsername(String username, Integer excludeUserId) {
-        if (excludeUserId == null) {
-            return userRepository.existsByUsername(username);
+        if (username == null || username.trim().isEmpty()) {
+            return false;
         }
-        return userRepository.existsByUsernameAndUserIdNot(username, excludeUserId);
+
+        String normalized = username.trim();
+
+        if (excludeUserId == null) {
+            return userRepository.existsByUsername(normalized);
+        }
+
+        return userRepository.existsByUsernameAndUserIdNot(normalized, excludeUserId);
+    }
+
+    public boolean isValidRoleId(Integer roleId) {
+        return roleId != null && roleRepository.existsById(roleId);
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "roleId"));
     }
 
     public User getUserById(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User createUser(User user, MultipartFile avatarFile) {
-        user.setAvatar(storeImage(avatarFile, user.getAvatar()));
-        user.setRole(resolveRole(user.getRoleName()));
+    public User createUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Thông tin tài khoản không hợp lệ");
+        }
+
+        String username = normalizeUsername(user.getUsername());
+        user.setUsername(username);
+
+        if (existsByUsername(username, null)) {
+            throw new IllegalArgumentException("Username đã tồn tại");
+        }
+
+        Role role = roleRepository.findById(user.getRoleId()).orElse(null);
+        if (role == null) {
+            throw new IllegalArgumentException("Role không hợp lệ");
+        }
+        user.setRole(role);
+
         if (user.getStatus() == null) {
             user.setStatus(1);
         }
+
+        if (user.getStatus() != 0 && user.getStatus() != 1) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu không được để trống");
+        }
+
+        user.setPassword(PasswordUtil.hash(user.getPassword().trim()));
+
         return userRepository.save(user);
     }
 
-    public User updateUser(Integer id, User formUser, MultipartFile avatarFile) {
+    public User updateUser(Integer id, User formUser) {
         Optional<User> optional = userRepository.findById(id);
         if (optional.isEmpty()) {
             return null;
         }
 
         User existing = optional.get();
-        existing.setUsername(formUser.getUsername());
+
+        String username = normalizeUsername(formUser.getUsername());
+        if (existsByUsername(username, id)) {
+            throw new IllegalArgumentException("Username đã tồn tại");
+        }
+
+        existing.setUsername(username);
         existing.setStatus(formUser.getStatus());
-        existing.setRole(resolveRole(formUser.getRoleName()));
-        existing.setAvatar(storeImage(avatarFile, existing.getAvatar()));
+
+        if (existing.getStatus() == null || (existing.getStatus() != 0 && existing.getStatus() != 1)) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        }
+
+        Role role = roleRepository.findById(formUser.getRoleId()).orElse(null);
+        if (role == null) {
+            throw new IllegalArgumentException("Role không hợp lệ");
+        }
+        existing.setRole(role);
 
         if (formUser.getPassword() != null && !formUser.getPassword().isBlank()) {
-            existing.setPassword(formUser.getPassword());
+            existing.setPassword(PasswordUtil.hash(formUser.getPassword().trim()));
         }
 
         return userRepository.save(existing);
@@ -113,53 +147,83 @@ public class UserService {
         return true;
     }
 
-    public User updateOwnProfile(Integer userId, String username, MultipartFile avatarFile) {
+    public User updateOwnProfile(Integer userId, String username) {
         Optional<User> optional = userRepository.findById(userId);
         if (optional.isEmpty()) {
             return null;
         }
 
+        String normalized = normalizeUsername(username);
+
+        if (existsByUsername(normalized, userId)) {
+            throw new IllegalArgumentException("Username đã tồn tại");
+        }
+
         User user = optional.get();
-        user.setUsername(username);
-        user.setAvatar(storeImage(avatarFile, user.getAvatar()));
+        user.setUsername(normalized);
 
         return userRepository.save(user);
     }
 
-    public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
+    public void changePassword(Integer userId,
+                               String currentPassword,
+                               String newPassword,
+                               String confirmPassword) {
         Optional<User> optional = userRepository.findById(userId);
         if (optional.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("Không tìm thấy tài khoản");
         }
 
         User user = optional.get();
-        if (user.getPassword() == null || !user.getPassword().equals(currentPassword)) {
-            return false;
+
+        if (currentPassword == null || currentPassword.isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không được để trống");
         }
 
-        user.setPassword(newPassword);
+        if (!PasswordUtil.verify(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không đúng");
+        }
+
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException("Mật khẩu mới không được để trống");
+        }
+
+        if (newPassword.length() < 6) {
+            throw new IllegalArgumentException("Mật khẩu mới phải >= 6 ký tự");
+        }
+
+        if (confirmPassword == null || confirmPassword.isBlank()) {
+            throw new IllegalArgumentException("Xác nhận mật khẩu không được để trống");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Xác nhận mật khẩu không khớp");
+        }
+
+        if (PasswordUtil.verify(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu mới không được trùng mật khẩu cũ");
+        }
+
+        user.setPassword(PasswordUtil.hash(newPassword));
         userRepository.save(user);
-        return true;
     }
 
-    private Role resolveRole(String roleName) {
-        if (roleName == null || roleName.isBlank()) {
-            return null;
+    public void updateStatus(int userId, int status) {
+        if (status != 0 && status != 1) {
+            throw new IllegalArgumentException("Trạng thái không hợp lệ");
         }
-        return roleRepository.findByRoleName(roleName).orElse(null);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        user.setStatus(status);
+        userRepository.save(user);
     }
 
-    private String storeImage(MultipartFile file, String currentValue) {
-        if (file == null || file.isEmpty()) {
-            return currentValue;
+    private String normalizeUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username không được để trống");
         }
-
-        String original = file.getOriginalFilename();
-        String ext = "";
-        if (original != null && original.contains(".")) {
-            ext = original.substring(original.lastIndexOf('.'));
-        }
-
-        return "avatar-" + UUID.randomUUID() + ext;
+        return username.trim();
     }
 }

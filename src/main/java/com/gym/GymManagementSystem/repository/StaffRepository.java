@@ -47,4 +47,6 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
     boolean existsByUser_UserIdAndStaffIdNot(Integer userId, Integer staffId);
 
     List<Staff> findAll(Sort sort);
+
+    Page<Staff> findByStatus(Integer status, Pageable pageable);
 }

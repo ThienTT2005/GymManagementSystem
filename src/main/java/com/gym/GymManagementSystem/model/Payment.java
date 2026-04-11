@@ -139,5 +139,21 @@ public class Payment {
         return "OTHER";
     }
 
+    @Transient
+    public String getDisplayMemberName() {
+        if (membership != null && membership.getMember() != null) {
+            return membership.getMember().getFullname();
+        }
+        if (classRegistration != null && classRegistration.getMember() != null) {
+            return classRegistration.getMember().getFullname();
+        }
+        return "-";
+    }
 
+    @Transient
+    public String getDisplayType() {
+        if (membership != null) return "Membership";
+        if (classRegistration != null) return "Class Registration";
+        return "-";
+    }
 }

@@ -1,34 +1,38 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <aside class="app-sidebar">
     <div class="sidebar-brand">
-        <h2>Trainer Panel</h2>
-        <p>Gym Management</p>
+        <h2>Huấn luyện viên</h2>
     </div>
 
     <nav class="sidebar-nav">
-        <a class="sidebar-link ${activePage == 'dashboard' ? 'active' : ''}"
-           href="${pageContext.request.contextPath}/trainer/dashboard">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Dashboard</span>
+        <a href="${pageContext.request.contextPath}/trainer/dashboard"
+           class="sidebar-link ${activePage == 'dashboard' ? 'active' : ''}">
+            <i class="fa-solid fa-house"></i>
+            <span>Trang chủ</span>
         </a>
 
-        <a class="sidebar-link ${activePage == 'schedule' ? 'active' : ''}"
-           href="${pageContext.request.contextPath}/trainer/schedule">
+        <a href="${pageContext.request.contextPath}/trainer/classes"
+           class="sidebar-link ${activePage == 'classes' ? 'active' : ''}">
+            <i class="fa-solid fa-dumbbell"></i>
+            <span>Lớp phụ trách</span>
+        </a>
+
+        <a href="${pageContext.request.contextPath}/trainer/schedule"
+           class="sidebar-link ${activePage == 'schedule' ? 'active' : ''}">
             <i class="fa-solid fa-calendar-days"></i>
             <span>Lịch dạy</span>
         </a>
 
-        <a class="sidebar-link ${activePage == 'class-members' ? 'active' : ''}"
-           href="${pageContext.request.contextPath}/trainer/class-members">
+        <a href="${pageContext.request.contextPath}/trainer/class-members"
+           class="sidebar-link ${activePage == 'class-members' ? 'active' : ''}">
             <i class="fa-solid fa-users"></i>
-            <span>Học viên lớp</span>
+            <span>Học viên</span>
         </a>
 
-        <a class="sidebar-link ${activePage == 'profile' ? 'active' : ''}"
-           href="${pageContext.request.contextPath}/trainer/profile">
-            <i class="fa-solid fa-user"></i>
+        <a href="${pageContext.request.contextPath}/trainer/profile"
+           class="sidebar-link ${activePage == 'profile' ? 'active' : ''}">
+            <i class="fa-solid fa-id-card"></i>
             <span>Hồ sơ cá nhân</span>
         </a>
     </nav>

@@ -6,38 +6,48 @@
 <head>
     <meta charset="UTF-8">
     <title>${pageTitle}</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/receptionist.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/ttt.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
 <div class="app-shell">
-    <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+    <%@ include file="/WEB-INF/views/layout/admin-header.jsp" %>
+
     <div class="app-body">
-        <%@ include file="/WEB-INF/views/admin/layout/sidebar.jsp" %>
+        <%@ include file="/WEB-INF/views/layout/admin-sidebar.jsp" %>
 
         <main class="app-content">
             <div class="page-header">
                 <div>
                     <h1>Quản lý lớp học</h1>
-                    <p>Lớp học gắn service và trainer, không dùng room</p>
                 </div>
-                <a class="btn-primary" href="${pageContext.request.contextPath}/admin/classes/create">
-                    <i class="fa fa-plus"></i> Thêm lớp học
+
+                <a class="btn-primary"
+                   href="${pageContext.request.contextPath}/admin/classes/create">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Thêm lớp</span>
                 </a>
             </div>
 
             <c:if test="${not empty successMessage}">
                 <div class="alert-success">${successMessage}</div>
             </c:if>
+
             <c:if test="${not empty errorMessage}">
                 <div class="alert-error">${errorMessage}</div>
             </c:if>
 
             <div class="page-card">
-                <form method="get" action="${pageContext.request.contextPath}/admin/classes" class="filter-form">
-                    <div class="filter-group">
-                        <input type="text" name="keyword" value="${keyword}" placeholder="Tìm tên lớp">
+                <form method="get"
+                      action="${pageContext.request.contextPath}/admin/classes"
+                      class="filter-form">
+
+                    <div class="filter-group search-group">
+                        <input type="text"
+                               name="keyword"
+                               value="${keyword}"
+                               placeholder="Tìm tên lớp">
                     </div>
 
                     <div class="filter-group">
@@ -53,7 +63,7 @@
 
                     <div class="filter-group">
                         <select name="trainerId">
-                            <option value="">Tất cả trainer</option>
+                            <option value="">Tất cả HLV</option>
                             <c:forEach var="t" items="${trainers}">
                                 <option value="${t.trainerId}" <c:if test="${trainerId == t.trainerId}">selected</c:if>>
                                     ${t.staffName}
@@ -66,67 +76,92 @@
                         <select name="status">
                             <option value="">Tất cả trạng thái</option>
                             <option value="1" <c:if test="${status == 1}">selected</c:if>>Hoạt động</option>
-                            <option value="0" <c:if test="${status == 0}">selected</c:if>>Ngừng</option>
+                            <option value="0" <c:if test="${status == 0}">selected</c:if>>Ngừng hoạt động</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-secondary">
-                        <i class="fa fa-search"></i> Tìm kiếm
-                    </button>
-                </form>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-secondary">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Tìm kiếm</span>
+                        </button>
 
-                <div class="table-wrap">
+                        <a class="btn-light"
+                           href="${pageContext.request.contextPath}/admin/classes">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Reset</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="page-card">
+                <div class="table-responsive">
                     <table class="dashboard-table admin-table">
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Tên lớp</th>
                             <th>Dịch vụ</th>
-                            <th>Trainer</th>
+                            <th>HLV</th>
                             <th>Hiện tại</th>
                             <th>Tối đa</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th>Hành động</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <c:choose>
                             <c:when test="${not empty classPage.content}">
-                                <c:forEach var="item" items="${classPage.content}">
+                                <c:forEach var="item" items="${classPage.content}" varStatus="loop">
                                     <tr>
-                                        <td>${item.classId}</td>
-                                        <td>${item.className}</td>
-                                        <td>${item.service != null ? item.service.serviceName : ''}</td>
-                                        <td>${item.trainerName}</td>
+                                        <td>${classPage.number * classPage.size + loop.index + 1}</td>
+                                        <td><strong>${item.className}</strong></td>
+                                        <td>${item.service != null ? item.service.serviceName : '---'}</td>
+                                        <td>${empty item.trainerName ? '---' : item.trainerName}</td>
                                         <td>${item.currentMember}</td>
                                         <td>${item.maxMember}</td>
+
                                         <td>
-                                            <span class="${item.status == 1 ? 'badge-active' : 'badge-inactive'}">
-                                                <c:choose>
-                                                    <c:when test="${item.status == 1}">Hoạt động</c:when>
-                                                    <c:otherwise>Ngừng</c:otherwise>
-                                                </c:choose>
+                                            <span class="status-badge ${item.status == 1 ? 'active' : 'inactive'}">
+                                                ${item.status == 1 ? 'Hoạt động' : 'Ngừng hoạt động'}
                                             </span>
                                         </td>
-                                        <td>
-                                            <a class="btn-sm btn-edit"
-                                               href="${pageContext.request.contextPath}/admin/classes/edit/${item.classId}">
-                                                Sửa
-                                            </a>
 
-                                            <form method="post"
-                                                  action="${pageContext.request.contextPath}/admin/classes/delete/${item.classId}"
-                                                  style="display:inline-block"
-                                                  onsubmit="return confirm('Bạn có chắc muốn ngừng lớp học này?');">
-                                                <button type="submit" class="btn-sm btn-delete">Ngừng</button>
-                                            </form>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a class="btn-sm btn-light"
+                                                   href="${pageContext.request.contextPath}/admin/classes/detail/${item.classId}"
+                                                   title="Xem chi tiết">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+
+                                                <a class="btn-sm btn-edit"
+                                                   href="${pageContext.request.contextPath}/admin/classes/edit/${item.classId}"
+                                                   title="Chỉnh sửa">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
+
+                                                <form method="post"
+                                                      action="${pageContext.request.contextPath}/admin/classes/toggle-status/${item.classId}"
+                                                      class="inline-form"
+                                                      onsubmit="return confirm('Xác nhận thay đổi trạng thái lớp học?');">
+                                                    <button class="btn-sm ${item.status == 1 ? 'btn-toggle-off' : 'btn-toggle-on'}"
+                                                            type="submit"
+                                                            title="${item.status == 1 ? 'Ngừng hoạt động' : 'Kích hoạt'}">
+                                                        <i class="fa-solid ${item.status == 1 ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 </c:forEach>
                             </c:when>
+
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="8" class="empty-cell">Không có dữ liệu</td>
+                                    <td colspan="8" class="empty-cell">Không có lớp học phù hợp</td>
                                 </tr>
                             </c:otherwise>
                         </c:choose>
