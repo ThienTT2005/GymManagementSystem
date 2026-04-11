@@ -14,7 +14,7 @@ public class ReportServiceImpl implements ReportService {
     private final PaymentRepository paymentRepository;
     private final TrialRegistrationRepository trialRegistrationRepository;
 
-    public ReportServiceImpl(PaymentRepository paymentRepository,
+    public ReportServiceImpl(PaymentRepository paymentRepository, 
                              TrialRegistrationRepository trialRegistrationRepository) {
         this.paymentRepository = paymentRepository;
         this.trialRegistrationRepository = trialRegistrationRepository;
@@ -27,12 +27,13 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public long countPendingPayments() {
-        return paymentRepository.countByStatus("Chờ duyệt");
+        return paymentRepository.countByStatus("Chờ xử lý");
     }
 
     @Override
     public BigDecimal getTotalRevenue() {
-        return paymentRepository.getTotalRevenue();
+        BigDecimal revenue = paymentRepository.getTotalRevenue();
+        return revenue != null ? revenue : BigDecimal.ZERO;
     }
 
     @Override

@@ -5,7 +5,7 @@
     <header class="header">
 
         <div class="logo">
-            <a href="${pageContext.request.contextPath}/pages/index.jsp">
+            <a href="${pageContext.request.contextPath}/index">
                 <img src="${pageContext.request.contextPath}/images/logo.png" alt="Logo"
                     style="height: 40px; vertical-align: middle;">
             </a>
@@ -17,7 +17,7 @@
             <a href="${pageContext.request.contextPath}/pages/schedule.jsp">Lịch học</a>
             <a href="${pageContext.request.contextPath}/pages/pricing.jsp">Chính sách giá</a>
             <a href="${pageContext.request.contextPath}/pages/contact.jsp">Liên hệ</a>
-            <a href="${pageContext.request.contextPath}/pages/News.jsp">Tin Tức </a>
+            <a href="${pageContext.request.contextPath}/news">Tin Tức </a>
         </nav>
 
         <div class="actions">

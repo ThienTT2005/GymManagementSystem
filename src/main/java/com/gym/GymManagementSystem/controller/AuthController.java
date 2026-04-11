@@ -13,8 +13,4 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AuthController {
 
-    @GetMapping("/")
-    public String showIndex() {
-        return "redirect:/pages/index.jsp";
-    }
 }

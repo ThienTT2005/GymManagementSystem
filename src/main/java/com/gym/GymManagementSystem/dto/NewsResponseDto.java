@@ -3,24 +3,15 @@ package com.gym.GymManagementSystem.dto;
 import java.time.LocalDateTime;
 
 public class NewsResponseDto {
+
     private Long postId;
     private String title;
     private String content;
-    private String imageUrl;
+    private String image;
     private String category;
+    private Integer status;
     private LocalDateTime createdAt;
-
-    public NewsResponseDto() {
-    }
-
-    public NewsResponseDto(Long postId, String title, String content, String imageUrl, String category, LocalDateTime createdAt) {
-        this.postId = postId;
-        this.title = title;
-        this.content = content;
-        this.imageUrl = imageUrl;
-        this.category = category;
-        this.createdAt = createdAt;
-    }
+    private LocalDateTime updatedAt;
 
     public Long getPostId() {
         return postId;
@@ -46,12 +37,12 @@ public class NewsResponseDto {
         this.content = content;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getCategory() {
@@ -62,11 +53,27 @@ public class NewsResponseDto {
         this.category = category;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

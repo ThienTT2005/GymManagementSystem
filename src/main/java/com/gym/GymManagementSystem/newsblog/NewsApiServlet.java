@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@WebServlet(name = "NewsApiServlet", urlPatterns = "/api/news")
+// @WebServlet(name = "NewsApiServlet", urlPatterns = "/api/news")
 public class NewsApiServlet extends HttpServlet {
 
     private final NewsBlogDAO newsBlogDAO = new NewsBlogDAO();

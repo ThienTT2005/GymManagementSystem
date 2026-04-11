@@ -9,19 +9,19 @@ import org.springframework.data.repository.query.Param;
 
 public interface NewsRepository extends JpaRepository<News, Long> {
 
-    Page<News> findByCategory(String category, Pageable pageable);
-
     Page<News> findByStatus(Integer status, Pageable pageable);
 
-    Page<News> findByStatusAndCategory(Integer status, String category, Pageable pageable);
+    Page<News> findByCategoryAndStatus(String category, Integer status, Pageable pageable);
 
     @Query("""
         SELECT n
         FROM News n
-        WHERE
-            (:keyword IS NULL OR :keyword = '' OR
-             LOWER(COALESCE(n.title, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
-             LOWER(COALESCE(n.content, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE n.status = 1
+          AND (
+                LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(n.category) LIKE LOWER(CONCAT('%', :keyword, '%'))
+              )
     """)
     Page<News> searchNews(@Param("keyword") String keyword, Pageable pageable);
 }

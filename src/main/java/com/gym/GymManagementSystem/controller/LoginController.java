@@ -66,7 +66,7 @@ public class LoginController {
         }
 
         // Login không phải admin: quay về trang quảng cáo
-        return "redirect:/pages/index.jsp";
+        return "redirect:/";
     }
 
     @GetMapping({ "/logout" })
@@ -74,6 +74,6 @@ public class LoginController {
         if (session != null) {
             session.invalidate();
         }
-        return "redirect:/pages/index.jsp";
+        return "redirect:/";
     }
 }

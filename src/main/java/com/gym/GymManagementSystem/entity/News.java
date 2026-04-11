@@ -33,9 +33,6 @@ public class News {
     @Column(name = "category")
     private String category;
 
-    public News() {
-    }
-
     public Long getPostId() {
         return postId;
     }
@@ -61,6 +58,10 @@ public class News {
     }
 
     public String getImage() {
+        return image;
+    }
+
+    public String getImageUrl() {
         return image;
     }
 
@@ -98,23 +99,5 @@ public class News {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            updatedAt = LocalDateTime.now();
-        }
-        if (status == null) {
-            status = 1;
-        }
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
     }
 }

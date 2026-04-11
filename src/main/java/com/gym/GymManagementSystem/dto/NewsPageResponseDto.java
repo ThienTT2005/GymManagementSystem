@@ -3,33 +3,29 @@ package com.gym.GymManagementSystem.dto;
 import java.util.List;
 
 public class NewsPageResponseDto {
-    private List<NewsResponseDto> content;
-    private int page;
+
+    private List<NewsResponseDto> newsList;
+    private int currentPage;
     private int totalPages;
+    private long totalItems;
+    private int pageSize;
+    private boolean hasNext;
+    private boolean hasPrevious;
 
-    public NewsPageResponseDto() {
+    public List<NewsResponseDto> getNewsList() {
+        return newsList;
     }
 
-    public NewsPageResponseDto(List<NewsResponseDto> content, int page, int totalPages) {
-        this.content = content;
-        this.page = page;
-        this.totalPages = totalPages;
+    public void setNewsList(List<NewsResponseDto> newsList) {
+        this.newsList = newsList;
     }
 
-    public List<NewsResponseDto> getContent() {
-        return content;
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public void setContent(List<NewsResponseDto> content) {
-        this.content = content;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 
     public int getTotalPages() {
@@ -38,5 +34,37 @@ public class NewsPageResponseDto {
 
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
+    }
+
+    public long getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(long totalItems) {
+        this.totalItems = totalItems;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public boolean isHasNext() {
+        return hasNext;
+    }
+
+    public void setHasNext(boolean hasNext) {
+        this.hasNext = hasNext;
+    }
+
+    public boolean isHasPrevious() {
+        return hasPrevious;
+    }
+
+    public void setHasPrevious(boolean hasPrevious) {
+        this.hasPrevious = hasPrevious;
     }
 }

@@ -1,0 +1,252 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.gym:GymManagementSystem >---------------------
+[INFO] Building GymManagementSystem 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.11:run (default-cli) > test-compile @ GymManagementSystem >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ GymManagementSystem ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ GymManagementSystem ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ GymManagementSystem ---
+[INFO] skip non existing resourceDirectory D:\UYEN\LAPTRINHWEB\GymManagementSystem\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ GymManagementSystem ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.11:run (default-cli) < test-compile @ GymManagementSystem <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.11:run (default-cli) @ GymManagementSystem ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.11)
+
+2026-04-11T15:26:25.281+07:00  INFO 13512 --- [GymManagementSystem] [           main] c.g.G.GymManagementSystemApplication     : Starting GymManagementSystemApplication using Java 19.0.2 with PID 13512 (D:\UYEN\LAPTRINHWEB\GymManagementSystem\target\classes started by Admin in D:\UYEN\LAPTRINHWEB\GymManagementSystem)
+2026-04-11T15:26:25.283+07:00  INFO 13512 --- [GymManagementSystem] [           main] c.g.G.GymManagementSystemApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-04-11T15:26:25.714+07:00  INFO 13512 --- [GymManagementSystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-11T15:26:25.758+07:00  INFO 13512 --- [GymManagementSystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 10 JPA repository interfaces.
+2026-04-11T15:26:26.337+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-11T15:26:26.347+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-11T15:26:26.347+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.52]
+2026-04-11T15:26:26.513+07:00  INFO 13512 --- [GymManagementSystem] [           main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2026-04-11T15:26:26.518+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-11T15:26:26.519+07:00  INFO 13512 --- [GymManagementSystem] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1198 ms
+2026-04-11T15:26:26.702+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-11T15:26:26.737+07:00  INFO 13512 --- [GymManagementSystem] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.42.Final
+2026-04-11T15:26:26.761+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-11T15:26:26.953+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-11T15:26:26.974+07:00  INFO 13512 --- [GymManagementSystem] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-11T15:26:28.080+07:00  WARN 13512 --- [GymManagementSystem] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 08001
+2026-04-11T15:26:28.081+07:00 ERROR 13512 --- [GymManagementSystem] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Public Key Retrieval is not allowed
+2026-04-11T15:26:28.081+07:00  WARN 13512 --- [GymManagementSystem] [           main] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
+
+org.hibernate.exception.JDBCConnectionException: unable to obtain isolated JDBC connection [Public Key Retrieval is not allowed] [n/a]
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:100) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:116) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:334) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:129) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:81) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:226) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:194) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1442) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1513) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:388) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:364) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:974) ~[spring-context-6.2.16.jar:6.2.16]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628) ~[spring-context-6.2.16.jar:6.2.16]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.11.jar:3.5.11]
+	at com.gym.GymManagementSystem.GymManagementSystemApplication.main(GymManagementSystemApplication.java:16) ~[classes/:na]
+Caused by: java.sql.SQLNonTransientConnectionException: Public Key Retrieval is not allowed
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:102) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:840) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:416) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:237) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:576) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:97) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-6.3.3.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:61) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	... 35 common frames omitted
+Caused by: com.mysql.cj.exceptions.UnableToConnectException: Public Key Retrieval is not allowed
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:67) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:484) ~[na:na]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:76) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:122) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:40) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.proceedHandshakeWithPluggableAuthentication(NativeAuthenticationProvider.java:436) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.connect(NativeAuthenticationProvider.java:206) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeProtocol.connect(NativeProtocol.java:1334) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.NativeSession.connect(NativeSession.java:155) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:964) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:828) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	... 48 common frames omitted
+
+2026-04-11T15:26:28.097+07:00  WARN 13512 --- [GymManagementSystem] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-11T15:26:28.098+07:00  WARN 13512 --- [GymManagementSystem] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-04-11T15:26:28.106+07:00  INFO 13512 --- [GymManagementSystem] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (null)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-11T15:26:29.111+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-11T15:26:29.204+07:00  INFO 13512 --- [GymManagementSystem] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-11T15:26:30.217+07:00  WARN 13512 --- [GymManagementSystem] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 08001
+2026-04-11T15:26:30.217+07:00 ERROR 13512 --- [GymManagementSystem] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Public Key Retrieval is not allowed
+2026-04-11T15:26:30.220+07:00 ERROR 13512 --- [GymManagementSystem] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Public Key Retrieval is not allowed] [n/a]
+2026-04-11T15:26:30.220+07:00  WARN 13512 --- [GymManagementSystem] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Public Key Retrieval is not allowed] [n/a]
+2026-04-11T15:26:30.222+07:00  INFO 13512 --- [GymManagementSystem] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-04-11T15:26:30.240+07:00  INFO 13512 --- [GymManagementSystem] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-04-11T15:26:30.251+07:00 ERROR 13512 --- [GymManagementSystem] [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Public Key Retrieval is not allowed] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:974) ~[spring-context-6.2.16.jar:6.2.16]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628) ~[spring-context-6.2.16.jar:6.2.16]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.11.jar:3.5.11]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.11.jar:3.5.11]
+	at com.gym.GymManagementSystem.GymManagementSystemApplication.main(GymManagementSystemApplication.java:16) ~[classes/:na]
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Public Key Retrieval is not allowed] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:364) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.16.jar:6.2.16]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.16.jar:6.2.16]
+	... 15 common frames omitted
+Caused by: org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Public Key Retrieval is not allowed] [n/a]
+	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:51) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:74) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:39) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcConnection(ImprovedExtractionContextImpl.java:63) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcDatabaseMetaData(ImprovedExtractionContextImpl.java:70) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.extract.internal.InformationExtractorJdbcDatabaseMetaDataImpl.processTableResultSet(InformationExtractorJdbcDatabaseMetaDataImpl.java:65) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.extract.internal.AbstractInformationExtractorImpl.getTables(AbstractInformationExtractorImpl.java:570) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.getTablesInformation(DatabaseInformationImpl.java:122) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:72) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:233) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:112) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:388) ~[spring-orm-6.2.16.jar:6.2.16]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.16.jar:6.2.16]
+	... 19 common frames omitted
+Caused by: java.sql.SQLNonTransientConnectionException: Public Key Retrieval is not allowed
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:102) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:840) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:416) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:237) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:576) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:97) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-6.3.3.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:46) ~[hibernate-core-6.6.42.Final.jar:6.6.42.Final]
+	... 40 common frames omitted
+Caused by: com.mysql.cj.exceptions.UnableToConnectException: Public Key Retrieval is not allowed
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:67) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:484) ~[na:na]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:76) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:122) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:40) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.proceedHandshakeWithPluggableAuthentication(NativeAuthenticationProvider.java:436) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.connect(NativeAuthenticationProvider.java:206) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.protocol.a.NativeProtocol.connect(NativeProtocol.java:1334) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.NativeSession.connect(NativeSession.java:155) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:964) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:828) ~[mysql-connector-j-9.6.0.jar:9.6.0]
+	... 53 common frames omitted
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.049 s
+[INFO] Finished at: 2026-04-11T15:26:30+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.11:run (default-cli) on project GymManagementSystem: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

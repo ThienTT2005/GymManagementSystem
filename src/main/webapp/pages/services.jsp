@@ -32,7 +32,7 @@
             </section>
 
             <section class="services-list">
-                <a href="${pageContext.request.contextPath}/pages/zumba.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/zumba.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/zumba-8.png" alt="Zumba"
                             class="service-card-image">
@@ -47,7 +47,7 @@
                     </article>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/pages/bodycombat.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/bodycombat.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/bodycombat.png" alt="BodyCombat"
                             class="service-card-image">
@@ -62,7 +62,7 @@
                     </article>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/pages/bodypump.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/bodypump.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/bodypump-8.png" alt="Body Pump"
                             class="service-card-image">
@@ -76,7 +76,7 @@
                     </article>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/pages/steptok.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/steptok.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/bums-tums-8.png" alt="Step Tok"
                             class="service-card-image">
@@ -90,7 +90,7 @@
                     </article>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/pages/pilates.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/pilates.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/pilates.jpg" alt="Pilates"
                             class="service-card-image">
@@ -105,7 +105,7 @@
                     </article>
                 </a>
 
-                <a href="${pageContext.request.contextPath}/pages/aerobics.jsp" style="text-decoration: none; color: inherit; display: block;">
+                <a href="${pageContext.request.contextPath}/pages/services/aerobics.jsp" style="text-decoration: none; color: inherit; display: block;">
                     <article class="service-card">
                         <img src="${pageContext.request.contextPath}/images/aerobic-8.png" alt="Aerobics"
                             class="service-card-image">
