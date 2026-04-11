@@ -83,17 +83,17 @@
                             </c:choose>
                         </td>
 
-                        <td class="small-date">${item.createdDate}</td>
+                        <td class="small-date">${item.createdAt}</td>
 
                         <td>
                             <div class="table-actions">
                                 <a class="btn-edit"
-                                   href="${pageContext.request.contextPath}/admin/news/edit/${item.newsId}">
+                                   href="${pageContext.request.contextPath}/admin/news/edit/${item.postId}">
                                     <i class="fa-regular fa-pen-to-square"></i> Sửa
                                 </a>
 
                                 <a class="btn-delete"
-                                   href="${pageContext.request.contextPath}/admin/news/delete/${item.newsId}"
+                                   href="${pageContext.request.contextPath}/admin/news/delete/${item.postId}"
                                    onclick="return confirm('Bạn có chắc muốn xóa tin tức này?')">
                                     <i class="fa-regular fa-trash-can"></i> Xóa
                                 </a>

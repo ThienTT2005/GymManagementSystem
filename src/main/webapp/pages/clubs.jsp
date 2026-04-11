@@ -68,6 +68,7 @@
             <!-- Registration Section -->
             <!-- Form đăng ký -->
             <jsp:include page="/components/formtuvan.jsp" />
+            <jsp:include page="/components/footer.jsp" />
     </body>
 
     </html>

@@ -1,15 +1,20 @@
 package com.gym.GymManagementSystem.service;
 
+import com.gym.GymManagementSystem.dto.NewsPageResponseDto;
 import com.gym.GymManagementSystem.entity.News;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface NewsService {
-    List<News> findAll();
-    News findById(Long id);
-    News save(News news);
-    void deleteById(Long id);
+
+    NewsPageResponseDto getNews(String category, int page, int size);
 
     Page<News> searchNews(String keyword, int page, int size);
+
+    News save(News news);
+
+    Optional<News> findById(Long id);
+
+    void deleteById(Long id);
 }

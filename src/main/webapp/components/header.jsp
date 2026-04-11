@@ -17,7 +17,7 @@
             <a href="${pageContext.request.contextPath}/pages/schedule.jsp">Lịch học</a>
             <a href="${pageContext.request.contextPath}/pages/pricing.jsp">Chính sách giá</a>
             <a href="${pageContext.request.contextPath}/pages/contact.jsp">Liên hệ</a>
-            <a href="${pageContext.request.contextPath}/pages/promotions.jsp">Khuyến mãi</a>
+            <a href="${pageContext.request.contextPath}/pages/News.jsp">Tin Tức </a>
         </nav>
 
         <div class="actions">

@@ -13,8 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/admin/news")
@@ -32,7 +32,7 @@ public class AdminNewsController {
                            @RequestParam(value = "size", defaultValue = "5") int size,
                            Model model) {
 
-        var newsPage = newsService.searchNews(keyword, page, size);
+        var newsPage = newsService.searchNews(keyword, page + 1, size);
 
         model.addAttribute("pageTitle", "Quản lý tin tức");
         model.addAttribute("newsList", newsPage.getContent());
@@ -46,7 +46,7 @@ public class AdminNewsController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         News news = new News();
-        news.setCreatedDate(LocalDate.now());
+        news.setCreatedAt(LocalDateTime.now());
 
         model.addAttribute("pageTitle", "Thêm tin tức");
         model.addAttribute("news", news);
@@ -58,8 +58,13 @@ public class AdminNewsController {
                            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                            @RequestParam(value = "existingImage", required = false) String existingImage) {
 
-        if (news.getCreatedDate() == null) {
-            news.setCreatedDate(LocalDate.now());
+        if (news.getPostId() != null) {
+            News existing = newsService.findById(news.getPostId()).orElse(null);
+            if (existing != null) {
+                news.setCreatedAt(existing.getCreatedAt());
+            }
+        } else if (news.getCreatedAt() == null) {
+            news.setCreatedAt(LocalDateTime.now());
         }
 
         try {
@@ -93,7 +98,8 @@ public class AdminNewsController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        News news = newsService.findById(id);
+        News news = newsService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tin"));
         model.addAttribute("pageTitle", "Sửa tin tức");
         model.addAttribute("news", news);
         return "admin/news/form";

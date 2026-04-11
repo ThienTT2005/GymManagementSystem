@@ -62,7 +62,7 @@
 
         <!-- ẢNH RUNNER -->
         <div class="contact-runner">
-            <img src="${pageContext.request.contextPath}/images/contact-runner.png" alt="Runner">
+            <img src="${pageContext.request.contextPath}/images/run.png" alt="Runner">
         </div>
     </div>
 </section>

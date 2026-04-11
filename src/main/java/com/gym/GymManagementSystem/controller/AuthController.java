@@ -15,6 +15,6 @@ public class AuthController {
 
     @GetMapping("/")
     public String showIndex() {
-        return "index";
+        return "redirect:/pages/index.jsp";
     }
 }

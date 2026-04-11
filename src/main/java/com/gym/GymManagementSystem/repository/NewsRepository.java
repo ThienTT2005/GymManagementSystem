@@ -9,6 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface NewsRepository extends JpaRepository<News, Long> {
 
+    Page<News> findByCategory(String category, Pageable pageable);
+
+    Page<News> findByStatus(Integer status, Pageable pageable);
+
+    Page<News> findByStatusAndCategory(Integer status, String category, Pageable pageable);
+
     @Query("""
         SELECT n
         FROM News n

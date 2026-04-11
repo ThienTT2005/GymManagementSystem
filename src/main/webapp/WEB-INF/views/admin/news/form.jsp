@@ -22,7 +22,7 @@
               method="post"
               enctype="multipart/form-data">
 
-            <input type="hidden" name="newsId" value="${news.newsId}"/>
+            <input type="hidden" name="postId" value="${news.postId}"/>
             <input type="hidden" name="existingImage" value="${news.image}"/>
 
             <div class="form-group">
@@ -36,16 +36,21 @@
             </div>
 
             <div class="form-group">
+                <label>Danh mục</label>
+                <select name="category" required>
+                    <option value="" disabled ${empty news.category ? 'selected' : ''}>-- Chọn danh mục --</option>
+                    <option value="BLOG" ${news.category == 'BLOG' ? 'selected' : ''}>BLOG</option>
+                    <option value="CAU_CHUYEN_HOI_VIEN" ${news.category == 'CAU_CHUYEN_HOI_VIEN' ? 'selected' : ''}>CÂU CHUYỆN HỘI VIÊN</option>
+                    <option value="KHUYEN_MAI" ${news.category == 'KHUYEN_MAI' ? 'selected' : ''}>KHUYẾN MÃI</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>Ảnh tin tức</label>
                 <input type="file"
                        name="imageFile"
                        id="imageFile"
                        accept="image/*">
-            </div>
-
-            <div class="form-group">
-                <label>Ngày đăng</label>
-                <input type="date" name="createdDate" value="${news.createdDate}" required>
             </div>
 
             <button type="submit" class="btn-save">Lưu</button>
