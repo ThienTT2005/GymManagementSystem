@@ -22,7 +22,7 @@
         <jsp:include page="/WEB-INF/views/common/member_sidebar.jsp"/>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <h2 class="mb-4">Xin chào, <strong><%= u.getFullName() %></strong>!</h2>
+            <h2 class="mb-4">Xin chào, <strong>${member.fullname}</strong>!</h2>
 
             <%-- CARD: Gói tập hiện tại --%>
             <div class="row g-4 mb-4">
@@ -37,7 +37,7 @@
                             </div>
                             <c:choose>
                                 <c:when test="${not empty membership}">
-                                    <p class="fw-bold fs-5 mb-1"><p>${membership.pkg.packageName}</p></p>
+                                    <p class="fw-bold fs-5 mb-1"><p>${membership.pkg.packageName}</p>
                                     <span class="badge
                                         <c:choose>
                                             <c:when test='${membership.status == "active"}'>bg-success</c:when>
@@ -47,7 +47,7 @@
                                             ${membership.status}
                                     </span>
                                     <p class="text-muted small mt-2 mb-0">
-                                        HSD: <fmt:formatDate value="${membership.endDate}" pattern="dd/MM/yyyy" type="date"/>
+                                        HSD: ${membership.endDate}
                                     </p>
                                 </c:when>
                                 <c:otherwise>
@@ -69,7 +69,7 @@
                                 <h6 class="card-title mb-0">Lớp đang theo học</h6>
                             </div>
                             <p class="fw-bold fs-3 mb-0">
-                                ${fn:length(myClasses)}
+                                ${classRegistrations.size()}
                             </p>
                             <a href="${pageContext.request.contextPath}/member/schedules" class="btn btn-sm btn-outline-success mt-2">Xem lịch</a>
                         </div>
@@ -85,8 +85,8 @@
                                 </div>
                                 <h6 class="card-title mb-0">Tài khoản</h6>
                             </div>
-                            <p class="mb-1"><%= u.getEmail() %></p>
-                            <p class="text-muted small mb-2"><%= u.getPhone() != null ? u.getPhone() : "Chưa cập nhật SĐT" %></p>
+                            <p class="mb-1">${member.email}</p>
+                            <p class="text-muted small mb-2">${member.phone != null ? member.phone : "Chưa cập nhật SĐT" }</p>
                             <a href="${pageContext.request.contextPath}/member/profile" class="btn btn-sm btn-outline-warning">Cập nhật</a>
                         </div>
                     </div>
@@ -96,11 +96,11 @@
             <%-- Lịch học đang tham gia --%>
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 pt-3">
-                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Lịch học của tôi</h5>
+                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Lớp học tham gia</h5>
                 </div>
                 <div class="card-body p-0">
                     <c:choose>
-                        <c:when test="${empty myClasses}">
+                        <c:when test="${empty classRegistrations}">
                             <p class="text-muted text-center py-4">Bạn chưa đăng ký lớp nào.</p>
                         </c:when>
                         <c:otherwise>
@@ -108,31 +108,21 @@
                                 <table class="table table-hover mb-0">
                                     <thead class="table-light">
                                     <tr>
-                                        <th>Lớp học</th><th>HLV</th><th>Chi nhánh</th>
-                                        <th>Thứ</th><th>Giờ</th><th>Trạng thái</th><th></th>
+                                        <th>Lớp học</th><th>HLV</th><th>Dịch vụ</th>
+                                        <th>Ngày bắt đầu</th><th>Trạng thái</th><th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <c:forEach var="cr" items="${myClasses}">
+                                    <c:forEach var="cr" items="${classRegistrations}">
                                         <tr>
-                                            <td>${cr.schedule.service.serviceName}</td>
-                                            <td>${cr.schedule.trainer.trainerName}</td>
-                                            <td>${cr.schedule.club.clubName}</td>
-                                            <td>${cr.schedule.dayOfWeek}</td>
-                                            <td>${cr.schedule.startTime} – ${cr.schedule.endTime}</td>
+                                            <td>${cr.classes.className}</td>
+                                            <td>${cr.classes.trainer.staff.fullName}</td>
+                                            <td>${cr.service.serviceName}</td>
+                                            <td>${cr.startDate}</td>
                                             <td>
                                                 <span class="badge ${cr.status == 'active' ? 'bg-success' : 'bg-secondary'}">
                                                         ${cr.status}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <c:if test="${cr.status == 'active'}">
-                                                    <form method="post" action="${pageContext.request.contextPath}/member/cancel-class" class="d-inline">
-                                                        <input type="hidden" name="registrationId" value="${cr.registrationId}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                                onclick="return confirm('Huỷ đăng ký lớp này?')">Huỷ</button>
-                                                    </form>
-                                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>

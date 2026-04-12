@@ -21,13 +21,13 @@
             <%-- Tabs --%>
             <ul class="nav nav-tabs mb-4" id="historyTab">
                 <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-membership">
-                        <i class="bi bi-award me-1"></i>Gói tập
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-payment">
+                        <i class="bi bi-receipt me-1"></i>Thanh toán
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-payment">
-                        <i class="bi bi-receipt me-1"></i>Thanh toán
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-membership">
+                        <i class="bi bi-award me-1"></i>Gói tập
                     </button>
                 </li>
                 <li class="nav-item">
@@ -38,8 +38,85 @@
             </ul>
 
             <div class="tab-content">
+                <%-- Tab: Thanh toán --%>
+                <div class="tab-pane fade show active" id="tab-payment">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <c:choose>
+                                <c:when test="${empty payments}">
+                                    <p class="text-center text-muted py-4">Chưa có lịch sử thanh toán.</p>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>#</th><th>Loại</th><th>Số tiền</th>
+                                                <th>Ngày TT</th><th>Trạng thái</th><th>Minh chứng</th><th>Hoá đơn</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <c:forEach var="p" items="${payments}" varStatus="st">
+                                                <tr>
+                                                    <td>${st.count}</td>
+                                                    <c:if test="${not empty p.membership}">
+                                                        <td>Membership-${p.membership.pkg.packageName}</td>
+                                                    </c:if>
+                                                    <c:if test="${not empty p.classRegistration}">
+                                                        <td>Classes-${p.classRegistration.service.serviceName}</td>
+                                                    </c:if>
+                                                    <td class="fw-semibold text-primary">
+                                                        <fmt:formatNumber value="${p.amount}" type="number" groupingUsed="true"/>đ
+                                                    </td>
+                                                    <td>${p.paymentDate}</td>
+                                                    <td>
+                                                        <span class="badge
+                                                            <c:choose>
+                                                                <c:when test='${p.status == "approved"}'>bg-success</c:when>
+                                                                <c:when test='${p.status == "pending"}'>bg-warning text-dark</c:when>
+                                                                <c:otherwise>bg-danger</c:otherwise>
+                                                            </c:choose>">
+                                                                ${p.status}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <c:if test="${not empty p.proofImage}">
+                                                            <a href="${pageContext.request.contextPath}${p.proofImage}"
+                                                               target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                                <i class="bi bi-image"></i> Xem
+                                                            </a>
+                                                        </c:if>
+                                                        <c:if test="${empty p.proofImage}">
+                                                            <span class="text-muted small">Chưa có</span>
+                                                        </c:if>
+                                                    </td>
+                                                    <td>
+                                                        <c:if test="${not empty p.membership.membershipId}">
+                                                            <a href="${pageContext.request.contextPath}/member/payment?membershipId=${p.membership.membershipId}"
+                                                               class="btn btn-outline-primary btn-sm">
+                                                                <i class="bi bi-credit-card me-1"></i>Xem
+                                                            </a>
+                                                        </c:if>
+                                                        <c:if test="${not empty p.classRegistration.classRegistrationId}">
+                                                            <a href="${pageContext.request.contextPath}/member/payment?classRegistrationId=${p.classRegistration.classRegistrationId}"
+                                                               class="btn btn-outline-primary btn-sm">
+                                                                <i class="bi bi-credit-card me-1"></i>Xem
+                                                            </a>
+                                                        </c:if>
+
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </div>
+                </div>
                 <%-- Tab: Gói tập --%>
-                <div class="tab-pane fade show active" id="tab-membership">
+                <div class="tab-pane fade" id="tab-membership">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">
                             <c:choose>
@@ -83,70 +160,13 @@
                     </div>
                 </div>
 
-                <%-- Tab: Thanh toán --%>
-                <div class="tab-pane fade" id="tab-payment">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <c:choose>
-                                <c:when test="${empty payments}">
-                                    <p class="text-center text-muted py-4">Chưa có lịch sử thanh toán.</p>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead class="table-light">
-                                            <tr>
-                                                <th>#</th><th>Gói tập</th><th>Số tiền</th>
-                                                <th>Ngày TT</th><th>Trạng thái</th><th>Minh chứng</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <c:forEach var="p" items="${payments}" varStatus="st">
-                                                <tr>
-                                                    <td>${st.count}</td>
-                                                    <td>${p.membership.pkg.packageName}</td>
-                                                    <td class="fw-semibold text-primary">
-                                                        <fmt:formatNumber value="${p.amount}" type="number" groupingUsed="true"/>đ
-                                                    </td>
-                                                    <td>${p.paymentDate}</td>
-                                                    <td>
-                                                        <span class="badge
-                                                            <c:choose>
-                                                                <c:when test='${p.status == "approved"}'>bg-success</c:when>
-                                                                <c:when test='${p.status == "pending"}'>bg-warning text-dark</c:when>
-                                                                <c:otherwise>bg-danger</c:otherwise>
-                                                            </c:choose>">
-                                                                ${p.status}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <c:if test="${not empty p.proofImage}">
-                                                            <a href="${pageContext.request.contextPath}${p.proofImage}"
-                                                               target="_blank" class="btn btn-sm btn-outline-secondary">
-                                                                <i class="bi bi-image"></i> Xem
-                                                            </a>
-                                                        </c:if>
-                                                        <c:if test="${empty p.proofImage}">
-                                                            <span class="text-muted small">Chưa có</span>
-                                                        </c:if>
-                                                    </td>
-                                                </tr>
-                                            </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                </div>
 
                 <%-- Tab: Lớp học --%>
                 <div class="tab-pane fade" id="tab-class">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">
                             <c:choose>
-                                <c:when test="${empty classRegs}">
+                                <c:when test="${empty classRegistrations}">
                                     <p class="text-center text-muted py-4">Chưa đăng ký lớp nào.</p>
                                 </c:when>
                                 <c:otherwise>
@@ -155,17 +175,18 @@
                                             <thead class="table-light">
                                             <tr>
                                                 <th>#</th><th>Lớp học</th><th>HLV</th>
-                                                <th>Chi nhánh</th><th>Thứ / Giờ</th><th>Trạng thái</th>
+                                                <th>Dịch vụ</th><th>Ngày bắt đầu</th><th>Ngày kết thúc</th><th>Trạng thái</th><th></th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <c:forEach var="cr" items="${classRegs}" varStatus="st">
+                                            <c:forEach var="cr" items="${classRegistrations}" varStatus="st">
                                                 <tr>
                                                     <td>${st.count}</td>
-                                                    <td><strong>${cr.schedule.service.serviceName}</strong></td>
-                                                    <td>${cr.schedule.trainer.trainerName}</td>
-                                                    <td>${cr.schedule.club.clubName}</td>
-                                                    <td>${cr.schedule.dayOfWeek} ${cr.schedule.startTime} – ${cr.schedule.endTime}</td>
+                                                    <td><strong>${cr.service.serviceName}</strong></td>
+                                                    <td>${cr.classes.trainer.staff.fullName}</td>
+                                                    <td>${cr.service.serviceName}</td>
+                                                    <td>${cr.startDate}</td>
+                                                    <td>${cr.endDate}</td>
                                                     <td>
                                                         <span class="badge ${cr.status == 'active' ? 'bg-success' : 'bg-secondary'}">
                                                                 ${cr.status}

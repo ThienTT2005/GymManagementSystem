@@ -8,40 +8,68 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// @Service: đánh dấu đây là Service, Spring sẽ quản lý object này
-// @RequiredArgsConstructor (Lombok): tự tạo constructor inject tất cả final field
-//   → thay cho @Autowired trên từng field
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
-    // Spring tự inject — không cần "new ClubRepository()"
-    private final ClubRepository clubRepository;
+    private final MemberRepository memberRepository;
     private final PackageRepository packageRepository;
-    private final MembershipRepository membershipRepository;
-    private final PaymentRepository paymentRepository;
+    private final GymClassRepository gymClassRepository;
     private final ScheduleRepository scheduleRepository;
-    private final ClassRegistrationRepository classRegRepository;
-    private final UserRepository userRepository;
+    private final MembershipRepository membershipRepository;
+    private final ClassRegistrationRepository classRegistrationRepository;
+    private final PaymentRepository paymentRepository;
 
-    // ========== CLUB ==========
+    // ========== MEMBER PROFILE ==========
 
-    public List<Club> getAllClubs() {
-        return clubRepository.findAll();
+    public Member getProfile(Integer userId) {
+        return memberRepository.findByUserUserId(userId).orElse(null);
     }
 
-//    public Club getClubById(int clubId) {
-//        return clubRepository.findById(clubId).orElse(null);
-//        // orElse(null): nếu không tìm thấy → trả về null thay vì throw exception
-//    }
+    @Transactional
+    public String updateProfile(Integer userId, String fullname, String email,
+                                String phone, String address,
+                                String gender, LocalDate dob, MultipartFile avatar) throws IOException {
+        Member member = memberRepository.findByUserUserId(userId).orElse(null);
+        if (member == null) return "Không tìm thấy hồ sơ.";
+
+        member.setFullname(fullname);
+        member.setEmail(email);
+        member.setPhone(phone);
+        member.setAddress(address);
+        member.setGender(gender);
+        member.setDob(dob);
+
+        if (avatar != null && !avatar.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
+
+                String uploadDir = System.getProperty("user.dir") + "/uploads/memberavt/";
+                File uploadPath = new File(uploadDir);
+
+                if (!uploadPath.exists()) {
+                    uploadPath.mkdirs();
+                }
+
+                avatar.transferTo(new File(uploadDir + fileName));
+
+                member.setAvatar("memberavt/" + fileName);
+
+            } catch (IOException e) {
+                return "Upload avatar thất bại.";
+            }
+        }
+        memberRepository.save(member);
+        return null; // null = thành công
+    }
 
     // ========== PACKAGE ==========
 
@@ -49,222 +77,253 @@ public class MemberService {
         return packageRepository.findByStatusOrderByPrice("active");
     }
 
-    public Package getPackageById(int packageId) {
+
+    public Package getPackageById(Integer packageId) {
         return packageRepository.findById(packageId).orElse(null);
     }
 
+    // ========== CLASS & SCHEDULE ==========
+
+    public Classes getClassesById(Integer classId) {return gymClassRepository.findById(classId).orElse(null);}
+
+    public List<Classes> getAllActiveClasses() {
+        return gymClassRepository.findByStatus("active");
+    }
+
+    public List<Schedule> getAllActiveSchedules() {
+        return scheduleRepository.findByStatus("active");
+    }
+
+    // Lấy lịch tập của 1 lớp
+    public List<Schedule> getSchedulesByClass(Integer classId) {
+        return scheduleRepository.findByClassesClassIdAndStatus(classId, "active");
+    }
+    // Lấy lịch học của các lớp member đã đăng ký (status = active, pending)
+    public List<ClassRegistration> getMyActivePendingClasses(Integer memberId) {
+        return classRegistrationRepository
+                .findActiveByMemberId(memberId);
+    }
+
+
     // ========== MEMBERSHIP ==========
+    public Membership getActiveMembership(Integer memberId) {
+        List<Membership> list = membershipRepository.findActiveByMemberId(memberId);
+        return list.isEmpty() ? null : list.get(0);
+    }
 
-    // @Transactional: nếu có lỗi giữa chừng → tự rollback, không lưu dở dang
-    @Transactional
-    public int registerPackage(int userId, int packageId) {
-        // Kiểm tra đã có gói active/pending chưa
-        List<Membership> existing = membershipRepository.findActiveByUserId(userId);
-        if (!existing.isEmpty()) return -2;
+    public Membership getPendingMembership(Integer memberId) {
+        List<Membership> list = membershipRepository.findPendingByMemberId(memberId);
+        return list.isEmpty() ? null : list.get(0);
+    }
 
-        Package pkg = packageRepository.findById(packageId).orElse(null);
-        if (pkg == null) return -1;
+    public Membership getMembershipByMembershipId(Integer membershipId) {
+        return membershipRepository.findByMembershipId(membershipId).orElse(null);
+    }
 
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return -1;
-
-        Membership m = new Membership();
-        m.setUser(user);       // set object User, không phải userId
-        m.setPkg(pkg);
-        m.setStartDate(LocalDate.now());
-        m.setEndDate(LocalDate.now().plusMonths(pkg.getDurationMonth()));
-
-        Membership saved = membershipRepository.save(m); // save = INSERT nếu mới
-        return saved.getMembershipId();
+    public List<Membership> getMembershipHistory(Integer memberId) {
+        return membershipRepository.findByMemberMemberIdOrderByCreatedAtDesc(memberId);
     }
 
     @Transactional
-    public int renewPackage(int userId, int packageId) {
+    public int registerMembership(Integer memberId, Integer packageId) {
+        List<Membership> existing = membershipRepository.findActiveByMemberId(memberId);
+        if (!existing.isEmpty()) return -2;
+        List<Membership> pend = membershipRepository.findPendingByMemberId(memberId);
+        if (!pend.isEmpty()) return -3;
+
         Package pkg = packageRepository.findById(packageId).orElse(null);
-        if (pkg == null) return -1;
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if (pkg == null || member == null) return -1;
 
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return -1;
+        Membership ms = new Membership();
+        ms.setMember(member);
+        ms.setPkg(pkg);
+        ms.setStartDate(LocalDate.now());
+        ms.setEndDate(LocalDate.now().plusMonths(pkg.getDurationMonth()));
+        return membershipRepository.save(ms).getMembershipId();
+    }
 
-        List<Membership> actives = membershipRepository.findActiveByUserId(userId);
+    @Transactional
+    public int renewMembership(Integer memberId, Integer packageId) {
+        Package pkg = packageRepository.findById(packageId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if (pkg == null || member == null) return -1;
+        List<Membership> pend = membershipRepository.findPendingByMemberId(memberId);
+        if (!pend.isEmpty()) return -3;
+
+        List<Membership> actives = membershipRepository.findActiveByMemberId(memberId);
         LocalDate newStart;
-
-        if (!actives.isEmpty()) {
-            Membership current = actives.get(0);
-            if (current.getEndDate() != null && current.getEndDate().isAfter(LocalDate.now())) {
-                newStart = current.getEndDate().plusDays(1);
-            } else {
-                newStart = LocalDate.now();
-            }
+        if (!actives.isEmpty()
+                && actives.get(0).getEndDate() != null
+                && actives.get(0).getEndDate().isAfter(LocalDate.now())) {
+            newStart = actives.get(0).getEndDate().plusDays(1);
         } else {
             newStart = LocalDate.now();
         }
 
-        Membership m = new Membership();
-        m.setUser(user);
-        m.setPkg(pkg);
-        m.setStartDate(newStart);
-        m.setEndDate(newStart.plusMonths(pkg.getDurationMonth()));
-
-        Membership saved = membershipRepository.save(m);
-        return saved.getMembershipId();
-    }
-
-    public Membership getActiveMembership(int userId) {
-        List<Membership> list = membershipRepository.findActiveByUserId(userId);
-        return list.isEmpty() ? null : list.get(0);
-    }
-
-    public List<Membership> getMembershipHistory(int userId) {
-        return membershipRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
+        Membership ms = new Membership();
+        ms.setMember(member);
+        ms.setPkg(pkg);
+        ms.setStartDate(newStart);
+        ms.setEndDate(newStart.plusMonths(pkg.getDurationMonth()));
+        return membershipRepository.save(ms).getMembershipId();
     }
 
     // ========== PAYMENT ==========
 
     @Transactional
-    public boolean createPayment(int membershipId, BigDecimal amount) {
-        Membership membership = membershipRepository.findById(membershipId).orElse(null);
-        if (membership == null) return false;
-
+    public boolean createPayment(Integer membershipId, Integer classRegistrationId, BigDecimal amount) {
         Payment payment = new Payment();
-        payment.setMembership(membership);
+        if(membershipId != null) {
+            Membership ms = membershipRepository.findById(membershipId).orElse(null);
+            if (ms != null) payment.setMembership(ms);
+        }
+        if(classRegistrationId != null){
+            ClassRegistration cr = classRegistrationRepository.findById(classRegistrationId).orElse(null);
+            if (cr != null) payment.setClassRegistration(cr);
+        }
+
         payment.setAmount(amount);
+        payment.setPaymentMethod("Chuyển khoản");
         paymentRepository.save(payment);
         return true;
     }
 
     @Transactional
-    public boolean uploadProofImage(int membershipId, MultipartFile file, String uploadDir)
+    public boolean uploadPaymentProof(Integer membershipId, Integer classRegistrationId, MultipartFile file, String uploadDir)
             throws IOException {
-        Payment payment = paymentRepository
-                .findTopByMembershipMembershipIdOrderByCreatedAtDesc(membershipId)
-                .orElse(null);
+        Payment payment = null;
+        if(membershipId != null) {
+            payment = paymentRepository
+                    .findTopByMembershipMembershipIdOrderByCreatedAtDesc(membershipId)
+                    .orElse(null);
+        }
+        if(classRegistrationId != null){
+            payment = paymentRepository
+                    .findTopByClassRegistrationClassRegistrationIdOrderByCreatedAtDesc(classRegistrationId)
+                    .orElse(null);
+        }
+
         if (payment == null || file.isEmpty()) return false;
 
-        // Tạo thư mục nếu chưa có
         Path dir = Paths.get(uploadDir, "payments");
         Files.createDirectories(dir);
 
-        // Lưu file với tên UUID
-        String ext = "";
         String original = file.getOriginalFilename();
-        if (original != null && original.contains(".")) {
-            ext = original.substring(original.lastIndexOf('.'));
-        }
+        String ext = (original != null && original.contains("."))
+                ? original.substring(original.lastIndexOf('.')) : "";
         String fileName = UUID.randomUUID() + ext;
         Files.copy(file.getInputStream(), dir.resolve(fileName),
                 StandardCopyOption.REPLACE_EXISTING);
 
         payment.setProofImage("/uploads/payments/" + fileName);
-        paymentRepository.save(payment); // save = UPDATE vì đã có ID
+        paymentRepository.save(payment);
         return true;
     }
 
-    public Payment getPaymentByMembershipId(int membershipId) {
+    public Payment getPaymentByMembershipId(Integer membershipId) {
         return paymentRepository
                 .findTopByMembershipMembershipIdOrderByCreatedAtDesc(membershipId)
                 .orElse(null);
     }
 
-    public List<Payment> getPaymentHistory(int userId) {
-        return paymentRepository.findByUserId(userId);
+    public Payment getPaymentByClassRegistrationId(Integer classRegistrationId) {
+        return paymentRepository
+                .findTopByClassRegistrationClassRegistrationIdOrderByCreatedAtDesc(classRegistrationId).orElse(null);
     }
 
-    // ========== SCHEDULE ==========
-
-    public List<ScheduleDTO> getAllSchedules() {
-        List<Schedule> schedules = scheduleRepository.findByStatus("active");
-
-        List<ScheduleDTO> result = new ArrayList<>();
-        for (Schedule sch : schedules) {
-            result.add(new ScheduleDTO(
-                    sch,
-                    classRegRepository.countByScheduleScheduleIdAndStatus(
-                            sch.getScheduleId(), "active")
-            ));
-        }
-        return result;
+    public List<Payment> getPaymentHistory(Integer memberId) {
+        return paymentRepository.findByMemberId(memberId);
     }
 
-    public List<ScheduleDTO> getSchedulesByClub(int clubId) {
-        List<Schedule> schedules = scheduleRepository.findByClubClubIdAndStatus(clubId, "active");
-
-        List<ScheduleDTO> result = new ArrayList<>();
-        for (Schedule sch : schedules) {
-            result.add(new ScheduleDTO(
-                    sch,
-                    classRegRepository.countByScheduleScheduleIdAndStatus(
-                            sch.getScheduleId(), "active")
-            ));
-        }
-        return result;
+    public List<ClassRegistration> getClassRegistrationHistory(Integer memberId) {
+        return classRegistrationRepository
+                .findByMemberMemberIdOrderByCreatedAtDesc(memberId);
     }
 
-//    public Schedule getScheduleById(int scheduleId) {
-//        return scheduleRepository.findById(scheduleId).orElse(null);
-//    }
-//
-//    public long countRegistered(int scheduleId) {
-//        return classRegRepository.countByScheduleScheduleIdAndStatus(scheduleId, "active");
-//    }
-
-    // ========== CLASS REGISTRATION ==========
+    // ========== Register%Cancel class ==========
 
     @Transactional
-    public int registerClass(int userId, int scheduleId) {
-        // Đã đăng ký chưa?
-        if (classRegRepository.existsByUserUserIdAndScheduleScheduleIdAndStatus(
-                userId, scheduleId, "active")) return -2;
+    public int registerClass(Integer memberId, Integer classId) {
+        // Kiểm tra đã đăng ký lớp này chưa (status khác cancelled)
+        boolean existed = classRegistrationRepository
+                .existsByMemberMemberIdAndClassesClassIdAndStatusNot(
+                        memberId, classId, "cancelled");
+        if (existed) return -2; // đã đăng ký rồi
 
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
-        if (schedule == null) return -1;
+        Classes gymClass = gymClassRepository.findById(classId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
+        if (gymClass == null || member == null) return -1;
 
-        // Còn chỗ không?
-        long registered = classRegRepository.countByScheduleScheduleIdAndStatus(scheduleId, "active");
-        if (registered >= schedule.getMaxMember()) return -3;
+        // Kiểm tra còn chỗ không
+        if (gymClass.getCurentmember() >= gymClass.getMaxmember()) return -3;
 
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return -1;
-
+        // Tạo class registration
         ClassRegistration cr = new ClassRegistration();
-        cr.setUser(user);
-        cr.setSchedule(schedule);
-        classRegRepository.save(cr);
-        return 0;
+        cr.setMember(member);
+        cr.setClasses(gymClass);
+        cr.setService(gymClass.getService());
+        cr.setStartDate(LocalDate.now());
+        cr.setStatus("pending");
+
+
+        // Cập nhật số lượng current_member trong lớp
+        gymClass.setCurentmember(gymClass.getCurentmember() + 1);
+        gymClassRepository.save(gymClass);
+
+        return classRegistrationRepository.save(cr).getClassRegistrationId();
+    }
+
+    public ClassRegistration getClassRegistrationByClassRegistrationId(Integer classRegistrationId) {
+        return classRegistrationRepository.findByClassRegistrationId(classRegistrationId).orElse(null);
     }
 
     @Transactional
-    public boolean cancelClass(int registrationId, int userId) {
-        ClassRegistration cr = classRegRepository.findById(registrationId).orElse(null);
-        if (cr == null || !cr.getUser().getUserId().equals(userId)) return false;
+    public boolean cancelClass(Integer classRegistrationId, Integer memberId) {
+        ClassRegistration cr = classRegistrationRepository
+                .findByClassRegistrationIdAndMemberMemberId(classRegistrationId, memberId)
+                .orElse(null);
+        if (cr == null) return false;
+        if ("cancelled".equals(cr.getStatus())) return false; // đã huỷ rồi
+
         cr.setStatus("cancelled");
-        classRegRepository.save(cr);
+        classRegistrationRepository.save(cr);
+
+        Payment p = paymentRepository
+                .findTopByClassRegistrationClassRegistrationIdOrderByCreatedAtDesc(classRegistrationId).orElse(null);
+        p.setStatus("cancelled");
+        paymentRepository.save(p);
+
+        // Giảm số lượng current_member trong lớp
+        Classes gymClass = cr.getClasses();
+        if (gymClass.getCurentmember() > 0) {
+            gymClass.setCurentmember(gymClass.getCurentmember() - 1);
+            gymClassRepository.save(gymClass);
+        }
         return true;
     }
 
-    public List<ClassRegistration> getMyClasses(int userId) {
-        return classRegRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
-    }
+// ========== HUỶ MEMBERSHIP ==========
 
-    // ========== USER PROFILE ==========
+    @Transactional
+    public boolean cancelMembership(Integer membershipId, Integer memberId) {
+        Membership ms = membershipRepository
+                .findByMembershipIdAndMemberMemberId(membershipId, memberId)
+                .orElse(null);
+        if (ms == null) return false;
 
-    public User getProfile(int userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
+        // Chỉ cho huỷ khi đang pending (chưa được duyệt)
+        // Nếu đã active thì không cho huỷ
+        if (!"pending".equals(ms.getStatus())) return false;
 
-    public String updateProfile(int userId, String fullName, String email,
-                                String phone, String address) {
-        if (userRepository.existsByEmailAndUserIdNot(email, userId)) {
-            return "Email đã được sử dụng bởi tài khoản khác.";
-        }
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return "Không tìm thấy tài khoản.";
+        ms.setStatus("cancelled");
+        Payment p = paymentRepository
+                .findTopByMembershipMembershipIdOrderByCreatedAtDesc(membershipId).orElse(null);
+        if (p == null) return false;
+        p.setStatus("cancelled");
 
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPhone(phone);
-        user.setAddress(address);
-        userRepository.save(user);
-        return null; // null = không có lỗi
+        paymentRepository.save(p);
+        membershipRepository.save(ms);
+        return true;
     }
 }

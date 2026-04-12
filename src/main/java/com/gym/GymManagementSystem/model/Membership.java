@@ -17,11 +17,9 @@ public class Membership {
     @Column(name = "membership_id")
     private Integer membershipId;
 
-    // @ManyToOne: nhiều Membership thuộc 1 User
-    // fetch = LAZY: chỉ load User khi thực sự cần (tiết kiệm query)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_id", nullable = false)
@@ -33,15 +31,26 @@ public class Membership {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    // pending = chờ duyệt, active = đang dùng, expired = hết hạn
     @Column(name = "status", length = 20)
     private String status = "pending";
+
+    @Column(name = "note")
+    private String note;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updateAt = LocalDateTime.now();
     }
 }

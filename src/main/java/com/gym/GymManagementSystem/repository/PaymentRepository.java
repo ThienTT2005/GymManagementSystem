@@ -11,8 +11,18 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     Optional<Payment> findTopByMembershipMembershipIdOrderByCreatedAtDesc(Integer membershipId);
 
-    @Query("SELECT p FROM Payment p " +
-            "WHERE p.membership.user.userId = :userId " +
-            "ORDER BY p.createdAt DESC")
-    List<Payment> findByUserId(@Param("userId") Integer userId);
+    Optional<Payment> findTopByClassRegistrationClassRegistrationIdOrderByCreatedAtDesc(Integer classRegistrationId);
+
+    @Query("""
+    SELECT p FROM Payment p
+    LEFT JOIN p.membership m
+    LEFT JOIN m.member mm
+    LEFT JOIN p.classRegistration cr
+    LEFT JOIN cr.member cm
+    WHERE 
+        (mm.memberId = :memberId)
+     OR (cm.memberId = :memberId)
+    ORDER BY p.createdAt DESC
+""")
+    List<Payment> findByMemberId(@Param("memberId") Integer memberId);
 }

@@ -23,20 +23,33 @@ public class Package {
     @Column(name = "price", nullable = false, precision = 12, scale = 0)
     private BigDecimal price;
 
-    @Column(name = "duration_month", nullable = false)
+    //change days->months
+    @Column(name = "duration_months", nullable = false)
     private Integer durationMonth;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "status", length = 20)
-    private String status = "active";
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updateAt = LocalDateTime.now();
     }
 }

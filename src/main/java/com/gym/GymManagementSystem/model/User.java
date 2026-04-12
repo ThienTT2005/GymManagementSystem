@@ -3,16 +3,18 @@ package com.gym.GymManagementSystem.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-@Data               // Lombok: tự tạo getter, setter, toString, equals
-@NoArgsConstructor  // Lombok: tự tạo constructor rỗng (JPA bắt buộc phải có)
+@Data
+@NoArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer userId;
 
@@ -22,29 +24,29 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "full_name", length = 100)
-    private String fullName;
+    // Liên kết tới bảng roles
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
-    @Column(name = "email", unique = true, length = 100)
-    private String email;
-
-    @Column(name = "phone", length = 20)
-    private String phone;
-
-    @Column(name = "address", length = 255)
-    private String address;
-
-    @Column(name = "role_id")
-    private Integer roleId;
-
+    // "Active" hoặc "Block"
     @Column(name = "status", length = 20)
-    private String status = "active";
+    private String status = "Active";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @PrePersist // Tự động set thời gian khi INSERT
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

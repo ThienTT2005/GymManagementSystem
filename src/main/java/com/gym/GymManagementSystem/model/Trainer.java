@@ -3,6 +3,7 @@ package com.gym.GymManagementSystem.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,39 +15,42 @@ public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trainer_id")
-    private Integer trainerId;
+    private Long trainerId;
 
-    @Column(name = "trainer_name", nullable = false, length = 100)
-    private String trainerName;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", nullable = false, unique = true)
+    private Staff staff;
 
-    @Column(name = "phone", length = 20)
-    private String phone;
-
-    @Column(name = "email", length = 100)
-    private String email;
-
-    @Column(name = "specialty", length = 100)
+    @Column(name = "specialty")
     private String specialty;
 
-    @Column(name = "experience_year")
-    private Integer experienceYear;
+    @Column(name = "experience", columnDefinition = "TEXT")
+    private String experience;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id")
-    private Club club;
+    @Column(name = "certifications", columnDefinition = "TEXT")
+    private String certifications;
 
-    @Column(name = "image", length = 255)
-    private String image;
+    @Column(name = "photo")
+    private String photo;
 
-    @Column(name = "status", length = 20)
-    private String status = "active";
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updateAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updateAt = LocalDateTime.now();
     }
 }
 
