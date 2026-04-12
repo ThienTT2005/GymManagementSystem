@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -66,14 +67,20 @@
                             <p>Đăng nhập vào tài khoản CodeGym của bạn để theo dõi tiến trình.</p>
                         </div>
 
+                        <c:if test="${param.error != null}">
+                            <div style="background-color: #fce8e8; color: #b7170e; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; border: 1px solid #f5c6cb; font-weight: 500;">
+                                Sai thông tin vui lòng nhập lại
+                            </div>
+                        </c:if>
+
                         <!-- Login Type Tabs -->
                         <div class="role-tabs">
-                            <button class="role-btn active" onclick="setRole('customer', this)">Customer</button>
-                            <button class="role-btn" onclick="setRole('staff', this)">Staff</button>
+                            <button class="role-btn active" onclick="setRole('member', this)">Hội viên</button>
+                            <button class="role-btn" onclick="setRole('staff', this)">Nhân viên</button>
                         </div>
 
                         <form action="${pageContext.request.contextPath}/login" method="POST">
-                            <input type="hidden" id="role" name="role" value="customer">
+                            <input type="hidden" id="role" name="role" value="member">
 
                             <div class="input-group">
                                 <label for="user">Tên đăng nhập (Username)</label>
@@ -96,12 +103,11 @@
                                 </div>
                             </div>
 
-                            <div class="form-options">
-                                <label class="remember-me">
-                                    <input type="checkbox" />
-                                    <span>Remember me</span>
-                                </label>
-                                <a class="forgot-password" href="#">Quên mật khẩu?</a>
+                            <div class="form-options" style="flex-direction: column; align-items: flex-start;">
+                                <a class="forgot-password" href="javascript:void(0)" onclick="showHotline()">Quên mật khẩu?</a>
+                                <div id="hotlineMessage" style="display: none; margin-top: 8px; color: #414753; font-size: 13px;">
+                                    Hãy liên hệ hotline <strong style="color: #b7170e;">0355 151 178</strong> để được hỗ trợ.
+                                </div>
                             </div>
 
                             <button class="btn-primary" type="submit">
@@ -110,38 +116,7 @@
                             </button>
                         </form>
 
-                        <div class="divider">
-                            <span>or continue with</span>
-                        </div>
 
-                        <div class="social-login">
-                            <button>
-                                <svg class="w-5 h-5" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-                                    <path
-                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                        fill="#4285F4"></path>
-                                    <path
-                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                        fill="#34A853"></path>
-                                    <path
-                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                        fill="#FBBC05"></path>
-                                    <path
-                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                        fill="#EA4335"></path>
-                                </svg>
-                                Google
-                            </button>
-                            <button>
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
-                                    style="width: 20px; height: 20px;">
-                                    <path
-                                        d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8.13 9.77v-6.9H7.63v-2.87h2.5V9.75c0-2.47 1.47-3.83 3.72-3.83 1.08 0 2.2.19 2.2.19v2.42h-1.24c-1.23 0-1.61.76-1.61 1.54v1.85h2.72l-.44 2.87h-2.28v6.9C18.56 20.87 22 16.84 22 12z">
-                                    </path>
-                                </svg>
-                                Facebook
-                            </button>
-                        </div>
 
                         <p class="signup-prompt">
                             New to CodeGym?
@@ -165,6 +140,15 @@
 
                 // Add active class to clicked button
                 element.classList.add('active');
+            }
+
+            function showHotline() {
+                const message = document.getElementById('hotlineMessage');
+                if (message.style.display === 'none') {
+                    message.style.display = 'block';
+                } else {
+                    message.style.display = 'none';
+                }
             }
 
             function togglePassword() {

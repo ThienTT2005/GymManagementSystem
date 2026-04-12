@@ -61,7 +61,23 @@ public class LoginController {
             return "redirect:/pages/login.jsp?error=1";
         }
 
-        String roleName = user.getRole() != null ? user.getRole() : "MEMBER";
+        String roleName = user.getRole() != null ? user.getRole().toUpperCase() : "MEMBER";
+
+        // Logic phân quyền nghiêm ngặt: kiểm tra role chọn từ UI có khớp với Role trong DB không
+        boolean isStaffRole = "ADMIN".equals(roleName) || "STAFF".equals(roleName);
+        boolean isMemberRole = "MEMBER".equals(roleName);
+
+        boolean roleMismatch = false;
+        if ("staff".equalsIgnoreCase(role) && !isStaffRole) {
+            roleMismatch = true;
+        } else if ("member".equalsIgnoreCase(role) && !isMemberRole) {
+            roleMismatch = true;
+        }
+
+        if (roleMismatch) {
+            return "redirect:/pages/login.jsp?error=1";
+        }
+
         session.setAttribute("loggedInUser", new LoggedInUser(
                 user.getFullName(),
                 roleName,
@@ -69,18 +85,12 @@ public class LoginController {
                 user.getPhone(),
                 user.getUserId()));
 
-        if ("staff".equalsIgnoreCase(role)) {
-            if ("ADMIN".equalsIgnoreCase(roleName) || "STAFF".equalsIgnoreCase(roleName)) {
-                return "redirect:/admin/dashboard";
-            }
+        // Chuyển hướng dựa trên role đã được xác thực
+        if (isStaffRole) {
+            return "redirect:/admin/dashboard";
+        } else {
             return "redirect:/member/dashboard";
         }
-
-        if ("MEMBER".equalsIgnoreCase(roleName)) {
-            return "redirect:/member/dashboard";
-        }
-
-        return "redirect:/";
     }
 
     @GetMapping({ "/logout" })

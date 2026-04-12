@@ -1,0 +1,2 @@
+@Entity @Table(name = "trainers") @Data
+public class Trainer { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer trainerId; private String trainerName; private Integer clubId; private String specialty; }
