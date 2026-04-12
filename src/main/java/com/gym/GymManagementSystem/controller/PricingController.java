@@ -19,7 +19,7 @@ public class PricingController {
 
     @GetMapping("/pricing")
     public String showPricing(Model model) {
-        List<GymPackage> packages = packageRepository.findAll();
+        List<GymPackage> packages = packageRepository.findAllByStatus(1);
         model.addAttribute("packages", packages);
         return "pages/pricing";
     }

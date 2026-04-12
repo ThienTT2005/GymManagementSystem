@@ -77,6 +77,14 @@ public class News {
         this.type = type;
     }
 
+    public String getCategory() {
+        return type;
+    }
+
+    public void setCategory(String category) {
+        this.type = category;
+    }
+
     public Integer getStatus() {
         return status;
     }

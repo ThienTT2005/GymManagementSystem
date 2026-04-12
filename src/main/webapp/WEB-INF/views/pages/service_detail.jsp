@@ -17,7 +17,6 @@
 <jsp:include page="/components/header.jsp" />
 
 <main class="zumba-page page-transition-main">
-    <!-- Banner -->
     <section class="zumba-banner">
         <c:choose>
             <c:when test="${not empty service.image}">
@@ -35,7 +34,6 @@
         </div>
     </section>
 
-    <!-- Giới thiệu -->
     <section class="zumba-intro">
         <div class="zumba-intro-text">
             <h2 class="section-title"><c:out value="${fn:toUpperCase(service.serviceName)}" /></h2>
@@ -63,7 +61,6 @@
         </div>
     </section>
 
-    <!-- Thông số (đã đổi thời lượng sang Giá) -->
     <section class="zumba-info-section">
         <div class="zumba-info-grid">
             <div class="zumba-info-card">
@@ -115,7 +112,6 @@
         </div>
     </section>
 
-    <!-- Lợi ích (để mặc định không sửa) -->
     <section class="zumba-benefits-section">
         <div class="zumba-benefits-header">
             <img

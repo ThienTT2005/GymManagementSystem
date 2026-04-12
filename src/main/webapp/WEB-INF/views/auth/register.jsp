@@ -197,23 +197,6 @@
             }
         }
     </style>
-
-    <script>
-        function validateForm() {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-            const errorClient = document.getElementById("errorClient");
-
-            errorClient.innerText = "";
-
-            if (password !== confirmPassword) {
-                errorClient.innerText = "Mật khẩu không khớp";
-                return false;
-            }
-
-            return true;
-        }
-    </script>
 </head>
 <body>
 <div class="container">

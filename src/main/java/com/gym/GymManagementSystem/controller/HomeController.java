@@ -39,4 +39,9 @@ public class HomeController {
 
         return "pages/index";
     }
+
+    @GetMapping("/pages/register")
+    public String showTrialRegisterPage() {
+        return "pages/register";
+    }
 }

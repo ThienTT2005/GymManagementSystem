@@ -91,13 +91,13 @@
     </div>
 
     <c:choose>
-        <c:when test="${not empty memberNews.newsList}">
+        <c:when test="${not empty memberNews}">
             <div class="promo-news-grid">
-                <c:forEach var="item" items="${memberNews.newsList}">
+                <c:forEach var="item" items="${memberNews}">
                     <article class="promo-news-card">
                         <a href="${pageContext.request.contextPath}/news/${item.postId}">
                             <img class="promo-news-card-image"
-                                 src="${pageContext.request.contextPath}${item.image}"
+                                 src="${pageContext.request.contextPath}${not empty item.image ? item.image : '/images/banner-tin-tuc-8.png'}"
                                  alt="${item.title}">
                         </a>
 
@@ -113,12 +113,19 @@
 
                             <div class="promo-news-card-title">
                                 <a href="${pageContext.request.contextPath}/news/${item.postId}" style="text-decoration: none; color: inherit;">
-                                        ${item.title}
+                                    <c:out value="${item.title}" />
                                 </a>
                             </div>
 
                             <div class="promo-news-card-content">
-                                    ${fn:replace(item.content, '. ', '.<br/>')}
+                                <c:choose>
+                                    <c:when test="${not empty item.content}">
+                                        ${fn:replace(item.content, '. ', '.<br/>')}
+                                    </c:when>
+                                    <c:otherwise>
+                                        Nội dung đang được cập nhật.
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
 
                             <div class="promo-news-card-date">

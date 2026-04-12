@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PackageRepository extends JpaRepository<GymPackage, Integer> {
@@ -20,4 +21,6 @@ public interface PackageRepository extends JpaRepository<GymPackage, Integer> {
     boolean existsByPackageNameIgnoreCase(String packageName);
 
     boolean existsByPackageNameIgnoreCaseAndPackageIdNot(String packageName, Integer packageId);
+
+    List<GymPackage> findAllByStatus(Integer status);
 }

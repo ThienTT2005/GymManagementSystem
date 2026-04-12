@@ -1,11 +1,15 @@
 package com.gym.GymManagementSystem.dto;
 
+import java.time.LocalDate;
+
 public class TrialRequestDTO {
     private String fullName;
     private String phone;
     private String email;
     private String gender;
     private String message;
+    private LocalDate preferredDate;
+    private String note;
 
     public String getFullName() {
         return fullName;
@@ -43,7 +47,23 @@ public class TrialRequestDTO {
         return message;
     }
 
+    public LocalDate getPreferredDate() {
+        return preferredDate;
+    }
+
+    public void setPreferredDate(LocalDate preferredDate) {
+        this.preferredDate = preferredDate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }
