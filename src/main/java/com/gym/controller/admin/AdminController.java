@@ -17,7 +17,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        if (!user.getRole().getRoleName().equals("Admin")) {
+        if (!user.getRole().getRoleName().equals("ADMIN")) {
             return "redirect:/error/403";
         }
 

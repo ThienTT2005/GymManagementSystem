@@ -17,7 +17,7 @@ public class TrainerController {
             return "redirect:/login";
         }
 
-        if (!user.getRole().getRoleName().equals("Trainer")) {
+        if (!user.getRole().getRoleName().equals("TRAINER")) {
             return "redirect:/error/403";
         }
 

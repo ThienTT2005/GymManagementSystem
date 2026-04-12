@@ -13,7 +13,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                              Object handler) throws Exception {
 
         HttpSession session = request.getSession();
-
+ 
         if (session.getAttribute("user") == null) {
             response.sendRedirect("/login");
             return false;

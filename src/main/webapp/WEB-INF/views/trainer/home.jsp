@@ -37,8 +37,8 @@
 <body>
 
 <div class="box">
-    <h1>Member Dashboard</h1>
-    <p>Xin chào: <b><%= user.getFullName() %></b></p>
+    <h1>Trainer Dashboard</h1>
+    <p>Xin chào: <b><%= user.getUsername() %></b></p>
 
     <br>
     <a href="/logout" class="btn">Logout</a>

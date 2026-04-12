@@ -37,14 +37,14 @@ public class AuthService {
             return null;
         }
 
-        if (!"Active".equalsIgnoreCase(user.getStatus())) {
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
             return null;
         }
 
         return user;
     }
 
-    public void register(String username, String password, String fullName) {
+    public void register(String username, String password) {
 
         if (userRepo.findByUsername(username) != null) {
             return;
@@ -53,10 +53,9 @@ public class AuthService {
         User user = new User();
         user.setUsername(username);
         user.setPassword(PasswordUtil.hash(password));
-        user.setFullName(fullName);
-        user.setStatus("Active");
+        user.setStatus("ACTIVE");
 
-        Role role = roleRepo.findByRoleName("Member");
+        Role role = roleRepo.findByRoleName("MEMBER");
         user.setRole(role);
 
         userRepo.save(user);

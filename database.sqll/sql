@@ -1,108 +1,204 @@
--- Tạo Database mới
-DROP DATABASE IF EXISTS GymManagement;
-CREATE DATABASE GymManagement CHARACTER SET utf8mb4;
-USE GymManagement;
+-- RESET DATABASE
+DROP DATABASE IF EXISTS gym_management;
+CREATE DATABASE gym_management;
+USE gym_management;
 
--- 1. Roles
+-- 1. ROLES
 CREATE TABLE roles (
     role_id INT PRIMARY KEY AUTO_INCREMENT,
     role_name VARCHAR(50) NOT NULL
-);
+) ENGINE=InnoDB;
 
--- 2. Clubs
-CREATE TABLE clubs (
-    club_id INT PRIMARY KEY AUTO_INCREMENT,
-    club_name VARCHAR(100) NOT NULL,
-    address TEXT,
-    phone VARCHAR(20)
-);
-
--- 3. Users
+-- 2. USERS
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100),
-    role_id INT,
-    status VARCHAR(20) DEFAULT 'Active',
+    status VARCHAR(20),
+    role_id INT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
-);
+) ENGINE=InnoDB;
 
--- 4. Trainers
+-- 3. MEMBERS
+CREATE TABLE members (
+    member_id INT PRIMARY KEY AUTO_INCREMENT,
+    fullname VARCHAR(255),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    address VARCHAR(255),
+    gender VARCHAR(10),
+    dob DATE,
+    status TINYINT,
+    avatar VARCHAR(255),
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
+
+-- 4. STAFF
+CREATE TABLE staff (
+    staff_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    full_name VARCHAR(255),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    address VARCHAR(255),
+    gender VARCHAR(10),
+    dob DATE,
+    position VARCHAR(100),
+    salary DOUBLE,
+    hire_date DATE,
+    note TEXT,
+    status TINYINT,
+    avatar VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
+
+-- 5. TRAINERS
 CREATE TABLE trainers (
     trainer_id INT PRIMARY KEY AUTO_INCREMENT,
-    trainer_name VARCHAR(100),
-    club_id INT,
-    specialty VARCHAR(100),
-    FOREIGN KEY (club_id) REFERENCES clubs(club_id)
-);
+    staff_id INT NOT NULL,
+    specialty VARCHAR(255),
+    experience INT,
+    certifications TEXT,
+    photo VARCHAR(255),
+    status TINYINT,
+    FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+) ENGINE=InnoDB;
 
--- 5. Services
-CREATE TABLE services (
-    service_id INT PRIMARY KEY AUTO_INCREMENT,
-    service_name VARCHAR(100),
-    description TEXT
-);
-
--- 6. Packages
+-- 6. PACKAGES
 CREATE TABLE packages (
     package_id INT PRIMARY KEY AUTO_INCREMENT,
-    package_name VARCHAR(100),
-    price DECIMAL(10, 2),
-    duration_month INT
-);
+    package_name VARCHAR(255),
+    price DOUBLE,
+    duration_months INT,
+    description TEXT,
+    image VARCHAR(255),
+    status TINYINT
+) ENGINE=InnoDB;
 
--- 7. Schedules
-CREATE TABLE schedules (
-    schedule_id INT PRIMARY KEY AUTO_INCREMENT,
+-- 7. SERVICES
+CREATE TABLE services (
+    service_id INT PRIMARY KEY AUTO_INCREMENT,
+    service_name VARCHAR(255),
+    price DOUBLE,
+    description TEXT,
+    image VARCHAR(255),
+    status TINYINT
+) ENGINE=InnoDB;
+
+-- 8. CLASSES
+CREATE TABLE classes (
+    class_id INT PRIMARY KEY AUTO_INCREMENT,
+    class_name VARCHAR(255),
     service_id INT,
     trainer_id INT,
-    club_id INT,
+    max_member INT,
+    current_member INT,
+    description TEXT,
+    status TINYINT,
+    FOREIGN KEY (service_id) REFERENCES services(service_id),
+    FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id)
+) ENGINE=InnoDB;
+
+-- 9. SCHEDULES
+CREATE TABLE schedules (
+    schedule_id INT PRIMARY KEY AUTO_INCREMENT,
+    class_id INT,
     day_of_week VARCHAR(20),
     start_time TIME,
-    FOREIGN KEY (service_id) REFERENCES services(service_id),
-    FOREIGN KEY (trainer_id) REFERENCES trainers(trainer_id),
-    FOREIGN KEY (club_id) REFERENCES clubs(club_id)
-);
+    end_time TIME,
+    status TINYINT,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id)
+) ENGINE=InnoDB;
 
--- 8. Memberships
+-- 10. MEMBERSHIPS
 CREATE TABLE memberships (
     membership_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
+    member_id INT,
     package_id INT,
     start_date DATE,
     end_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    status TINYINT,
+    note TEXT,
+    FOREIGN KEY (member_id) REFERENCES members(member_id),
     FOREIGN KEY (package_id) REFERENCES packages(package_id)
-);
+) ENGINE=InnoDB;
 
--- 9. Payments
+-- 11. CLASS_REGISTRATIONS
+CREATE TABLE class_registrations (
+    class_registration_id INT PRIMARY KEY AUTO_INCREMENT,
+    member_id INT,
+    class_id INT,
+    service_id INT,
+    start_date DATE,
+    end_date DATE,
+    registration_date DATE,
+    status TINYINT,
+    note TEXT,
+    FOREIGN KEY (member_id) REFERENCES members(member_id),
+    FOREIGN KEY (class_id) REFERENCES classes(class_id),
+    FOREIGN KEY (service_id) REFERENCES services(service_id)
+) ENGINE=InnoDB;
+
+-- 12. PAYMENTS
 CREATE TABLE payments (
     payment_id INT PRIMARY KEY AUTO_INCREMENT,
-    membership_id INT,
-    amount DECIMAL(10, 2),
-    status VARCHAR(20) DEFAULT 'Pending',
-    FOREIGN KEY (membership_id) REFERENCES memberships(membership_id)
-);
+    membership_id INT NULL,
+    class_registration_id INT NULL,
+    amount DOUBLE,
+    payment_method VARCHAR(50),
+    payment_date DATETIME,
+    proof_image VARCHAR(255),
+    status VARCHAR(20),
+    note TEXT,
+    FOREIGN KEY (membership_id) REFERENCES memberships(membership_id),
+    FOREIGN KEY (class_registration_id) REFERENCES class_registrations(class_registration_id)
+) ENGINE=InnoDB;
 
--- 10. Class_Registrations
-CREATE TABLE class_registrations (
-    registration_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    schedule_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_id)
-);
-
--- 11. Trial_Registrations
-CREATE TABLE trial_registrations (
+-- 13. TRIAL_REQUESTS
+CREATE TABLE trial_requests (
     trial_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100), phone VARCHAR(20), club_id INT,
-    FOREIGN KEY (club_id) REFERENCES clubs(club_id)
-);
+    fullname VARCHAR(255),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    preferred_date DATE,
+    status VARCHAR(50),
+    note TEXT
+) ENGINE=InnoDB;
 
--- 12. News
-CREATE TABLE news (news_id INT PRIMARY KEY AUTO_INCREMENT, title VARCHAR(255), content TEXT);
+-- 14. CONSULTATIONS
+CREATE TABLE consultations (
+    consultation_id INT PRIMARY KEY AUTO_INCREMENT,
+    fullname VARCHAR(255),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    status VARCHAR(50)
+) ENGINE=InnoDB;
 
--- 13. Contacts
-CREATE TABLE contacts (contact_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), message TEXT);
+-- 15. NEWS
+CREATE TABLE news (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255),
+    content TEXT,
+    category VARCHAR(100),
+    image VARCHAR(255),
+    status TINYINT
+) ENGINE=InnoDB;
+
+-- 16. NOTIFICATIONS
+CREATE TABLE notifications (
+    notification_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    title VARCHAR(255),
+    message TEXT,
+    is_read TINYINT,
+    content TEXT,
+    target_url VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+) ENGINE=InnoDB;
+
+-- DATA
+INSERT INTO roles (role_name) VALUES ('ADMIN'), ('MEMBER'), ('TRAINER');
+
+INSERT INTO users (username, password, role_id, status)
+VALUES ('admin', '123', 1, 'ACTIVE');

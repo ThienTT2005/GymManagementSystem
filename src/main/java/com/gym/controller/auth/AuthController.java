@@ -18,7 +18,7 @@ public class AuthController {
     @Autowired
     private UserRepository userRepo;
 
-    // ====== VIEW ======
+
     @GetMapping("/login")
     public String loginPage() {
         return "auth/login";
@@ -29,7 +29,7 @@ public class AuthController {
         return "auth/register";
     }
 
-    // ====== LOGIN ======
+
     @PostMapping("/login")
     public String login(
             @RequestParam String username,
@@ -58,28 +58,33 @@ public class AuthController {
         // phân quyền
         String role = user.getRole().getRoleName();
 
-        if (role.equalsIgnoreCase("Admin")) {
+        if (role.equalsIgnoreCase("ADMIN")) {
             return "redirect:/admin/home";
         }
 
-        if (role.equalsIgnoreCase("Member")) {
+        if (role.equalsIgnoreCase("MEMBER")) {
             return "redirect:/member/home";
+        }
+        if (role.equalsIgnoreCase("TRAINER")) {
+            return "redirect:/trainer/home";
+        }
+        if (role.equalsIgnoreCase("RECEPTIONIST")) {
+            return "redirect:/receptionist/home";
         }
 
         return "redirect:/login";
     }
 
-    // ====== REGISTER ======
+
     @PostMapping("/register")
     public String register(
             @RequestParam String username,
             @RequestParam String password,
             @RequestParam String confirmPassword,
-            @RequestParam String fullName,
             Model model
     ) {
 
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || fullName.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             model.addAttribute("error", "Vui lòng nhập đầy đủ");
             return "auth/register";
         }
@@ -94,12 +99,11 @@ public class AuthController {
             return "auth/register";
         }
 
-        authService.register(username, password, fullName);
+        authService.register(username, password);
 
         return "redirect:/login";
     }
 
-    // ====== LOGOUT ======
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
