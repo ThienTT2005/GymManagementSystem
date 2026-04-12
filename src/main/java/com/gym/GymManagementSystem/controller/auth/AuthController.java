@@ -1,6 +1,7 @@
 package com.gym.GymManagementSystem.controller.auth;
 
 import com.gym.GymManagementSystem.model.User;
+import com.gym.GymManagementSystem.repository.UserRepository;
 import com.gym.GymManagementSystem.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, UserRepository userRepository) {
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/login")
@@ -45,15 +48,15 @@ public class AuthController {
                         Model model) {
 
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            model.addAttribute("errorMessage", "Vui lòng nhập đầy đủ username và password");
+            model.addAttribute("error", "Vui lòng nhập đầy đủ username và password");
             model.addAttribute("username", username);
             return "auth/login";
         }
 
-        User user = authService.login(username, password);
+        User user = authService.login(username.trim(), password);
 
         if (user == null) {
-            model.addAttribute("errorMessage", "Sai tài khoản, mật khẩu hoặc tài khoản đã bị khóa");
+            model.addAttribute("error", "Sai tài khoản, mật khẩu hoặc tài khoản đã bị khóa");
             model.addAttribute("username", username);
             return "auth/login";
         }
@@ -70,28 +73,30 @@ public class AuthController {
     public String register(@RequestParam String username,
                            @RequestParam String password,
                            @RequestParam String confirmPassword,
-                           @RequestParam String fullName,
                            Model model) {
 
-        if (username == null || username.isBlank()
-                || password == null || password.isBlank()
-                || confirmPassword == null || confirmPassword.isBlank()
-                || fullName == null || fullName.isBlank()) {
+        username = username == null ? "" : username.trim();
+
+        if (username.isBlank() || password == null || password.isBlank()
+                || confirmPassword == null || confirmPassword.isBlank()) {
             model.addAttribute("error", "Vui lòng nhập đầy đủ");
+            model.addAttribute("username", username);
             return "auth/register";
         }
 
         if (!password.equals(confirmPassword)) {
             model.addAttribute("error", "Mật khẩu không khớp");
+            model.addAttribute("username", username);
             return "auth/register";
         }
 
-        if (authService.existsByUsername(username)) {
+        if (userRepository.findByUsername(username).isPresent()) {
             model.addAttribute("error", "Tài khoản đã tồn tại");
+            model.addAttribute("username", username);
             return "auth/register";
         }
 
-        authService.register(username, password, fullName);
+        authService.register(username, password);
         return "redirect:/login";
     }
 
@@ -108,15 +113,10 @@ public class AuthController {
     }
 
     private String resolveRoleName(User user) {
-        if (user == null) {
+        if (user == null || user.getRole() == null || user.getRole().getRoleName() == null) {
             return null;
         }
-
-        try {
-            return user.getRoleName();
-        } catch (Exception e) {
-            return null;
-        }
+        return user.getRole().getRoleName();
     }
 
     private String getRedirectByRole(String roleName) {
@@ -132,7 +132,6 @@ public class AuthController {
         if ("MEMBER".equalsIgnoreCase(roleName)) {
             return "/member/dashboard";
         }
-
         return "/login";
     }
 }

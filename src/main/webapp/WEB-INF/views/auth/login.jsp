@@ -1,121 +1,250 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>Đăng nhập</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            text-align: center;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            background: url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .left {
+            width: 42%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .right {
+            width: 58%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .ad-box {
+            max-width: 520px;
+        }
+
+        .ad-box h1 {
+            font-size: 42px;
+            margin-bottom: 18px;
+            line-height: 1.2;
+        }
+
+        .ad-box p {
+            font-size: 18px;
+            opacity: 0.95;
+            line-height: 1.7;
         }
 
         .box {
-            margin: 100px auto;
-            width: 320px;
-            padding: 24px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        h2 {
-            color: #d32f2f;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-
-        input {
             width: 100%;
-            padding: 10px 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
+            max-width: 410px;
+            padding: 42px 34px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            text-align: center;
         }
 
-        button {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        button:hover {
-            background: #b71c1c;
+        .box h2 {
+            color: #ff4d4f;
+            margin-bottom: 22px;
+            font-size: 30px;
         }
 
         .error {
-            color: red;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(255, 77, 79, 0.18);
+            border: 1px solid rgba(255, 77, 79, 0.35);
+            color: #ffe1e1;
+            font-size: 14px;
+            text-align: left;
         }
 
-        .links {
-            margin-top: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .form-group {
+            margin-bottom: 14px;
         }
 
-        .links a {
-            color: #d32f2f;
-            text-decoration: none;
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.88);
+            color: #222;
             font-size: 14px;
         }
 
-        .links a:hover {
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 61, 61, 0.25);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            margin-top: 4px;
+            background: linear-gradient(45deg, #ff3d3d, #c62828);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-login:hover {
+            box-shadow: 0 0 16px rgba(255, 0, 0, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .link {
+            margin-top: 18px;
+        }
+
+        .link a {
+            color: #ffffff;
+            text-decoration: none;
+            display: block;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .link a:hover {
             text-decoration: underline;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left,
+            .right {
+                width: 100%;
+            }
+
+            .left {
+                min-height: 60vh;
+            }
+
+            .right {
+                min-height: 40vh;
+                padding-top: 0;
+            }
+
+            .ad-box h1 {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .left,
+            .right {
+                padding: 20px;
+            }
+
+            .box {
+                padding: 30px 22px;
+            }
+
+            .ad-box h1 {
+                font-size: 28px;
+            }
+
+            .ad-box p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+<div class="container">
+    <div class="left">
+        <div class="box">
+            <h2>Đăng nhập</h2>
 
-<div class="box">
-    <h2>Đăng nhập</h2>
+            <c:if test="${not empty error}">
+                <div class="error">${error}</div>
+            </c:if>
 
-    <c:if test="${not empty errorMessage}">
-        <p class="error">${errorMessage}</p>
-    </c:if>
+            <form action="${pageContext.request.contextPath}/login" method="post">
+                <div class="form-group">
+                    <input type="text"
+                           name="username"
+                           placeholder="Tên đăng nhập"
+                           value="${username}"
+                           autocomplete="username"
+                           required>
+                </div>
 
-    <form action="${pageContext.request.contextPath}/login" method="post" autocomplete="off">
-        <input type="text"
-               name="username"
-               placeholder="Username"
-               value="${username}"
-               autocomplete="off" />
+                <div class="form-group">
+                    <input type="password"
+                           name="password"
+                           placeholder="Mật khẩu"
+                           autocomplete="current-password"
+                           required>
+                </div>
 
-        <input type="password"
-               name="password"
-               placeholder="Password"
-               autocomplete="new-password" />
+                <button type="submit" class="btn-login">Đăng nhập</button>
+            </form>
 
-        <button type="submit">Đăng nhập</button>
-    </form>
+            <div class="link">
+                <a href="${pageContext.request.contextPath}/register">Chưa có tài khoản? Đăng ký</a>
+                <a href="${pageContext.request.contextPath}/">Về trang chủ</a>
+            </div>
+        </div>
+    </div>
 
-    <div class="links">
-        <a href="${pageContext.request.contextPath}/register">Chưa có tài khoản? Đăng ký</a>
-        <a href="${pageContext.request.contextPath}/">Về trang chủ</a>
+    <div class="right">
+        <div class="ad-box">
+            <h1>Transform Your Body</h1>
+            <p>
+                Tham gia phòng gym hiện đại với huấn luyện viên chuyên nghiệp.
+                Tăng cơ, giảm mỡ, nâng cao sức khỏe ngay hôm nay.
+            </p>
+        </div>
     </div>
 </div>
-
-<script>
-    window.onload = function() {
-        const passwordInput = document.querySelector("input[type='password']");
-        if (passwordInput) {
-            passwordInput.value = "";
-        }
-    };
-</script>
 </body>
 </html>
