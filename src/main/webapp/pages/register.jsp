@@ -57,26 +57,20 @@
             <div class="intro-content">
                 <h2 class="section-title">ĐẾN CODEGY, TẬP LUYỆN<br>ĐA DẠNG BỘ MÔN</h2>
                 <div class="divider"></div>
-                <p style="font-size: 30px; margin-top: 40px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur exercitationem labore, ipsum cumque distinctio aliquam aperiam eaque quis. Vero sunt animi ipsum molestiae, ratione deleniti nesciunt debitis error aspernatur autem.</p>
+                <p style="font-size: 30px; margin-top: 40px;">Tại CODEGY, chúng tôi mang đến hệ thống tập luyện đẳng cấp với các bộ môn từ nhảy hiện đại, võ thuật tự vệ đến các bài tập cân bằng thân tâm. Dù mục tiêu của bạn là giảm cân, tăng cơ hay giải tỏa căng thẳng, chúng tôi luôn có lộ trình phù hợp dành riêng cho bạn.</p>
             </div>
             <div class="intro-images">
                 <div class="intro-img-wrapper">
                     <img src="../images/banner-de-xuat-8.png" alt="Gym facility" class="intro-img">
                     <img src="../images/banner-de-xuat-8.png" alt="Gym facility" class="intro-img">
                 </div>
-                <p style="font-size: 24px; color: black; margin-top: 10px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime veritatis, hic, illo, totam labore quos dolor ratione optio error minima sint quisquam quae consectetur ea nam doloribus possimus nulla commodi.</p>
+                <p style="font-size: 24px; color: black; margin-top: 10px;">Máy móc nhập khẩu 100%, chuẩn quốc tế, hỗ trợ tối đa lộ trình bứt phá vóc dáng.</p>
             </div>
         </section>
 
         <!-- Location Section -->
         <section class="location-section">
             <div class="location-grid">
-                <div class="location-card">
-                    <img src="../images/LB.jpg" alt="Long Biên">
-                    <div class="location-overlay">
-                        <p class="location-name">LONG BIÊN</p>
-                    </div>
-                </div>
                 <div class="location-card">
                     <img src="../images/HÀ ĐÔNG.jpg" alt="Hà Đông">
                     <div class="location-overlay">
@@ -85,9 +79,11 @@
                 </div>
             </div>
             <div class="location-content">
-                <h2 class="section-title">ĐẾN CODEGY, TẬP LUYỆN<br>ĐA DẠNG BỘ MÔN</h2>
+                <h2 class="section-title">HỆ THỐNG PHÒNG TẬP<br>HIỆN ĐẠI & ĐẲNG CẤP</h2>
                 <div class="divider"></div>
-                <p style="font-size: 30px; margin-top: 40px;">TEXT</p>
+                <p style="font-size: 30px; margin-top: 40px;">CODEGYM tự hào sở hữu không gian tập luyện với thiết kế hiện đại, tối ưu hóa diện tích và ánh sáng.
+                    Mỗi khu vực được phân chia khoa học, giúp bạn luôn tìm thấy cảm hứng và sự tập trung cao nhất
+                    trong từng bài tập.</p>
             </div>
         </section>
 
