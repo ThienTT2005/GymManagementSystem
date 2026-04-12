@@ -56,8 +56,11 @@ public class RoleInterceptor implements HandlerInterceptor {
     private String resolveRoleName(HttpSession session, User user) {
         if (session != null) {
             Object sessionRole = session.getAttribute("roleName");
-            if (sessionRole instanceof String roleName && !roleName.isBlank()) {
-                return roleName;
+            if (sessionRole instanceof String) {
+                String roleName = (String) sessionRole;
+                if (!roleName.isBlank()) {
+                    return roleName;
+                }
             }
         }
 

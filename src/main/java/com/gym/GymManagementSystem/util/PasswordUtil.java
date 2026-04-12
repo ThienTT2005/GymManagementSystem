@@ -19,4 +19,7 @@ public class PasswordUtil {
         }
         return encoder.matches(rawPassword, hashedPassword);
     }
+    public static boolean check(String rawPassword, String hashedPassword) {
+    	return verify(rawPassword, hashedPassword);
+    }
 }

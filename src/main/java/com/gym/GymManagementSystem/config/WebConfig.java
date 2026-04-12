@@ -28,28 +28,30 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/admin/**", "/trainer/**", "/member/**", "/receptionist/**")
-                .excludePathPatterns(
-                        "/login",
-                        "/logout",
-                        "/register",
-                        "/assets/**",
-                        "/uploads/**",
-                        "/error",
-                        "/favicon.ico"
-                );
+        .addPathPatterns("/admin/**", "/trainer/**", "/member/**", "/receptionist/**")
+        .excludePathPatterns(
+                "/login",
+                "/logout",
+                "/register",
+                "/assets/**",
+                "/uploads/**",
+                "/error",
+                "/403",
+                "/favicon.ico"
+        );
 
-        registry.addInterceptor(roleInterceptor)
-                .addPathPatterns("/admin/**", "/trainer/**", "/member/**", "/receptionist/**")
-                .excludePathPatterns(
-                        "/login",
-                        "/logout",
-                        "/register",
-                        "/assets/**",
-                        "/uploads/**",
-                        "/error",
-                        "/favicon.ico"
-                );
+	registry.addInterceptor(roleInterceptor)
+        .addPathPatterns("/admin/**", "/trainer/**", "/member/**", "/receptionist/**")
+        .excludePathPatterns(
+                "/login",
+                "/logout",
+                "/register",
+                "/assets/**",
+                "/uploads/**",
+                "/error",
+                "/403",
+                "/favicon.ico"
+        );
     }
 
     @Override
