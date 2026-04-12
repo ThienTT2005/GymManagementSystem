@@ -78,6 +78,7 @@
                 </section>
                 <h2 class="consult-form-title">ĐĂNG KÝ THAM GIA CÙNG CHÚNG TÔI</h2>
                 <jsp:include page="/components/formtapthu.jsp" />
+                <jsp:include page="/components/footer.jsp" />
             </main>
 
             <script>

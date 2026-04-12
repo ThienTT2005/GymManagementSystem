@@ -81,11 +81,12 @@
                 </c:otherwise>
             </c:choose>
         </section>
-
+        <h2 class="consult-form-title">ĐĂNG KÝ VÀ NHẬN TƯ VẤN</h2>
         <div class="services-consult-below">
             <jsp:include page="/components/formtuvan.jsp" />
         </div>
     </main>
+
 
     <jsp:include page="/components/footer.jsp" />
 

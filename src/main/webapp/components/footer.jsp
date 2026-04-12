@@ -25,10 +25,10 @@
         <div class="footer-col">
             <h3>Dịch vụ</h3>
             <ul>
-                <li><a href="#">Huấn luyện viên cá nhân</a></li>
-                <li><a href="#">Gói tập Gym</a></li>
-                <li><a href="#">Tin tức</a></li>
-                <li><a href="#">Chính sách giá</a></li>
+                <li><a href="${pageContext.request.contextPath}/">Huấn luyện viên cá nhân</a></li>
+                <li><a href="${pageContext.request.contextPath}/services">Gói tập Gym</a></li>
+                <li><a href="${pageContext.request.contextPath}/news">Tin tức</a></li>
+                <li><a href="${pageContext.request.contextPath}/pricing">Chính sách giá</a></li>
             </ul>
         </div>
 
@@ -45,9 +45,9 @@
 
             <h3>Mạng xã hội</h3>
             <div class="social-links">
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">YouTube</a>
+                <a href="https://web.facebook.com/" target="_blank">Facebook</a>
+                <a href="https://www.instagram.com/" target="_blank">Instagram</a>
+                <a href="https://zalo.me/zalo-chat" target="_blank">Zalo</a>
             </div>
         </div>
 

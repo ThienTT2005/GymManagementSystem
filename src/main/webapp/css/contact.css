@@ -44,9 +44,9 @@ body {
 
 /* Section */
 .contact-section {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px 70px;
+    padding: 60px 20px 90px;
 }
 
 .contact-section-title {
@@ -68,7 +68,7 @@ body {
 .contact-left {
     grid-column: 1;
     grid-row: 1;
-    height: 320px;
+    height: 400px;
     overflow: hidden;
     background: #ddd;
     border-radius: 8px;
@@ -111,11 +111,11 @@ body {
 }
 
 .contact-form input {
-    height: 46px;
+    height: 52px;
 }
 
 .contact-form textarea {
-    height: 120px;
+    height: 160px;
     resize: none;
 }
 
@@ -164,23 +164,25 @@ body {
     line-height: 1.7;
 }
 
-/* RUNNER */
+/* RUNNER - ĐÃ CHỈNH */
 .contact-runner {
     grid-column: 2;
     grid-row: 2;
     display: flex;
     justify-content: center;
     align-items: flex-end;
+
+    transform: scale(1.2); /* 👈 phóng to toàn bộ khung */
 }
 
 .contact-runner img {
-    width: 220px;
-    height: auto;
+    width: auto;
+    height: 550px; /* 👈 tăng kích thước ảnh */
     object-fit: contain;
 }
 
 /* Responsive */
-@media (max-width: 1100px) {
+@media (max-width: 1500px) {
     .contact-layout {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto auto;
@@ -202,6 +204,7 @@ body {
     .contact-runner {
         grid-column: 1;
         grid-row: 4;
+        transform: scale(1); /* 👈 tránh vỡ layout mobile */
     }
 }
 
@@ -235,6 +238,7 @@ body {
     }
 
     .contact-runner img {
-        width: 180px;
+        width: 350px;
+        height: auto;
     }
 }

@@ -148,7 +148,7 @@
             </div>
         </c:if>
     </section>
-
+    <h2 class="consult-form-title">ĐĂNG KÝ VÀ NHẬN TƯ VẤN</h2>
     <jsp:include page="../components/formtuvan.jsp" />
 </main>
 

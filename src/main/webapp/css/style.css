@@ -395,9 +395,10 @@ body {
 ========================= */
 .consult-form-section {
     width: 100%;
-    height: 460px;
+    height: auto; /* Thay đổi từ 400px sang auto để co lại theo nội dung */
     background-color: #F5F5F5;
-    margin: 30px 0;
+    margin: 15px 0; /* Giảm thêm margin */
+    padding: 25px 0; /* Thêm padding vừa phải */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -407,11 +408,11 @@ body {
 
 .consult-form-title {
     font-family: 'Roboto', sans-serif;
-    font-size: 24px;
-    font-weight: bold; /* in đậm */
-    text-align: center; /* nằm ở center */
+    font-size: 22px; /* Giảm nhẹ font size */
+    font-weight: bold;
+    text-align: center;
     color: #000;
-    margin-bottom: 30px;
+    margin-bottom: 15px; /* Giảm margin dưới tiêu đề */
     text-transform: uppercase;
 }
 
@@ -423,8 +424,8 @@ body {
 .consult-form-grid {
     display: grid;
     grid-template-columns: 350px 350px;
-    grid-template-rows: 50px 50px 50px;
-    gap: 24px 40px; /* 24px vertical gap, 40px horizontal gap */
+    grid-template-rows: 45px 45px 45px; /* Giảm cao của mỗi row từ 50px xuống 45px */
+    gap: 12px 30px; /* Giảm gap vertical xuống 12px */
     grid-template-areas:
         "name message"
         "gender message"
@@ -452,26 +453,26 @@ body {
 
 .consult-field input,
 .consult-field select {
-    height: 50px;
+    height: 45px; /* Giảm từ 50px */
 }
 
 .consult-field textarea {
-    height: 198px; /* 50 + 24 + 50 + 24 + 50 = 198px */
-    padding-top: 15px;
+    height: 159px; /* 45*3 + 12*2 = 159px để bằng 3 ô bên trái */
+    padding-top: 12px;
     resize: none;
 }
 
 .consult-form-action {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 15px; /* Giảm từ 20px */
 }
 
 .consult-btn {
     width: 350px;
-    height: 50px;
+    height: 45px; /* Giảm từ 50px */
     border: none;
-    background-color: #A50202; /* màu A50202 */
+    background-color: #A50202;
     color: #fff;
     font-size: 16px;
     font-weight: bold;
@@ -664,7 +665,7 @@ body {
     }
 }
 .footer {
-    background: #111;
+    background: #A50202;
     color: #fff;
 }
 
@@ -673,7 +674,7 @@ body {
 .footer li,
 .footer a {
     color: #fff !important;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 /* Bỏ dấu chấm list */
