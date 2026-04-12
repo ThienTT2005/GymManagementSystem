@@ -34,4 +34,25 @@ public class AuthService {
 
         return user;
     }
+
+    public boolean existsByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+        return userRepository.existsByUsername(username.trim());
+    }
+
+    public void register(String username, String password, String fullName) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Thông tin đăng ký không hợp lệ");
+        }
+
+        User user = new User();
+        user.setUsername(username.trim());
+        user.setPassword(PasswordUtil.hash(password));
+        user.setRoleId(4);
+        user.setStatus(1);
+
+        userRepository.save(user);
+    }
 }

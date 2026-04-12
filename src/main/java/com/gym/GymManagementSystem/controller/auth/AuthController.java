@@ -28,6 +28,16 @@ public class AuthController {
         return "auth/login";
     }
 
+    @GetMapping("/register")
+    public String registerPage(HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            String roleName = (String) session.getAttribute("roleName");
+            return "redirect:" + getRedirectByRole(roleName);
+        }
+        return "auth/register";
+    }
+
     @PostMapping("/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
@@ -54,6 +64,35 @@ public class AuthController {
         session.setAttribute("roleName", roleName);
 
         return "redirect:" + getRedirectByRole(roleName);
+    }
+
+    @PostMapping("/register")
+    public String register(@RequestParam String username,
+                           @RequestParam String password,
+                           @RequestParam String confirmPassword,
+                           @RequestParam String fullName,
+                           Model model) {
+
+        if (username == null || username.isBlank()
+                || password == null || password.isBlank()
+                || confirmPassword == null || confirmPassword.isBlank()
+                || fullName == null || fullName.isBlank()) {
+            model.addAttribute("error", "Vui lòng nhập đầy đủ");
+            return "auth/register";
+        }
+
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu không khớp");
+            return "auth/register";
+        }
+
+        if (authService.existsByUsername(username)) {
+            model.addAttribute("error", "Tài khoản đã tồn tại");
+            return "auth/register";
+        }
+
+        authService.register(username, password, fullName);
+        return "redirect:/login";
     }
 
     @GetMapping("/logout")
