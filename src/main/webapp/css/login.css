@@ -1,6 +1,8 @@
-/* login.css */
-body {
-    font-family: 'Inter', sans-serif;
+/* login.css — toàn trang: Inter + Roboto, không nghiêng (trừ icon Material) */
+body.login-page {
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+    font-style: normal;
+    font-synthesis: none;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -11,12 +13,53 @@ body {
     flex-direction: column;
 }
 
+body.login-page .header,
+body.login-page .footer,
+body.login-page .menu a,
+body.login-page .actions button,
+body.login-page .trial,
+body.login-page .login {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+}
+
+body.login-page .footer,
+body.login-page .footer h3,
+body.login-page .footer p,
+body.login-page .footer li {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+}
+
+body.login-page .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+}
+
 .login-main {
     flex-grow: 1;
     display: grid;
     grid-template-columns: 1fr;
     min-height: calc(100vh - 64px);
     overflow: hidden;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+}
+
+.login-main h1,
+.login-main h2 {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+}
+
+.login-main p,
+.login-main label,
+.login-main input,
+.login-main button,
+.login-main a {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
 }
 
 @media (min-width: 1024px) {
@@ -52,23 +95,28 @@ body {
 
 .hero-content h1 {
     font-size: 3rem;
-    font-weight: 900;
+    font-weight: 800;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     color: red;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    font-style: italic;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
     text-transform: uppercase;
     margin-bottom: 24px;
 }
 
 .hero-content h1 span {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     color: #b7170e;
 }
 
 .hero-content p {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     color: #d4d4d8;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.625;
     margin-bottom: 24px;
 }
@@ -91,11 +139,15 @@ body {
     display: block;
     font-size: 1.5rem;
     font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     margin-bottom: 4px;
 }
 
 .stat-label {
     font-size: 0.75rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #a1a1aa;
@@ -134,13 +186,18 @@ body {
 
 .form-header h2 {
     font-size: 1.875rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
+    font-weight: 700;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    letter-spacing: -0.02em;
     color: #1a1c1c;
     margin-bottom: 8px;
 }
 
 .form-header p {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 400;
     color: #414753;
 }
 
@@ -156,6 +213,8 @@ body {
     flex: 1;
     padding: 10px 0;
     font-size: 0.875rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     border-radius: 0.5rem;
     transition: all 0.3s;
     border: none;
@@ -183,6 +242,8 @@ body {
 .input-group label {
     font-size: 0.875rem;
     font-weight: 600;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     color: #1a1c1c;
     display: block;
     margin-bottom: 8px;
@@ -210,6 +271,8 @@ body {
     outline: none;
     transition: all 0.3s;
     font-size: 1rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     box-sizing: border-box;
 }
 
@@ -232,6 +295,7 @@ body {
     color: #717785;
     cursor: pointer;
     transition: color 0.3s;
+    font-family: 'Material Symbols Outlined', sans-serif;
 }
 
 .toggle-password:hover {
@@ -243,6 +307,8 @@ body {
     align-items: center;
     justify-content: space-between;
     font-size: 0.875rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     margin: 24px 0;
 }
 
@@ -273,6 +339,8 @@ body {
 .forgot-password {
     color: #b7170e;
     font-weight: 600;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     text-decoration: none;
     text-underline-offset: 4px;
 }
@@ -288,6 +356,8 @@ body {
     background-color: #b7170e;
     color: #ffffff;
     font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     border-radius: 0.5rem;
     border: none;
     box-shadow: 0 10px 15px -3px rgba(183, 23, 14, 0.2);
@@ -329,6 +399,8 @@ body {
     background-color: #faf9f9;
     padding: 0 16px;
     font-size: 0.75rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 700;
@@ -352,6 +424,8 @@ body {
     border: 1px solid #c1c6d5;
     border-radius: 0.5rem;
     font-weight: 500;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -363,6 +437,8 @@ body {
 .signup-prompt {
     text-align: center;
     font-size: 0.875rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
     color: #414753;
     margin-top: 32px;
 }
@@ -370,6 +446,8 @@ body {
 .signup-prompt a {
     color: #b7170e;
     font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
     text-decoration: none;
     margin-left: 4px;
     text-underline-offset: 4px;

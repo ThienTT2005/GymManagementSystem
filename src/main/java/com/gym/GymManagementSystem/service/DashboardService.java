@@ -1,7 +1,6 @@
 package com.gym.GymManagementSystem.service;
 
 import com.gym.GymManagementSystem.entity.Payment;
-import com.gym.GymManagementSystem.entity.Schedule;
 import com.gym.GymManagementSystem.entity.TrialRegistration;
 
 import java.util.List;
@@ -21,6 +20,4 @@ public interface DashboardService {
     List<Payment> getPendingPaymentList();
 
     List<TrialRegistration> getPendingTrialList();
-
-    List<Schedule> getTodaySchedules();
 }

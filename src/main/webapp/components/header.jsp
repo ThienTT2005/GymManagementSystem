@@ -1,8 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/page-transitions.css?v=1">
 
-    <header class="header">
+    <header class="header nav-transition">
 
         <div class="logo">
             <a href="${pageContext.request.contextPath}/index">
@@ -11,22 +12,20 @@
             </a>
         </div>
 
-        <nav class="menu">
-            <a href="${pageContext.request.contextPath}/pages/clubs.jsp">CLB</a>
-            <a href="${pageContext.request.contextPath}/pages/services.jsp">Dịch vụ</a>
-            <a href="${pageContext.request.contextPath}/pages/schedule.jsp">Lịch học</a>
-            <a href="${pageContext.request.contextPath}/pages/pricing.jsp">Chính sách giá</a>
-            <a href="${pageContext.request.contextPath}/pages/contact.jsp">Liên hệ</a>
-            <a href="${pageContext.request.contextPath}/news">Tin Tức </a>
+        <nav class="menu nav-transition">
+            <a href="${pageContext.request.contextPath}/index">HOME</a>
+            <a href="${pageContext.request.contextPath}/services">DỊCH VỤ</a>
+            <a href="${pageContext.request.contextPath}/pricing">CHÍNH SÁCH GIÁ</a>
+            <a href="${pageContext.request.contextPath}/pages/contact.jsp">LIÊN HỆ</a>
+            <a href="${pageContext.request.contextPath}/news">TIN TỨC </a>
         </nav>
 
         <div class="actions">
 
             <button class="trial"
-                onclick="window.location.href='${pageContext.request.contextPath}/pages/register.jsp'">Đăng ký tập
-                thử</button>
+                onclick="window.location.href='${pageContext.request.contextPath}/pages/register.jsp'">ĐĂGN KÝ TẬP THỬ</button>
             <button class="login"
-                onclick="window.location.href='${pageContext.request.contextPath}/pages/login.jsp'">Đăng nhập</button>
+                onclick="window.location.href='${pageContext.request.contextPath}/pages/login.jsp'">ĐĂNG NHẬP</button>
 
         </div>
 

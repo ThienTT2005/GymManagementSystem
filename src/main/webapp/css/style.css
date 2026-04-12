@@ -107,6 +107,10 @@ body {
     color: #333;
 }
 
+.home-intro-section h2 {
+    letter-spacing: 0.2em;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -658,4 +662,27 @@ body {
     .slide img {
         height: 210px;
     }
+}
+.footer {
+    background: #111;
+    color: #fff;
+}
+
+/* TẤT CẢ TEXT TRONG FOOTER */
+.footer p,
+.footer li,
+.footer a {
+    color: #fff !important;
+    text-decoration: underline;
+}
+
+/* Bỏ dấu chấm list */
+.footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* Hover đẹp hơn */
+.footer a:hover {
+    color: #ff4d4d;
 }

@@ -30,11 +30,6 @@
                         <i class="bi bi-receipt me-1"></i>Thanh toán
                     </button>
                 </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-class">
-                        <i class="bi bi-calendar-check me-1"></i>Lớp học
-                    </button>
-                </li>
             </ul>
 
             <div class="tab-content">
@@ -129,47 +124,6 @@
                                                         <c:if test="${empty p.proofImage}">
                                                             <span class="text-muted small">Chưa có</span>
                                                         </c:if>
-                                                    </td>
-                                                </tr>
-                                            </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
-                </div>
-
-                <%-- Tab: Lớp học --%>
-                <div class="tab-pane fade" id="tab-class">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <c:choose>
-                                <c:when test="${empty classRegs}">
-                                    <p class="text-center text-muted py-4">Chưa đăng ký lớp nào.</p>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead class="table-light">
-                                            <tr>
-                                                <th>#</th><th>Lớp học</th><th>HLV</th>
-                                                <th>Chi nhánh</th><th>Thứ / Giờ</th><th>Trạng thái</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <c:forEach var="cr" items="${classRegs}" varStatus="st">
-                                                <tr>
-                                                    <td>${st.count}</td>
-                                                    <td><strong>${cr.schedule.service.serviceName}</strong></td>
-                                                    <td>${cr.schedule.trainer.trainerName}</td>
-                                                    <td>${cr.schedule.club.clubName}</td>
-                                                    <td>${cr.schedule.dayOfWeek} ${cr.schedule.startTime} – ${cr.schedule.endTime}</td>
-                                                    <td>
-                                                        <span class="badge ${cr.status == 'active' ? 'bg-success' : 'bg-secondary'}">
-                                                                ${cr.status}
-                                                        </span>
                                                     </td>
                                                 </tr>
                                             </c:forEach>

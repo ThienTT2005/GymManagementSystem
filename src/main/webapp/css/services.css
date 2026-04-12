@@ -116,6 +116,18 @@ body {
     color: #000;
 }
 
+.services-consult-below {
+    max-width: 1080px;
+    margin: 0 auto 48px;
+    padding: 0 20px 40px;
+}
+
+.service-detail-consult {
+    max-width: 1080px;
+    margin: 0 auto 48px;
+    padding: 0 20px 48px;
+}
+
 /* Responsive */
 @media (max-width: 1100px) {
     .services-list {

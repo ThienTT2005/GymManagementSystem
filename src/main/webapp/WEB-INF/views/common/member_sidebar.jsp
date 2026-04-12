@@ -28,12 +28,6 @@
                     <i class="bi bi-building me-2"></i>Chi nhánh
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link text-white <%= currentURI.contains("/schedules") ? "active fw-bold" : "" %>"
-                   href="<%= ctx %>/member/schedules">
-                    <i class="bi bi-calendar3 me-2"></i>Lịch tập
-                </a>
-            </li>
             <li class="nav-item mt-2">
                 <small class="text-secondary px-3 text-uppercase" style="font-size:.7rem;">Gói tập</small>
             </li>

@@ -9,15 +9,16 @@
         <!-- Fonts and Icons -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&display=swap"
             rel="stylesheet">
         <link
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
             rel="stylesheet">
 
         <!-- Custom CSS -->
-        <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="../css/login.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/page-transitions.css?v=1">
 
         <style>
             .material-symbols-outlined {
@@ -26,7 +27,7 @@
         </style>
     </head>
 
-    <body>
+    <body class="login-page">
         <!-- Main Content -->
         <div class="container">
             <!-- Header -->
@@ -75,11 +76,11 @@
                             <input type="hidden" id="role" name="role" value="customer">
 
                             <div class="input-group">
-                                <label for="email">Email Address</label>
+                                <label for="user">Tên đăng nhập (Username)</label>
                                 <div class="input-container">
-                                    <span class="material-symbols-outlined icon">mail</span>
-                                    <input id="email" name="email" placeholder="name@company.com" required
-                                        type="email" />
+                                    <span class="material-symbols-outlined icon">person</span>
+                                    <input id="user" name="user" placeholder="Nhập tên đăng nhập" required
+                                        type="text" />
                                 </div>
                             </div>
 

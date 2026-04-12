@@ -1,8 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    com.gym.GymManagementSystem.model.User u = (com.gym.GymManagementSystem.model.User) session.getAttribute("loggedUser");
-%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/member/dashboard">
@@ -16,7 +13,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle fs-5"></i>
-                        <span><%= u != null ? u.getFullName() : "Member" %></span>
+                        <span>
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.loggedInUser}">
+                                    <c:out value="${sessionScope.loggedInUser.fullName}" />
+                                </c:when>
+                                <c:otherwise>Member</c:otherwise>
+                            </c:choose>
+                        </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/member/profile">

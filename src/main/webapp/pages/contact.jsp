@@ -74,12 +74,39 @@
     const contactForm = document.getElementById("contactForm");
     const successMessage = document.getElementById("successMessage");
 
-    contactForm.addEventListener("submit", function (e) {
+    contactForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         if (contactForm.checkValidity()) {
-            successMessage.style.display = "block";
-            contactForm.reset();
+            const fullName = contactForm.querySelector('input[name="fullName"]').value;
+            const email = contactForm.querySelector('input[name="email"]').value;
+            const phone = contactForm.querySelector('input[name="phone"]').value;
+            const message = contactForm.querySelector('textarea[name="message"]').value;
+
+            try {
+                const response = await fetch('/api/consultations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName: fullName,
+                        email: email,
+                        phone: phone,
+                        message: message
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save data');
+                }
+
+                successMessage.style.display = "block";
+                contactForm.reset();
+            } catch (error) {
+                console.error('Error saving form data:', error);
+                alert("Đã có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại sau.");
+            }
         } else {
             contactForm.reportValidity();
         }

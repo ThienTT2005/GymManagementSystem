@@ -157,92 +157,33 @@
         </div>
 
         <div class="dashboard-row">
-            <div class="dashboard-col">
-    <div class="page-box dashboard-panel">
-        <div class="panel-header">
-            <div class="section-title">Doanh thu theo tháng</div>
-        </div>
-
-        <div class="chart-placeholder">
-            <div class="chart-bars">
-                <c:forEach var="item" items="${monthlyRevenue}">
-                    <div class="bar-group">
-                        <div class="bar bar-red" style="height: ${item.heightCurrentYear}px;"></div>
-                        <div class="bar bar-orange" style="height: ${item.heightPreviousYear}px;"></div>
-                        <span>Tháng ${item.month}</span>
-                    </div>
-                </c:forEach>
-
-                <c:if test="${empty monthlyRevenue}">
-                    <div class="empty-text" style="width: 100%; padding-top: 80px;">
-                        Chưa có dữ liệu doanh thu
-                    </div>
-                </c:if>
-            </div>
-
-            <div class="chart-legend">
-                <span><i class="legend-box legend-red"></i> Năm ${currentYear}</span>
-                <span><i class="legend-box legend-orange"></i> Năm ${previousYear}</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-            <div class="dashboard-col">
+            <div class="dashboard-col" style="flex: 1 1 100%; max-width: 100%;">
                 <div class="page-box dashboard-panel">
                     <div class="panel-header">
-                        <div class="section-title">Danh sách lớp học hôm nay</div>
+                        <div class="section-title">Doanh thu theo tháng</div>
                     </div>
 
-                    <div class="table-box">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Lớp học</th>
-                                <th>Giờ</th>
-                                <th>Huấn luyện viên</th>
-                                <th>Chi nhánh</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <c:forEach var="item" items="${todayClasses}">
-                                <tr>
-                                    <td>${item.className}</td>
-                                    <td>${item.scheduleTime}</td>
-                                    <td>${item.trainerName}</td>
-                                    <td>${item.branchName}</td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${item.status == 'Đang mở'}">
-                                                <span class="badge badge-success">${item.status}</span>
-                                            </c:when>
-                                            <c:when test="${item.status == 'Tạm dừng'}">
-                                                <span class="badge badge-warning">${item.status}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge badge-danger">${item.status}</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </tr>
+                    <div class="chart-placeholder">
+                        <div class="chart-bars">
+                            <c:forEach var="item" items="${monthlyRevenue}">
+                                <div class="bar-group">
+                                    <div class="bar bar-red" style="height: ${item.heightCurrentYear}px;"></div>
+                                    <div class="bar bar-orange" style="height: ${item.heightPreviousYear}px;"></div>
+                                    <span>Tháng ${item.month}</span>
+                                </div>
                             </c:forEach>
 
-                            <c:if test="${empty todayClasses}">
-                                <tr>
-                                    <td colspan="5" class="empty-text">
-                                        Hôm nay chưa có lớp học nào
-                                    </td>
-                                </tr>
+                            <c:if test="${empty monthlyRevenue}">
+                                <div class="empty-text" style="width: 100%; padding-top: 80px;">
+                                    Chưa có dữ liệu doanh thu
+                                </div>
                             </c:if>
-                            </tbody>
-                        </table>
-                    </div>
+                        </div>
 
-                    <div class="panel-footer">
-                        <a href="${pageContext.request.contextPath}/admin/schedules" class="view-all-link">
-                            Xem tất cả <i class="fa-solid fa-chevron-right"></i>
-                        </a>
+                        <div class="chart-legend">
+                            <span><i class="legend-box legend-red"></i> Năm ${currentYear}</span>
+                            <span><i class="legend-box legend-orange"></i> Năm ${previousYear}</span>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -48,14 +48,6 @@
             </li>
 
             <li>
-                <a class="${currentUri.contains('/admin/schedules') ? 'active' : ''}"
-                   href="${pageContext.request.contextPath}/admin/schedules">
-                    <span class="menu-icon"><i class="fa-solid fa-calendar-days"></i></span>
-                    <span class="menu-text">Lịch tập</span>
-                </a>
-            </li>
-
-            <li>
                 <a class="${currentUri.contains('/admin/packages') ? 'active' : ''}"
                    href="${pageContext.request.contextPath}/admin/packages">
                     <span class="menu-icon"><i class="fa-solid fa-box-open"></i></span>

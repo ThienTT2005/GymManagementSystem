@@ -152,7 +152,7 @@
         </div>
     </section>
 
-    <jsp:include page="/components/formtuvan.jsp" />
+    <jsp:include page="/components/formtapthu.jsp" />
 </main>
 
 <jsp:include page="/components/footer.jsp" />

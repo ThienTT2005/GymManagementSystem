@@ -1,10 +1,13 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AEROBICS - CODEGYM</title>
+    <title><c:out value="${service.serviceName}" /> - CODEGYM</title>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/zumba.css">
@@ -13,53 +16,73 @@
 
 <jsp:include page="/components/header.jsp" />
 
-<main class="zumba-page">
+<main class="zumba-page page-transition-main">
     <!-- Banner -->
     <section class="zumba-banner">
-        <img
-                src="${pageContext.request.contextPath}/images/aerobic-8.png"
-                alt="Aerobics banner"
-                class="zumba-banner-image"
-        >
+        <c:choose>
+            <c:when test="${not empty service.image}">
+                <img src="${pageContext.request.contextPath}<c:out value='${service.image}'/>" alt="<c:out value='${service.serviceName}'/> banner" class="zumba-banner-image">
+            </c:when>
+            <c:otherwise>
+                <img src="${pageContext.request.contextPath}/images/zumba-8.png" alt="<c:out value='${service.serviceName}'/> banner" class="zumba-banner-image">
+            </c:otherwise>
+        </c:choose>
         <div class="zumba-banner-overlay"></div>
 
         <div class="zumba-banner-content">
-            <p class="zumba-breadcrumb"><a href="${pageContext.request.contextPath}/pages/services.jsp" style="color: inherit; text-decoration: none;">DỊCH VỤ</a> &gt; AEROBICS</p>
-            <h1 class="zumba-banner-title">AEROBICS</h1>
+            <p class="zumba-breadcrumb"><a href="${pageContext.request.contextPath}/services" style="color: inherit; text-decoration: none;">DỊCH VỤ</a> &gt; <c:out value="${fn:toUpperCase(service.serviceName)}" /></p>
+            <h1 class="zumba-banner-title"><c:out value="${fn:toUpperCase(service.serviceName)}" /></h1>
         </div>
     </section>
 
     <!-- Giới thiệu -->
     <section class="zumba-intro">
         <div class="zumba-intro-text">
-            <h2 class="section-title">Z</h2>
+            <h2 class="section-title"><c:out value="${fn:toUpperCase(service.serviceName)}" /></h2>
             <p class="section-description">
-                AEROBICS Aerobic là bộ môn không những giúp cơ thể bạn linh
-                hoạt, dẻo dai, chúng còn giúp tinh thần bạn sảng
-                khoái và suy nghĩ tích cực hơn. Aerobic có thể được
-                xem là bộ môn luyện tập giúp nâng cao sức khoẻ toàn
-                diện.
+                <c:choose>
+                    <c:when test="${not empty service.description}">
+                        <c:out value="${service.description}" />
+                    </c:when>
+                    <c:otherwise>
+                        Mô tả đang được cập nhật...
+                    </c:otherwise>
+                </c:choose>
             </p>
         </div>
 
         <div class="zumba-intro-image">
-            <img
-                    src="${pageContext.request.contextPath}/images/run.png"
-                    alt="Lớp học aerobics"
-            >
+            <c:choose>
+                <c:when test="${not empty service.image}">
+                    <img src="${pageContext.request.contextPath}<c:out value='${service.image}'/>" alt="<c:out value='${service.serviceName}'/>">
+                </c:when>
+                <c:otherwise>
+                    <img src="${pageContext.request.contextPath}/images/run.png" alt="<c:out value='${service.serviceName}'/>">
+                </c:otherwise>
+            </c:choose>
         </div>
     </section>
 
-    <!-- Thông số -->
+    <!-- Thông số (đã đổi thời lượng sang Giá) -->
     <section class="zumba-info-section">
         <div class="zumba-info-grid">
             <div class="zumba-info-card">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
                 </svg>
-                <h3>THỜI LƯỢNG</h3>
-                <p>60 phút</p>
+                <h3>GIÁ CẢ</h3>
+                <p>
+                    <c:choose>
+                        <c:when test="${service.price != null && service.price > 0}">
+                            <fmt:formatNumber value="${service.price}" type="number" groupingUsed="true" /> VNĐ
+                        </c:when>
+                        <c:otherwise>
+                            Liên hệ
+                        </c:otherwise>
+                    </c:choose>
+                </p>
             </div>
 
             <div class="zumba-info-card">
@@ -92,17 +115,17 @@
         </div>
     </section>
 
-    <!-- Lợi ích -->
+    <!-- Lợi ích (để mặc định không sửa) -->
     <section class="zumba-benefits-section">
         <div class="zumba-benefits-header">
             <img
                     src="${pageContext.request.contextPath}/images/banner.png"
-                    alt="Aerobics benefit"
+                    alt="Zumba benefit"
                     class="zumba-benefits-banner"
             >
             <p class="zumba-benefits-description">
-                Aerobic là sự kết hợp hoàn hảo giữa âm nhạc và vận động toàn thân, giúp bạn kiểm soát cân nặng,
-                tăng cường hệ miễn dịch và duy trì một tinh thần sảng khoái, tràn đầy sức sống.
+                Chương trình luyện tập không chỉ là một môn thể thao, mà còn là giải pháp giúp cơ thể khỏe mạnh, dẻo dai,
+                tăng cường sức bền và mang lại nguồn năng lượng tích cực mỗi ngày.
             </p>
         </div>
 
@@ -124,8 +147,8 @@
                 </svg>
                 <h3>CƠ BẮP DẺO DAI</h3>
                 <p>
-                    Các bài tập giãn cơ phối hợp trong Aerobic giúp giải phóng sự căng cứng của khớp,
-                    duy trì sự linh hoạt và ngăn ngừa các vấn đề về xương khớp.
+                    Những chuyển động liên tục giúp cơ thể linh hoạt hơn, cải thiện độ dẻo
+                    và tăng khả năng phối hợp toàn thân.
                 </p>
             </article>
 
@@ -135,8 +158,8 @@
                 </svg>
                 <h3>CƠ THỂ VỮNG CHÃI</h3>
                 <p>
-                    Sự phối hợp nhịp nhàng giữa tay và chân trên nền nhạc nhanh giúp rèn luyện khả năng
-                    phản xạ, giữ thăng bằng tốt hơn và làm khung xương thêm chắc khỏe.
+                    Luyện tập đều đặn giúp tăng khả năng giữ thăng bằng, củng cố nhóm cơ trung tâm
+                    và cải thiện tư thế vận động.
                 </p>
             </article>
 
@@ -146,14 +169,16 @@
                 </svg>
                 <h3>SỨC KHỎE BỀN BỈ</h3>
                 <p>
-                    Vận động liên tục giúp tim phổi hoạt động hiệu quả hơn, nâng cao sức chịu đựng
-                    và giúp bạn duy trì năng lượng làm việc suốt cả ngày dài.
+                    Các bài tập theo nhịp điệu giúp nâng cao sức khỏe tim mạch, cải thiện hô hấp
+                    và tăng độ bền cho cơ thể trong cuộc sống hàng ngày.
                 </p>
             </article>
         </div>
     </section>
 
-    <jsp:include page="/components/formtapthu.jsp" />
+    <div class="service-detail-consult">
+        <jsp:include page="/components/formtuvan.jsp" />
+    </div>
 </main>
 
 <jsp:include page="/components/footer.jsp" />

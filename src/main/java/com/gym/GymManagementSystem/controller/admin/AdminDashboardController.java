@@ -35,8 +35,6 @@ public class AdminDashboardController {
 
         model.addAttribute("pendingPaymentList", dashboardService.getPendingPaymentList());
         model.addAttribute("trialList", dashboardService.getPendingTrialList());
-        model.addAttribute("todayClasses", dashboardService.getTodaySchedules());
-
         model.addAttribute("monthlyRevenue", paymentService.getMonthlyRevenueComparison());
         model.addAttribute("currentYear", java.time.Year.now().getValue());
         model.addAttribute("previousYear", java.time.Year.now().getValue() - 1);

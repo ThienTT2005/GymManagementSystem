@@ -27,17 +27,24 @@ public class AdminAuthFilter extends OncePerRequestFilter {
         if (path.startsWith("/admin")) {
             HttpSession session = request.getSession(false);
             LoggedInUser loggedInUser = session != null ? (LoggedInUser) session.getAttribute("loggedInUser") : null;
-            boolean isAdmin = loggedInUser != null
+            boolean allowed = loggedInUser != null
                     && loggedInUser.getRoleName() != null
-                    && loggedInUser.getRoleName().equalsIgnoreCase("Admin");
+                    && isAdminAreaRole(loggedInUser.getRoleName());
 
-            if (!isAdmin) {
+            if (!allowed) {
                 response.sendRedirect(contextPath + "/pages/login.jsp");
                 return;
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private static boolean isAdminAreaRole(String roleName) {
+        String r = roleName.trim();
+        return r.equalsIgnoreCase("ADMIN")
+                || r.equalsIgnoreCase("Admin")
+                || r.equalsIgnoreCase("STAFF");
     }
 }
 

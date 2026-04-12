@@ -11,6 +11,34 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=3">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/news.css?v=1">
+
+    <style>
+        .bmi-success-message {
+            display: none;
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #f8d7da;
+            color: #b30000;
+            border-radius: 6px;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        .bmi-success-message.success-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .bmi-success-message.success-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .bmi-success-message.success-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
 
@@ -20,43 +48,35 @@
     <img src="${pageContext.request.contextPath}/images/banner.jpg" alt="Banner">
 </section>
 
-<section class="clubs-section">
-    <h2>CÂU LẠC BỘ Ở GẦN BẠN</h2>
+<section class="clubs-section home-intro-section">
+    <h2>HOME</h2>
     <p>
-        Khám phá hệ thống phòng tập CODEGYM hiện đại, đa dạng, đáp ứng mọi nhu cầu tập luyện của bạn,
-        dù bạn ở bất kỳ đâu tại Hà Nội.
+        Chào mừng bạn đến với không gian luyện tập CODEGYM. Khám phá các dịch vụ dưới đây và chọn chương trình
+        phù hợp với mục tiêu sức khỏe của bạn.
     </p>
 
     <div class="grid">
-        <a href="${pageContext.request.contextPath}/pages/services/zumba.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/zumba-8.png" alt="Zumba">
-            <div class="overlay">ZUMBA</div>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pages/services/bodycombat.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/bodycombat.png" alt="Body Combat">
-            <div class="overlay">BODY COMBAT</div>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pages/services/bodypump.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/bodypump-8.png" alt="Body Pump">
-            <div class="overlay">BODY PUMP</div>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pages/services/steptok.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/bums-tums-8.png" alt="Step Tok">
-            <div class="overlay">STEP TOK</div>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pages/services/pilates.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/pilates.jpg" alt="Pilates">
-            <div class="overlay">PILATES</div>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/pages/services/aerobics.jsp" class="grid-item">
-            <img src="${pageContext.request.contextPath}/images/aerobic-8.png" alt="Aerobics">
-            <div class="overlay">AEROBICS</div>
-        </a>
+        <c:choose>
+            <c:when test="${not empty services}">
+                <c:forEach var="service" items="${services}">
+                    <a href="${pageContext.request.contextPath}/services/${service.serviceId}" class="grid-item" style="position: relative; display: block; overflow: hidden;">
+                        <img src="${pageContext.request.contextPath}${not empty service.image ? service.image : '/images/bodycombat.png'}"
+                             alt="<c:out value='${service.serviceName}' />"
+                             style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(40%); transition: filter 0.3s;"
+                             onmouseover="this.style.filter='brightness(60%)'"
+                             onmouseout="this.style.filter='brightness(40%)'">
+                        <div class="overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 28px; font-weight: bold; text-align: center; text-transform: uppercase; pointer-events: none; width: 100%;">
+                            <c:out value="${service.serviceName}" />
+                        </div>
+                    </a>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <div style="text-align:center; padding: 20px; color: #666; grid-column: 1 / -1;">
+                    Hiện chưa có dịch vụ nào trực tuyến.
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
 </section>
 
@@ -93,12 +113,12 @@
 
                             <div class="promo-news-card-title">
                                 <a href="${pageContext.request.contextPath}/news/${item.postId}" style="text-decoration: none; color: inherit;">
-                                    ${item.title}
+                                        ${item.title}
                                 </a>
                             </div>
 
                             <div class="promo-news-card-content">
-                                ${fn:replace(item.content, '. ', '.<br/>')}
+                                    ${fn:replace(item.content, '. ', '.<br/>')}
                             </div>
 
                             <div class="promo-news-card-date">
@@ -154,14 +174,14 @@
 
     <div class="bmi-content">
         <h2>TÍNH BMI (CHỈ SỐ KHỐI CƠ THỂ)</h2>
-        <p>Để lại thông tin và chúng tôi sẽ gửi lại kết quả cho bạn trong thời gian sớm nhất!</p>
+        <p>Nhập thông tin để xem ngay chỉ số BMI của bạn.</p>
 
         <form id="bmiForm" class="bmi-form">
-            <input type="text" name="height" placeholder="Chiều cao/ cm" required>
-            <input type="text" name="weight" placeholder="Cân nặng/ kg" required>
-            <input type="text" name="age" placeholder="Tuổi" required>
+            <input type="number" id="height" name="height" placeholder="Chiều cao / cm" min="1" step="0.1" required>
+            <input type="number" id="weight" name="weight" placeholder="Cân nặng / kg" min="1" step="0.1" required>
+            <input type="number" id="age" name="age" placeholder="Tuổi" min="1" required>
 
-            <select name="gender" required>
+            <select id="gender" name="gender" required>
                 <option value="" disabled selected>Giới tính</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
@@ -169,15 +189,17 @@
 
             <input
                     type="text"
+                    id="fullname"
                     name="fullname"
                     placeholder="Họ và tên"
-                    pattern="[A-Za-zÀ-ỹ\\s]+"
-                    title="Vui lòng chỉ nhập chữ cái"
+                    pattern="^[A-Za-zÀ-ỹ\s\.]+$"
+                    title="Chỉ được nhập chữ cái, dấu cách và dấu chấm (.)"
                     required
             >
 
             <input
                     type="text"
+                    id="phone"
                     name="phone"
                     placeholder="Số điện thoại"
                     pattern="[0-9]{10}"
@@ -190,9 +212,7 @@
             </div>
         </form>
 
-        <div id="bmiMessage" class="bmi-success-message" style="display:none;">
-            Cảm ơn bạn, chúng tôi đã nhận thông tin!
-        </div>
+        <div id="bmiMessage" class="bmi-success-message"></div>
     </div>
 </section>
 
@@ -225,7 +245,7 @@
         const gap = 24;
         const moveX = currentSlide * (slideWidth + gap);
 
-        track.style.transform = `translateX(-${moveX}px)`;
+        track.style.transform = "translateX(-" + moveX + "px)";
     }
 
     function updateBeforeAfter(value) {
@@ -233,29 +253,75 @@
         const sliderBtn = document.getElementById("sliderButton");
 
         if (afterImage) {
-            afterImage.style.clipPath = `polygon(${value}% 0, 100% 0, 100% 100%, ${value}% 100%)`;
+            afterImage.style.clipPath = "polygon(" + value + "% 0, 100% 0, 100% 100%, " + value + "% 100%)";
         }
 
         if (sliderBtn) {
-            sliderBtn.style.left = `${value}%`;
+            sliderBtn.style.left = value + "%";
         }
     }
 
-    document.getElementById("bmiForm")?.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
+    document.addEventListener("DOMContentLoaded", function () {
+        const bmiForm = document.getElementById("bmiForm");
+        const bmiMessage = document.getElementById("bmiMessage");
 
-        fetch("${pageContext.request.contextPath}/pages/saveBmi.jsp", {
-            method: "POST",
-            body: formData
-        })
-            .then(res => res.text())
-            .then(data => {
-                if (data.trim() === "success") {
-                    document.getElementById("bmiForm").style.display = "none";
-                    document.getElementById("bmiMessage").style.display = "block";
-                }
-            });
+        if (!bmiForm || !bmiMessage) return;
+
+        bmiForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById("fullname").value.trim();
+            const height = parseFloat(document.getElementById("height").value);
+            const weight = parseFloat(document.getElementById("weight").value);
+
+            const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/;
+
+            if (fullName === "") {
+                alert("Vui lòng nhập họ và tên.");
+                return;
+            }
+
+            if (!nameRegex.test(fullName)) {
+                alert("Họ tên không được chứa số hoặc ký tự đặc biệt.");
+                return;
+            }
+
+            if (isNaN(height) || height <= 0) {
+                alert("Chiều cao không hợp lệ.");
+                return;
+            }
+
+            if (isNaN(weight) || weight <= 0) {
+                alert("Cân nặng không hợp lệ.");
+                return;
+            }
+
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
+
+            let classification = "";
+            let className = "bmi-success-message ";
+
+            if (bmi < 18.5) {
+                classification = "Thiếu cân";
+                className += "success-warning";
+            } else if (bmi < 25) {
+                classification = "Bình thường";
+                className += "success-normal";
+            } else if (bmi < 30) {
+                classification = "Thừa cân";
+                className += "success-warning";
+            } else {
+                classification = "Béo phì";
+                className += "success-danger";
+            }
+
+            bmiMessage.className = className;
+            bmiMessage.innerHTML =
+                "Chào <strong>" + fullName + "</strong>, chỉ số BMI của bạn là <strong>" +
+                bmi.toFixed(2) + "</strong> - <strong>" + classification + "</strong>.";
+            bmiMessage.style.display = "block";
+        });
     });
 </script>
 

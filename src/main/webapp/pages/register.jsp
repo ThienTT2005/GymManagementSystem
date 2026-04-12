@@ -97,22 +97,37 @@
     <script>
         const regForm = document.getElementById("registerForm");
         if (regForm) {
-            regForm.addEventListener("submit", function (e) {
+            regForm.addEventListener("submit", async function (e) {
                 e.preventDefault();
-                const formData = new FormData(this);
-                fetch("${pageContext.request.contextPath}/pages/saveRegistration.jsp", {
-                    method: "POST",
-                    body: formData
-                })
-                    .then(res => res.text())
-                    .then(data => {
-                        if (data.trim() === "success") {
-                            document.getElementById("registerForm").style.display = "none";
-                            document.getElementById("registerMessage").style.display = "block";
-                        } else {
-                            alert("Có lỗi xảy ra, vui lòng thử lại sau!");
-                        }
+                
+                const fullName = this.querySelector('input[name="name"]').value;
+                const phone = this.querySelector('input[name="phone"]').value;
+                const email = this.querySelector('input[name="email"]').value;
+
+                try {
+                    const response = await fetch('/api/trial-requests', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            fullName: fullName,
+                            phone: phone,
+                            email: email,
+                            note: "Đăng ký từ trang cá nhân (Register) không cung cấp ngày và ghi chú chuyên sâu."
+                        })
                     });
+
+                    if (response.ok) {
+                        this.style.display = "none";
+                        document.getElementById("registerMessage").style.display = "block";
+                    } else {
+                        alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+                    }
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+                }
             });
         }
 

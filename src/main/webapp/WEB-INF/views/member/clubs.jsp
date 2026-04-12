@@ -44,9 +44,9 @@
                                 <p class="card-text small">${club.description}</p>
                             </div>
                             <div class="card-footer bg-white border-0 pb-3">
-                                <a href="${pageContext.request.contextPath}/member/schedules?clubId=${club.clubId}"
+                                <a href="${pageContext.request.contextPath}/member/packages"
                                    class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-calendar3 me-1"></i>Xem lịch tập
+                                    <i class="bi bi-bag me-1"></i>Đăng ký gói tập
                                 </a>
                             </div>
                         </div>
