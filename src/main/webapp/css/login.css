@@ -1,0 +1,459 @@
+/* login.css — toàn trang: Inter + Roboto, không nghiêng (trừ icon Material) */
+body.login-page {
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+    font-style: normal;
+    font-synthesis: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: black;
+    color: #1a1c1c;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.login-page .header,
+body.login-page .footer,
+body.login-page .menu a,
+body.login-page .actions button,
+body.login-page .trial,
+body.login-page .login {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+}
+
+body.login-page .footer,
+body.login-page .footer h3,
+body.login-page .footer p,
+body.login-page .footer li {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+}
+
+body.login-page .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.login-main {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 64px);
+    overflow: hidden;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+}
+
+.login-main h1,
+.login-main h2 {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+}
+
+.login-main p,
+.login-main label,
+.login-main input,
+.login-main button,
+.login-main a {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+}
+
+@media (min-width: 1024px) {
+    .login-main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Hero Section */
+.login-hero {
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 64px;
+    color: white;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("../images/multi-choices.png");
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    position: relative;
+    max-width: 800px;
+}
+
+@media (min-width: 1024px) {
+    .login-hero {
+        display: flex;
+    }
+}
+
+.hero-content {
+    max-width: 36rem;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    color: red;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+.hero-content h1 span {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    color: #b7170e;
+}
+
+.hero-content p {
+    font-size: 1.125rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    color: #d4d4d8;
+    font-weight: 400;
+    line-height: 1.625;
+    margin-bottom: 24px;
+}
+
+.stats-container {
+    display: flex;
+    gap: 16px;
+    padding-top: 16px;
+}
+
+.stat-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    padding: 16px;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #a1a1aa;
+}
+
+/* Form Section */
+.login-form-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background-color: #faf9f9;
+}
+
+@media (min-width: 768px) {
+    .login-form-section {
+        padding: 48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .login-form-section {
+        padding: 80px;
+    }
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.form-header {
+    margin-bottom: 32px;
+}
+
+.form-header h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    letter-spacing: -0.02em;
+    color: #1a1c1c;
+    margin-bottom: 8px;
+}
+
+.form-header p {
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    color: #414753;
+}
+
+.role-tabs {
+    padding: 4px;
+    background-color: #eeeeee;
+    border-radius: 0.75rem;
+    display: flex;
+    margin-bottom: 32px;
+}
+
+.role-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 0.875rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: #414753;
+    font-weight: 500;
+}
+
+.role-btn.active {
+    background-color: white;
+    color: #1a1c1c;
+    font-weight: 700;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.role-btn:not(.active):hover {
+    color: #1a1c1c;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    color: #1a1c1c;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.input-container {
+    position: relative;
+}
+
+.input-container .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #717785;
+    font-size: 1.25rem;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    background-color: #f4f3f3;
+    border: 1px solid #c1c6d5;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: all 0.3s;
+    font-size: 1rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    box-sizing: border-box;
+}
+
+.input-container input:focus {
+    box-shadow: 0 0 0 2px #b7170e;
+    border-color: transparent;
+}
+
+.input-container input::placeholder {
+    color: #717785;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #717785;
+    cursor: pointer;
+    transition: color 0.3s;
+    font-family: 'Material Symbols Outlined', sans-serif;
+}
+
+.toggle-password:hover {
+    color: #1a1c1c;
+}
+
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    margin: 24px 0;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.remember-me input {
+    width: 16px;
+    height: 16px;
+    border-radius: 0.25rem;
+    border-color: #c1c6d5;
+    accent-color: #b7170e;
+}
+
+.remember-me span {
+    color: #414753;
+    transition: color 0.3s;
+}
+
+.remember-me:hover span {
+    color: #1a1c1c;
+}
+
+.forgot-password {
+    color: #b7170e;
+    font-weight: 600;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    text-decoration: none;
+    text-underline-offset: 4px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background-color: #b7170e;
+    color: #ffffff;
+    font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(183, 23, 14, 0.2);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.divider {
+    position: relative;
+    padding: 16px 0;
+    margin-top: 24px;
+    text-align: center;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    border-top: 1px solid #c1c6d5;
+}
+
+.divider span {
+    position: relative;
+    background-color: #faf9f9;
+    padding: 0 16px;
+    font-size: 0.75rem;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: #717785;
+}
+
+.social-login {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.social-login button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+    background-color: transparent;
+    border: 1px solid #c1c6d5;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.social-login button:hover {
+    background-color: #eeeeee;
+}
+
+.signup-prompt {
+    text-align: center;
+    font-size: 0.875rem;
+    font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+    font-style: normal;
+    color: #414753;
+    margin-top: 32px;
+}
+
+.signup-prompt a {
+    color: #b7170e;
+    font-weight: 700;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+    font-style: normal;
+    text-decoration: none;
+    margin-left: 4px;
+    text-underline-offset: 4px;
+}
+
+.signup-prompt a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}

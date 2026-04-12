@@ -18,4 +18,6 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Inte
     Page<Consultation> findByStatus(String status, Pageable pageable);
 
     long countByStatus(String status);
+
+    boolean existsByPhone(String phone);
 }

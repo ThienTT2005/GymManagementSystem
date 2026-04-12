@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ServiceRepository extends JpaRepository<ServiceGym, Integer> {
 
     Page<ServiceGym> findByServiceNameContainingIgnoreCase(String keyword, Pageable pageable);
@@ -16,4 +18,6 @@ public interface ServiceRepository extends JpaRepository<ServiceGym, Integer> {
     boolean existsByServiceNameIgnoreCase(String serviceName);
 
     boolean existsByServiceNameIgnoreCaseAndServiceIdNot(String serviceName, Integer serviceId);
+
+    List<ServiceGym> findByStatus(Integer status);
 }

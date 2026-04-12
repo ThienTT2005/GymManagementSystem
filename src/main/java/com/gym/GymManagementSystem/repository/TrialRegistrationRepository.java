@@ -18,4 +18,6 @@ public interface TrialRegistrationRepository extends JpaRepository<TrialRegistra
     Page<TrialRegistration> findByStatus(String status, Pageable pageable);
 
     long countByStatus(String status);
+
+    boolean existsByPhone(String phone);
 }

@@ -1,0 +1,273 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #111;
+    background: #fff;
+}
+
+.pricing-page {
+    width: 100%;
+}
+
+/* Banner */
+.pricing-banner {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    margin-top: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
+}
+
+.pricing-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pricing-banner-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+/* Pricing section */
+.pricing-section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 50px 40px 30px;
+    background: #fff;
+}
+
+.pricing-content {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.pricing-tabs {
+    display: flex;
+    gap: 36px;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.pricing-tab {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #000;
+}
+
+.pricing-tab.active {
+    color: #000;
+}
+
+.pricing-main {
+    display: grid;
+    grid-template-columns: 140px 4px 1fr 430px;
+    align-items: center;
+    column-gap: 30px;
+}
+
+.duration-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.duration-list li {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+}
+
+.duration-list li.active {
+    color: #8d131c;
+}
+
+.pricing-divider {
+    width: 4px;
+    height: 320px;
+    background: #b30000;
+}
+
+.pricing-info ul {
+    list-style: disc;
+    padding-left: 22px;
+}
+
+.pricing-info li {
+    font-size: 20px;
+    line-height: 2;
+    color: #000;
+}
+
+.pricing-info li strong {
+    font-weight: 700;
+    margin-left: 24px;
+}
+
+.pricing-figure {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pricing-figure img {
+    width: 430px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Register section */
+.register-section {
+    width: 100%;
+    background: #d9d9d9;
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.12);
+    padding: 40px 20px 50px;
+}
+
+.register-box {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.register-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 350px);
+    justify-content: center;
+    gap: 24px 40px;
+}
+
+.form-grid input,
+.form-grid select {
+    width: 350px;
+    height: 50px;
+    padding: 0 14px;
+    border: none;
+    outline: none;
+    background: #fbfafa;
+    font-size: 16px;
+    color: #000;
+}
+
+.form-grid input::placeholder {
+    color: #444;
+}
+
+.register-btn {
+    margin-top: 36px;
+    width: 350px;
+    height: 50px;
+    border: none;
+    background: #a50202;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.register-btn:hover {
+    background: #870000;
+}
+
+.success-message {
+    display: none;
+    margin-top: 18px;
+    color: green;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .pricing-main {
+        grid-template-columns: 140px 4px 1fr;
+        row-gap: 30px;
+    }
+
+    .pricing-figure {
+        grid-column: 1 / -1;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing-banner {
+        height: 260px;
+    }
+
+    .pricing-banner-title {
+        font-size: 22px;
+        text-align: center;
+        width: 90%;
+    }
+
+    .pricing-section {
+        padding: 30px 20px;
+    }
+
+    .pricing-tab {
+        font-size: 18px;
+    }
+
+    .duration-list li,
+    .pricing-info li {
+        font-size: 16px;
+    }
+
+    .pricing-main {
+        grid-template-columns: 1fr;
+    }
+
+    .pricing-divider {
+        width: 100%;
+        height: 3px;
+    }
+
+    .form-grid,
+    .form-grid input,
+    .form-grid select,
+    .register-btn {
+        width: 100%;
+    }
+}
