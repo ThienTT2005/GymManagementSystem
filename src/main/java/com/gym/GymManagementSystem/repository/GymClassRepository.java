@@ -23,4 +23,6 @@ public interface GymClassRepository extends JpaRepository<GymClass, Integer> {
     List<GymClass> findAll(Sort sort);
 
     List<GymClass> findByStatusOrderByCurrentMemberDesc(Integer status, Pageable pageable);
+
+    List<GymClass> findAllByStatus(Integer status);
 }

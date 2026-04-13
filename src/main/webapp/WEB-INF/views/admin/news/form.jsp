@@ -53,7 +53,9 @@
                                 <form:option value="NEWS">Tin tức</form:option>
                                 <form:option value="PROMOTION">Khuyến mãi</form:option>
                                 <form:option value="BLOG">Blog</form:option>
+                                <form:option value="STORY">Câu chuyện hội viên</form:option>
                             </form:select>
+                            <form:errors path="type" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group">
@@ -62,6 +64,7 @@
                                 <form:option value="1">Hiển thị</form:option>
                                 <form:option value="0">Ẩn</form:option>
                             </form:select>
+                            <form:errors path="status" cssClass="error-text"/>
                         </div>
 
                         <div class="form-group full-width">
@@ -79,7 +82,8 @@
                             <div class="form-group full-width">
                                 <label>Ảnh hiện tại</label>
                                 <img class="preview-image"
-                                     src="${pageContext.request.contextPath}/uploads/${news.image}">
+                                     src="${pageContext.request.contextPath}/uploads/${news.image}"
+                                     alt="Ảnh bài viết">
                             </div>
                         </c:if>
 

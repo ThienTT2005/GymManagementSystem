@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
@@ -87,6 +88,22 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     long countByStatus(String status);
 
     List<Payment> findAll(Sort sort);
+
+    Optional<Payment> findTopByMembershipMembershipIdOrderByCreatedAtDesc(Integer membershipId);
+
+    Optional<Payment> findTopByClassRegistrationRegistrationIdOrderByCreatedAtDesc(Integer registrationId);
+
+    @Query("""
+        select p
+        from Payment p
+        left join p.membership m
+        left join m.member mm
+        left join p.classRegistration cr
+        left join cr.member cm
+        where (mm.memberId = :memberId or cm.memberId = :memberId)
+        order by p.createdAt desc
+    """)
+    List<Payment> findByMemberId(Integer memberId);
 
     @Query("select coalesce(sum(p.amount), 0) from Payment p where p.status = 'PAID'")
     BigDecimal getTotalRevenue();

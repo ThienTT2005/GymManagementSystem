@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClassRegistrationRepository extends JpaRepository<ClassRegistration, Integer> {
 
@@ -33,4 +34,12 @@ public interface ClassRegistrationRepository extends JpaRepository<ClassRegistra
     List<ClassRegistration> findByGymClass_ClassIdAndStatus(Integer classId, String status);
 
     List<ClassRegistration> findAll(Sort sort);
+
+    List<ClassRegistration> findByMemberMemberIdOrderByRegistrationDateDesc(Integer memberId);
+
+    Optional<ClassRegistration> findByRegistrationId(Integer registrationId);
+
+    Optional<ClassRegistration> findByRegistrationIdAndMemberMemberId(Integer registrationId, Integer memberId);
+
+    boolean existsByMemberMemberIdAndGymClassClassIdAndStatusNot(Integer memberId, Integer classId, String status);
 }

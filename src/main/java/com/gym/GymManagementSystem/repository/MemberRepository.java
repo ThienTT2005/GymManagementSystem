@@ -6,6 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     Page<Member> findByFullnameContainingIgnoreCaseOrPhoneContainingIgnoreCaseOrEmailContainingIgnoreCase(
@@ -22,5 +25,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     boolean existsByUser_UserIdAndMemberIdNot(Integer userId, Integer memberId);
 
-    java.util.List<Member> findAll(Sort sort);
+    Optional<Member> findByUserUserId(Integer userId);
+
+    List<Member> findAll(Sort sort);
 }

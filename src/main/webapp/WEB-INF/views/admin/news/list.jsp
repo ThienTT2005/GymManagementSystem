@@ -58,6 +58,7 @@
                             <option value="NEWS" ${type=='NEWS'?'selected':''}>Tin tức</option>
                             <option value="PROMOTION" ${type=='PROMOTION'?'selected':''}>Khuyến mãi</option>
                             <option value="BLOG" ${type=='BLOG'?'selected':''}>Blog</option>
+                            <option value="STORY" ${type=='STORY'?'selected':''}>Câu chuyện hội viên</option>
                         </select>
                     </div>
 
@@ -85,7 +86,6 @@
             <div class="page-card">
 
                 <div class="table-responsive">
-
                     <table class="dashboard-table admin-table">
 
                         <thead>
@@ -100,12 +100,10 @@
                         </thead>
 
                         <tbody>
-
                         <c:choose>
 
                             <c:when test="${not empty newsPage.content}">
                                 <c:forEach var="item" items="${newsPage.content}" varStatus="loop">
-
                                     <tr>
 
                                         <td>
@@ -129,7 +127,9 @@
                                             <c:choose>
                                                 <c:when test="${item.type=='NEWS'}">Tin tức</c:when>
                                                 <c:when test="${item.type=='PROMOTION'}">Khuyến mãi</c:when>
-                                                <c:otherwise>Blog</c:otherwise>
+                                                <c:when test="${item.type=='BLOG'}">Blog</c:when>
+                                                <c:when test="${item.type=='STORY'}">Câu chuyện hội viên</c:when>
+                                                <c:otherwise>${item.type}</c:otherwise>
                                             </c:choose>
                                         </td>
 
@@ -152,20 +152,17 @@
                                                       action="${pageContext.request.contextPath}/admin/news/toggle-status/${item.postId}"
                                                       class="inline-form"
                                                       onsubmit="return confirm('Xác nhận thay đổi trạng thái bài viết?');">
-
                                                     <button class="btn-sm ${item.status == 1 ? 'btn-toggle-off' : 'btn-toggle-on'}"
                                                             type="submit"
                                                             title="${item.status == 1 ? 'Ẩn bài viết' : 'Hiển thị bài viết'}">
                                                         <i class="fa-solid ${item.status == 1 ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
                                                     </button>
-
                                                 </form>
 
                                             </div>
                                         </td>
 
                                     </tr>
-
                                 </c:forEach>
                             </c:when>
 
@@ -178,11 +175,9 @@
                             </c:otherwise>
 
                         </c:choose>
-
                         </tbody>
 
                     </table>
-
                 </div>
 
                 <c:if test="${newsPage.totalPages > 1}">

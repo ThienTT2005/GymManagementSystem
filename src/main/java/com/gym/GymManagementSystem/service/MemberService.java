@@ -1,9 +1,19 @@
 package com.gym.GymManagementSystem.service;
 
+import com.gym.GymManagementSystem.model.ClassRegistration;
+import com.gym.GymManagementSystem.model.GymClass;
+import com.gym.GymManagementSystem.model.GymPackage;
 import com.gym.GymManagementSystem.model.Member;
+import com.gym.GymManagementSystem.model.Membership;
+import com.gym.GymManagementSystem.model.Payment;
 import com.gym.GymManagementSystem.model.Role;
 import com.gym.GymManagementSystem.model.User;
+import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
+import com.gym.GymManagementSystem.repository.GymClassRepository;
 import com.gym.GymManagementSystem.repository.MemberRepository;
+import com.gym.GymManagementSystem.repository.MembershipRepository;
+import com.gym.GymManagementSystem.repository.PackageRepository;
+import com.gym.GymManagementSystem.repository.PaymentRepository;
 import com.gym.GymManagementSystem.repository.RoleRepository;
 import com.gym.GymManagementSystem.repository.UserRepository;
 import com.gym.GymManagementSystem.util.PasswordUtil;
@@ -13,11 +23,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -29,14 +46,31 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final MembershipRepository membershipRepository;
+    private final ClassRegistrationRepository classRegistrationRepository;
+    private final PaymentRepository paymentRepository;
+    private final GymClassRepository gymClassRepository;
+    private final PackageRepository packageRepository;
 
     public MemberService(MemberRepository memberRepository,
                          UserRepository userRepository,
-                         RoleRepository roleRepository) {
+                         RoleRepository roleRepository,
+                         MembershipRepository membershipRepository,
+                         ClassRegistrationRepository classRegistrationRepository,
+                         PaymentRepository paymentRepository,
+                         GymClassRepository gymClassRepository,
+                         PackageRepository packageRepository) {
         this.memberRepository = memberRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.membershipRepository = membershipRepository;
+        this.classRegistrationRepository = classRegistrationRepository;
+        this.paymentRepository = paymentRepository;
+        this.gymClassRepository = gymClassRepository;
+        this.packageRepository = packageRepository;
     }
+
+    // ADMIN / RECEPTIONIST / TRAINER
 
     public Page<Member> searchMembers(String keyword, Integer status, int page, int size) {
         int safePage = Math.max(page - 1, 0);
@@ -109,6 +143,7 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    @Transactional
     public Member createMember(Member member, Integer userId) {
         if (member == null) {
             throw new IllegalArgumentException("Thông tin hội viên không hợp lệ");
@@ -127,10 +162,12 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
+    @Transactional
     public Member createMember(Member member) {
         return createMember(member, null);
     }
 
+    @Transactional
     public Member updateMember(Integer id, Member formMember, Integer userId) {
         if (id == null || formMember == null) {
             throw new IllegalArgumentException("Thông tin cập nhật không hợp lệ");
@@ -167,6 +204,7 @@ public class MemberService {
         return memberRepository.save(existing);
     }
 
+    @Transactional
     public Member updateMember(Member member) {
         if (member == null || member.getMemberId() == null) {
             throw new IllegalArgumentException("Thông tin cập nhật không hợp lệ");
@@ -178,6 +216,7 @@ public class MemberService {
         return softDeleteMember(id);
     }
 
+    @Transactional
     public boolean softDeleteMember(Integer id) {
         if (id == null) {
             return false;
@@ -190,6 +229,7 @@ public class MemberService {
         }).orElse(false);
     }
 
+    @Transactional
     public void updateStatus(Integer memberId, Integer status) {
         if (memberId == null) {
             throw new IllegalArgumentException("Không tìm thấy hội viên");
@@ -245,6 +285,264 @@ public class MemberService {
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "username"));
     }
 
+    // MEMBER ACTOR
+
+    public Member getProfile(Integer userId) {
+        return memberRepository.findByUserUserId(userId).orElse(null);
+    }
+
+    @Transactional
+    public String updateProfile(Integer userId,
+                                String fullName,
+                                String email,
+                                String phone,
+                                String address,
+                                String gender,
+                                LocalDate dob,
+                                MultipartFile avatar) throws IOException {
+        Member member = memberRepository.findByUserUserId(userId).orElse(null);
+        if (member == null) {
+            return "Không tìm thấy hồ sơ.";
+        }
+
+        member.setFullname(trimToNull(fullName));
+        member.setEmail(trimToNull(email));
+        member.setPhone(trimToNull(phone));
+        member.setAddress(trimToNull(address));
+        member.setGender(normalizeGender(gender));
+        member.setDob(dob);
+
+        String validationError = validateProfile(member);
+        if (validationError != null) {
+            return validationError;
+        }
+
+        if (avatar != null && !avatar.isEmpty()) {
+            String originalName = avatar.getOriginalFilename();
+            String ext = "";
+
+            if (originalName != null && originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf('.'));
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + ext;
+            Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", "memberavt");
+            Files.createDirectories(uploadPath);
+            Files.copy(avatar.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+            member.setAvatar("memberavt/" + fileName);
+        }
+
+        memberRepository.save(member);
+        return null;
+    }
+
+    public List<GymPackage> getAllActivePackages() {
+        return packageRepository.findAllByStatus(1);
+    }
+
+    public GymPackage getPackageById(Integer id) {
+        return packageRepository.findById(id).orElse(null);
+    }
+
+    public List<GymClass> getAllActiveClasses() {
+        return gymClassRepository.findAll().stream()
+                .filter(c -> c.getStatus() != null && c.getStatus() == 1)
+                .toList();
+    }
+
+    public GymClass getClassesById(Integer id) {
+        return gymClassRepository.findById(id).orElse(null);
+    }
+
+    public List<ClassRegistration> getMyActivePendingClasses(Integer memberId) {
+        return classRegistrationRepository.findByMemberMemberIdOrderByRegistrationDateDesc(memberId)
+                .stream()
+                .filter(c -> "ACTIVE".equalsIgnoreCase(c.getStatus())
+                        || "PENDING".equalsIgnoreCase(c.getStatus()))
+                .toList();
+    }
+
+    public Membership getActiveMembership(Integer memberId) {
+        return membershipRepository.findAll().stream()
+                .filter(m -> m.getMember() != null)
+                .filter(m -> m.getMember().getMemberId().equals(memberId))
+                .filter(m -> "ACTIVE".equalsIgnoreCase(m.getStatus()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Membership getPendingMembership(Integer memberId) {
+        return membershipRepository.findAll().stream()
+                .filter(m -> m.getMember() != null)
+                .filter(m -> m.getMember().getMemberId().equals(memberId))
+                .filter(m -> "PENDING".equalsIgnoreCase(m.getStatus()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Membership getMembershipByMembershipId(Integer id) {
+        return membershipRepository.findById(id).orElse(null);
+    }
+
+    public List<Membership> getMembershipHistory(Integer memberId) {
+        return membershipRepository.findByMemberMemberIdOrderByCreatedAtDesc(memberId);
+    }
+
+    @Transactional
+    public int registerMembership(Integer memberId, Integer packageId) {
+        if (getActiveMembership(memberId) != null) return -2;
+        if (getPendingMembership(memberId) != null) return -3;
+
+        Member member = memberRepository.findById(memberId).orElse(null);
+        GymPackage pkg = packageRepository.findById(packageId).orElse(null);
+
+        if (member == null || pkg == null) return -1;
+
+        Membership m = new Membership();
+        m.setMember(member);
+        m.setGymPackage(pkg);
+        m.setStartDate(LocalDate.now());
+        m.setEndDate(LocalDate.now().plusMonths(pkg.getDurationMonths()));
+        m.setStatus("PENDING");
+
+        return membershipRepository.save(m).getMembershipId();
+    }
+
+    @Transactional
+    public int renewMembership(Integer memberId, Integer packageId) {
+        if (getPendingMembership(memberId) != null) return -3;
+
+        Member member = memberRepository.findById(memberId).orElse(null);
+        GymPackage pkg = packageRepository.findById(packageId).orElse(null);
+
+        if (member == null || pkg == null) return -1;
+
+        LocalDate start = LocalDate.now();
+        Membership active = getActiveMembership(memberId);
+        if (active != null && active.getEndDate() != null && active.getEndDate().isAfter(LocalDate.now())) {
+            start = active.getEndDate().plusDays(1);
+        }
+
+        Membership m = new Membership();
+        m.setMember(member);
+        m.setGymPackage(pkg);
+        m.setStartDate(start);
+        m.setEndDate(start.plusMonths(pkg.getDurationMonths()));
+        m.setStatus("PENDING");
+
+        return membershipRepository.save(m).getMembershipId();
+    }
+
+    @Transactional
+    public int registerClass(Integer memberId, Integer classId) {
+        boolean existed = classRegistrationRepository
+                .existsByMemberMemberIdAndGymClassClassIdAndStatusNot(memberId, classId, "CANCELLED");
+
+        if (existed) return -2;
+
+        Member member = memberRepository.findById(memberId).orElse(null);
+        GymClass gymClass = gymClassRepository.findById(classId).orElse(null);
+
+        if (member == null || gymClass == null) return -1;
+        if (gymClass.getCurrentMember() >= gymClass.getMaxMember()) return -3;
+
+        ClassRegistration cr = new ClassRegistration();
+        cr.setMember(member);
+        cr.setGymClass(gymClass);
+        cr.setService(gymClass.getService());
+        cr.setStartDate(LocalDate.now());
+        cr.setRegistrationDate(LocalDate.now());
+        cr.setStatus("PENDING");
+
+        gymClass.setCurrentMember(gymClass.getCurrentMember() + 1);
+        gymClassRepository.save(gymClass);
+
+        return classRegistrationRepository.save(cr).getRegistrationId();
+    }
+
+    public ClassRegistration getClassRegistrationByClassRegistrationId(Integer id) {
+        return classRegistrationRepository.findById(id).orElse(null);
+    }
+
+    public List<ClassRegistration> getClassRegistrationHistory(Integer memberId) {
+        return classRegistrationRepository.findByMemberMemberIdOrderByRegistrationDateDesc(memberId);
+    }
+
+    @Transactional
+    public boolean createPayment(Integer membershipId, Integer classRegistrationId, java.math.BigDecimal amount) {
+        Payment p = new Payment();
+
+        if (membershipId != null) {
+            Membership m = membershipRepository.findById(membershipId).orElse(null);
+            p.setMembership(m);
+        }
+
+        if (classRegistrationId != null) {
+            ClassRegistration cr = classRegistrationRepository.findById(classRegistrationId).orElse(null);
+            p.setClassRegistration(cr);
+        }
+
+        p.setAmount(amount);
+        p.setStatus("PENDING");
+        p.setPaymentMethod("BANK_TRANSFER");
+        p.setPaymentDate(LocalDate.now());
+
+        paymentRepository.save(p);
+        return true;
+    }
+
+    public Payment getPaymentByMembershipId(Integer id) {
+        return paymentRepository
+                .findTopByMembershipMembershipIdOrderByCreatedAtDesc(id)
+                .orElse(null);
+    }
+
+    public Payment getPaymentByClassRegistrationId(Integer id) {
+        return paymentRepository
+                .findTopByClassRegistrationRegistrationIdOrderByCreatedAtDesc(id)
+                .orElse(null);
+    }
+
+    public List<Payment> getPaymentHistory(Integer memberId) {
+        return paymentRepository.findByMemberId(memberId);
+    }
+
+    @Transactional
+    public boolean uploadPaymentProof(Integer membershipId,
+                                      Integer classRegistrationId,
+                                      MultipartFile file,
+                                      String uploadDir) throws IOException {
+        Payment payment = null;
+
+        if (membershipId != null) {
+            payment = getPaymentByMembershipId(membershipId);
+        }
+
+        if (classRegistrationId != null) {
+            payment = getPaymentByClassRegistrationId(classRegistrationId);
+        }
+
+        if (payment == null || file == null || file.isEmpty()) return false;
+
+        Path dir = Paths.get(uploadDir, "payments");
+        Files.createDirectories(dir);
+
+        String originalName = file.getOriginalFilename();
+        String ext = "";
+        if (originalName != null && originalName.contains(".")) {
+            ext = originalName.substring(originalName.lastIndexOf('.'));
+        }
+
+        String fileName = UUID.randomUUID() + ext;
+        Files.copy(file.getInputStream(), dir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+        payment.setProofImage("/uploads/payments/" + fileName);
+        paymentRepository.save(payment);
+
+        return true;
+    }
+
     private Comparator<Member> memberNameComparator() {
         return Comparator
                 .comparing((Member member) -> extractLastName(member.getFullname()), String.CASE_INSENSITIVE_ORDER)
@@ -258,7 +556,6 @@ public class MemberService {
         }
 
         String keywordLower = keyword.toLowerCase();
-
         String fullname = member.getFullname() != null ? member.getFullname().toLowerCase() : "";
         String phone = member.getPhone() != null ? member.getPhone().toLowerCase() : "";
         String email = member.getEmail() != null ? member.getEmail().toLowerCase() : "";
@@ -318,6 +615,28 @@ public class MemberService {
         if (member.getStatus() != 0 && member.getStatus() != 1) {
             throw new IllegalArgumentException("Trạng thái không hợp lệ");
         }
+    }
+
+    private String validateProfile(Member member) {
+        if (member.getFullname() == null || member.getFullname().isBlank()) {
+            return "Họ tên không được để trống";
+        }
+
+        if (member.getPhone() != null && !member.getPhone().isBlank()
+                && !PHONE_PATTERN.matcher(member.getPhone()).matches()) {
+            return "Số điện thoại không hợp lệ";
+        }
+
+        if (member.getEmail() != null && !member.getEmail().isBlank()
+                && !EMAIL_PATTERN.matcher(member.getEmail()).matches()) {
+            return "Email không hợp lệ";
+        }
+
+        if (member.getDob() != null && member.getDob().isAfter(LocalDate.now())) {
+            return "Ngày sinh không hợp lệ";
+        }
+
+        return null;
     }
 
     private void bindUser(Member member, Integer userId, Integer excludeMemberId) {
@@ -416,5 +735,34 @@ public class MemberService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    @Transactional
+    public boolean cancelMembership(Integer membershipId, Integer memberId) {
+        Membership membership = membershipRepository
+                .findByMembershipIdAndMemberMemberId(membershipId, memberId)
+                .orElse(null);
+
+        if (membership == null) {
+            return false;
+        }
+
+        if (!"PENDING".equalsIgnoreCase(membership.getStatus())) {
+            return false;
+        }
+
+        membership.setStatus("CANCELLED");
+
+        Payment payment = paymentRepository
+                .findTopByMembershipMembershipIdOrderByCreatedAtDesc(membershipId)
+                .orElse(null);
+
+        if (payment != null) {
+            payment.setStatus("CANCELLED");
+            paymentRepository.save(payment);
+        }
+
+        membershipRepository.save(membership);
+        return true;
     }
 }

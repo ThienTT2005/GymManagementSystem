@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MembershipRepository extends JpaRepository<Membership, Integer> {
 
@@ -21,6 +22,12 @@ public interface MembershipRepository extends JpaRepository<Membership, Integer>
     long countByStatus(String status);
 
     List<Membership> findAll(Sort sort);
+
+    List<Membership> findByMemberMemberIdOrderByCreatedAtDesc(Integer memberId);
+
+    Optional<Membership> findByMembershipId(Integer membershipId);
+
+    Optional<Membership> findByMembershipIdAndMemberMemberId(Integer membershipId, Integer memberId);
 
     @Query("""
         select new com.gym.GymManagementSystem.dto.DashboardTopPackageItem(

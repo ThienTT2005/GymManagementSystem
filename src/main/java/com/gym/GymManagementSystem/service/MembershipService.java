@@ -50,7 +50,7 @@ public class MembershipService {
         if (hasKeyword && hasStatus) {
             result = membershipRepository.findByMember_FullnameContainingIgnoreCaseAndStatus(
                     keyword.trim(),
-                    status.trim(),
+                    status.trim().toUpperCase(),
                     pageable
             );
         } else if (hasKeyword) {
@@ -60,7 +60,7 @@ public class MembershipService {
             );
         } else if (hasStatus) {
             result = membershipRepository.findByStatus(
-                    status.trim(),
+                    status.trim().toUpperCase(),
                     pageable
             );
         } else {
@@ -117,7 +117,6 @@ public class MembershipService {
         }
 
         validateDates(membership);
-
         membership.setStatus("PENDING");
 
         Membership saved = membershipRepository.save(membership);
@@ -156,7 +155,7 @@ public class MembershipService {
 
         String normalizedStatus = normalizeStatus(formMembership.getStatus());
 
-        if ("ACTIVE".equalsIgnoreCase(normalizedStatus) && !hasPaidPayment(existing.getMembershipId())) {
+        if ("ACTIVE".equals(normalizedStatus) && !hasPaidPayment(existing.getMembershipId())) {
             throw new IllegalArgumentException("Chưa có thanh toán PAID, không thể kích hoạt");
         }
 
@@ -210,7 +209,7 @@ public class MembershipService {
     }
 
     public void activateFromPaidPayment(Integer membershipId) {
-        // Giữ lại để không vỡ code cũ, nhưng không tự ACTIVE nữa.
+        // Giữ lại để không vỡ code cũ
     }
 
     public void attachCurrentMembershipSummary(Member member) {
@@ -275,7 +274,9 @@ public class MembershipService {
             return;
         }
 
-        switch (latest.getStatus()) {
+        String paymentStatus = latest.getStatus() == null ? "" : latest.getStatus().toUpperCase();
+
+        switch (paymentStatus) {
             case "PAID":
                 membership.setPaymentStatusDisplay("ĐÃ THANH TOÁN");
                 break;

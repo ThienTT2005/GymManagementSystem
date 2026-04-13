@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -10,14 +11,10 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pricing.css">
-    <style>
-        .pricing-tab {
-            cursor: pointer;
-        }
 
-        .duration-list li {
-            cursor: pointer;
-        }
+    <style>
+        .pricing-tab { cursor: pointer; }
+        .duration-list li { cursor: pointer; }
     </style>
 </head>
 
@@ -25,12 +22,16 @@
 <jsp:include page="/components/header.jsp" />
 
 <main class="pricing-page">
+
+    <!-- BANNER -->
     <section class="pricing-banner">
-        <img src="${pageContext.request.contextPath}/images/banner-pricing.png" alt="Chính sách giá"
+        <img src="${pageContext.request.contextPath}/images/banner-pricing.png"
+             alt="Chính sách giá"
              class="pricing-banner-image">
         <h1 class="pricing-banner-title">CHÍNH SÁCH GIÁ</h1>
     </section>
 
+    <!-- DATA -->
     <div id="packageData" style="display:none;">
         <c:forEach var="pkg" items="${packages}">
             <div class="pkg-data"
@@ -44,8 +45,10 @@
         </c:forEach>
     </div>
 
+    <!-- MAIN -->
     <section class="pricing-section">
         <div class="pricing-content">
+
             <div class="pricing-tabs" id="pricingTabs"></div>
 
             <div class="pricing-main" id="pricingMain" style="display: none;">
@@ -66,6 +69,7 @@
                  style="text-align:center; display:none; font-size: 20px; color: #666; padding: 40px;">
                 Hiện tại chưa có gói tập nào.
             </div>
+
         </div>
     </section>
 
@@ -77,6 +81,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+
         const contextPath = '${pageContext.request.contextPath}';
         const packageElements = document.querySelectorAll('.pkg-data');
 
@@ -99,6 +104,7 @@
         });
 
         const packagesByName = {};
+
         packages.forEach(function (pkg) {
             const name = pkg.name.toUpperCase();
             if (!packagesByName[name]) {
@@ -132,12 +138,14 @@
                 btn.type = 'button';
                 btn.className = 'pricing-tab' + (name === currentName ? ' active' : '');
                 btn.textContent = name;
+
                 btn.onclick = function () {
                     currentName = name;
                     currentPackage = packagesByName[name][0];
                     renderTabs();
                     renderDurations();
                 };
+
                 tabsContainer.appendChild(btn);
             });
         }
@@ -154,10 +162,12 @@
                 const li = document.createElement('li');
                 li.className = (currentPackage && currentPackage.id === item.id) ? 'active' : '';
                 li.textContent = item.durationMonths + " THÁNG";
+
                 li.onclick = function () {
                     currentPackage = item;
                     renderDurations();
                 };
+
                 durationListContainer.appendChild(li);
             });
 
@@ -168,31 +178,41 @@
             if (!currentPackage) return;
 
             let durationLabel = currentPackage.durationMonths + " tháng";
-            let pricePerMonth = currentPackage.durationMonths > 0 ? (currentPackage.price / currentPackage.durationMonths) : 0;
+            let pricePerMonth = currentPackage.durationMonths > 0
+                ? (currentPackage.price / currentPackage.durationMonths)
+                : 0;
 
-            var html = [];
+            let html = [];
             html.push("<li><span>Thời gian tập luyện:</span><strong>" + durationLabel + "</strong></li>");
             html.push("<li><span>Tổng chi phí:</span><strong>" + formatCurrency(currentPackage.price) + "</strong></li>");
             html.push("<li><span>Chi phí / tháng:</span><strong>" + formatCurrency(pricePerMonth) + "</strong></li>");
+
             if (currentPackage.desc && currentPackage.desc.trim() !== '') {
-                html.push("<li><span>Mô tả:</span><strong>" + currentPackage.desc + "</strong></li>");
+                const cleanDesc = currentPackage.desc.trim().replace(/\s+/g, ' ');
+                const words = cleanDesc.split(' ');
+                const shortDesc = words.length > 10
+                    ? words.slice(0, 10).join(' ') + '...'
+                    : cleanDesc;
+
+                html.push("<li><span>Mô tả:</span><strong>" + shortDesc + "</strong></li>");
             }
 
             pricingInfoContainer.innerHTML = html.join('');
 
             let imgUrl = contextPath + '/images/pricing-man.png';
+
             if (currentPackage.image && currentPackage.image.trim() !== '') {
-                let trimImg = currentPackage.image.trim();
-                imgUrl = trimImg.startsWith('/')
-                    ? contextPath + trimImg
-                    : contextPath + '/' + trimImg;
+                imgUrl = contextPath + '/uploads/' + currentPackage.image.trim();
             }
+
             pricingFigureContainer.innerHTML = '<img src="' + imgUrl + '" alt="Huấn luyện">';
         }
 
         renderTabs();
         renderDurations();
+
     });
 </script>
+
 </body>
 </html>

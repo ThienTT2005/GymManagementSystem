@@ -133,7 +133,7 @@
                 }
 
                 container.innerHTML = `
-                    <h2 class="consult-form-title" style="margin-bottom: 30px;">ĐĂNG KÝ THAM GIA VÀ NHẬN TƯ VẤN</h2>
+
                     <div style="text-align: center; padding: 60px 20px; background-color: #fff; border-radius: 12px; border: 1px solid #e0e0e0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.5s;">
                         <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px;">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>

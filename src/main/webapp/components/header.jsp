@@ -16,6 +16,7 @@
         <a href="${pageContext.request.contextPath}/services">DỊCH VỤ</a>
         <a href="${pageContext.request.contextPath}/pricing">CHÍNH SÁCH GIÁ</a>
         <a href="${pageContext.request.contextPath}/news">TIN TỨC</a>
+        <a href="${pageContext.request.contextPath}/contact">LIÊN HỆ </a>
     </nav>
 
     <div class="actions">

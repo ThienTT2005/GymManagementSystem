@@ -10,16 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class NewsService {
-
     private final NewsRepository newsRepository;
 
     @Value("${app.upload.dir}")
@@ -29,7 +25,9 @@ public class NewsService {
         this.newsRepository = newsRepository;
     }
 
-    public Page<News> searchNews(String keyword, String type, Integer status, int page, int size) {
+    // ================= SEARCH =================
+    public Page<News> searchNews(String keyword, String category, Integer status, int page, int size) {
+
         PageRequest pageable = PageRequest.of(
                 Math.max(page - 1, 0),
                 size > 0 ? size : 8,
@@ -37,34 +35,34 @@ public class NewsService {
         );
 
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        boolean hasType = type != null && !type.trim().isEmpty();
+        boolean hasCategory = category != null && !category.trim().isEmpty();
         boolean hasStatus = status != null;
 
         String kw = hasKeyword ? keyword.trim() : "";
-        String tp = hasType ? type.trim() : "";
+        String ct = hasCategory ? category.trim() : "";
 
-        if (hasKeyword && hasType && hasStatus) {
-            return newsRepository.findByTitleContainingIgnoreCaseAndTypeAndStatus(kw, tp, status, pageable);
+        if (hasKeyword && hasCategory && hasStatus) {
+            return newsRepository.findByTitleContainingIgnoreCaseAndTypeAndStatus(kw, ct, status, pageable);
         }
 
-        if (hasKeyword && hasType) {
-            return newsRepository.findByTitleContainingIgnoreCaseAndType(kw, tp, pageable);
+        if (hasKeyword && hasCategory) {
+            return newsRepository.findByTitleContainingIgnoreCaseAndType(kw, ct, pageable);
         }
 
         if (hasKeyword && hasStatus) {
             return newsRepository.findByTitleContainingIgnoreCaseAndStatus(kw, status, pageable);
         }
 
-        if (hasType && hasStatus) {
-            return newsRepository.findByTypeAndStatus(tp, status, pageable);
+        if (hasCategory && hasStatus) {
+            return newsRepository.findByTypeAndStatus(ct, status, pageable);
         }
 
         if (hasKeyword) {
             return newsRepository.findByTitleContainingIgnoreCase(kw, pageable);
         }
 
-        if (hasType) {
-            return newsRepository.findByType(tp, pageable);
+        if (hasCategory) {
+            return newsRepository.findByType(ct, pageable);
         }
 
         if (hasStatus) {
@@ -74,11 +72,14 @@ public class NewsService {
         return newsRepository.findAll(pageable);
     }
 
+    // ================= GET =================
     public News getNewsById(Integer id) {
         return newsRepository.findById(id).orElse(null);
     }
 
+    // ================= CREATE =================
     public News createNews(News news, MultipartFile imageFile) {
+
         if (news.getStatus() == null) {
             news.setStatus(1);
         }
@@ -90,13 +91,14 @@ public class NewsService {
         return newsRepository.save(news);
     }
 
+    // ================= UPDATE =================
     public News updateNews(Integer id, News formNews, MultipartFile imageFile) {
+
         Optional<News> optional = newsRepository.findById(id);
-        if (optional.isEmpty()) {
-            return null;
-        }
+        if (optional.isEmpty()) return null;
 
         News existing = optional.get();
+
         existing.setTitle(formNews.getTitle());
         existing.setContent(formNews.getContent());
         existing.setType(formNews.getType());
@@ -109,7 +111,9 @@ public class NewsService {
         return newsRepository.save(existing);
     }
 
+    // ================= STATUS =================
     public void updateStatus(Integer id, Integer status) {
+
         if (id == null) {
             throw new IllegalArgumentException("Không tìm thấy bài viết");
         }
@@ -125,20 +129,22 @@ public class NewsService {
         newsRepository.save(news);
     }
 
+    // ================= DELETE =================
     public boolean softDeleteNews(Integer id) {
+
         Optional<News> optional = newsRepository.findById(id);
-        if (optional.isEmpty()) {
-            return false;
-        }
+        if (optional.isEmpty()) return false;
 
         News news = optional.get();
         news.setStatus(0);
         newsRepository.save(news);
+
         return true;
     }
 
-    // ✅ FIX CHUẨN 100%
+    // ================= UPLOAD IMAGE =================
     private String saveImage(MultipartFile imageFile) {
+
         String originalFilename = imageFile.getOriginalFilename();
         String extension = "";
 
@@ -166,4 +172,5 @@ public class NewsService {
 
         return fileName;
     }
+
 }

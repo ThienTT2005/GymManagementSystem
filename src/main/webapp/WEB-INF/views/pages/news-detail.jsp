@@ -8,13 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${news.title}</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/news-detail.css">
 </head>
 <body>
 
-<jsp:include page="/components/header.jsp" />
+<jsp:include page="/components/header.jsp"/>
 
 <main class="news-detail-page">
     <div class="news-detail-container">
@@ -39,12 +40,23 @@
             <span>/</span>
             <span class="news-date">${news.createdAt}</span>
             <span>/</span>
-            <span class="news-category">${news.category}</span>
+            <span class="news-category">
+                <c:choose>
+                    <c:when test="${news.type == 'NEWS'}">TIN TỨC</c:when>
+                    <c:when test="${news.type == 'PROMOTION'}">KHUYẾN MÃI</c:when>
+                    <c:when test="${news.type == 'BLOG'}">BLOG</c:when>
+                    <c:when test="${news.type == 'STORY'}">CÂU CHUYỆN HỘI VIÊN</c:when>
+                    <c:otherwise>${news.type}</c:otherwise>
+                </c:choose>
+            </span>
         </div>
 
         <c:if test="${not empty news.image}">
             <div class="news-image-wrap">
-                <img src="${pageContext.request.contextPath}${news.image}" alt="${news.title}" class="news-image">
+                <img src="${pageContext.request.contextPath}/uploads/${news.image}"
+                     alt="${news.title}"
+                     class="news-image"
+                     style="max-height: 500px; width: 100%; object-fit: contain;">
             </div>
         </c:if>
 
@@ -54,7 +66,7 @@
     </div>
 </main>
 
-<jsp:include page="/components/footer.jsp" />
+<jsp:include page="/components/footer.jsp"/>
 
 </body>
 </html>

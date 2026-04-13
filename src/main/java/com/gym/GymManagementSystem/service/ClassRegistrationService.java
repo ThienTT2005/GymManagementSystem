@@ -54,19 +54,19 @@ public class ClassRegistrationService {
 
         if (hasKeyword && hasClass && hasStatus) {
             return repository.findByMember_FullnameContainingIgnoreCaseAndGymClass_ClassIdAndStatus(
-                    kw, classId, status.trim(), pageable
+                    kw, classId, status.trim().toUpperCase(), pageable
             );
         }
 
         if (hasKeyword && hasStatus) {
             return repository.findByMember_FullnameContainingIgnoreCaseAndStatus(
-                    kw, status.trim(), pageable
+                    kw, status.trim().toUpperCase(), pageable
             );
         }
 
         if (hasClass && hasStatus) {
             return repository.findByGymClass_ClassIdAndStatus(
-                    classId, status.trim(), pageable
+                    classId, status.trim().toUpperCase(), pageable
             );
         }
 
@@ -79,7 +79,7 @@ public class ClassRegistrationService {
         }
 
         if (hasStatus) {
-            return repository.findByStatus(status.trim(), pageable);
+            return repository.findByStatus(status.trim().toUpperCase(), pageable);
         }
 
         return repository.findAll(pageable);
@@ -87,6 +87,10 @@ public class ClassRegistrationService {
 
     public ClassRegistration getRegistrationById(Integer id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public ClassRegistration getById(Integer id) {
+        return getRegistrationById(id);
     }
 
     public List<Member> getAllMembers() {
@@ -121,7 +125,9 @@ public class ClassRegistrationService {
             throw new IllegalArgumentException("Không được tạo trực tiếp đăng ký lớp ở trạng thái ACTIVE");
         }
 
-        return repository.save(registration);
+        ClassRegistration saved = repository.save(registration);
+        syncClassCurrentMember(saved.getGymClass());
+        return saved;
     }
 
     public ClassRegistration updateRegistration(Integer id, ClassRegistration formRegistration, Integer memberId, Integer classId, Integer serviceId) {
@@ -146,7 +152,9 @@ public class ClassRegistrationService {
             throw new IllegalArgumentException("Không thể kích hoạt đăng ký lớp khi thanh toán chưa được xác nhận");
         }
 
-        return repository.save(existing);
+        ClassRegistration saved = repository.save(existing);
+        syncClassCurrentMember(saved.getGymClass());
+        return saved;
     }
 
     public boolean cancelRegistration(Integer id) {
@@ -158,6 +166,20 @@ public class ClassRegistrationService {
         ClassRegistration registration = optional.get();
         registration.setStatus("CANCELLED");
         repository.save(registration);
+
+        Payment payment = paymentRepository.findAll(Sort.by(Sort.Direction.DESC, "paymentId"))
+                .stream()
+                .filter(p -> p.getClassRegistration() != null
+                        && p.getClassRegistration().getRegistrationId() != null
+                        && p.getClassRegistration().getRegistrationId().equals(registration.getRegistrationId()))
+                .findFirst()
+                .orElse(null);
+
+        if (payment != null) {
+            payment.setStatus("CANCELLED");
+            paymentRepository.save(payment);
+        }
+
         syncClassCurrentMember(registration.getGymClass());
         return true;
     }
@@ -176,6 +198,13 @@ public class ClassRegistrationService {
                 .filter(item -> item.getMember() != null && memberId.equals(item.getMember().getMemberId()))
                 .filter(item -> "ACTIVE".equalsIgnoreCase(item.getStatus()) || "PENDING".equalsIgnoreCase(item.getStatus()))
                 .toList();
+    }
+
+    public List<ClassRegistration> getByMember(Integer memberId) {
+        if (memberId == null) {
+            return List.of();
+        }
+        return repository.findByMemberMemberIdOrderByRegistrationDateDesc(memberId);
     }
 
     public long countActive() {
@@ -279,6 +308,7 @@ public class ClassRegistrationService {
         List<Payment> payments = paymentRepository.findAll(Sort.by(Sort.Direction.DESC, "paymentId"));
         return payments.stream()
                 .anyMatch(p -> p.getClassRegistration() != null
+                        && p.getClassRegistration().getRegistrationId() != null
                         && registrationId.equals(p.getClassRegistration().getRegistrationId())
                         && "PAID".equalsIgnoreCase(p.getStatus()));
     }

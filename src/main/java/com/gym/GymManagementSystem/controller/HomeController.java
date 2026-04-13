@@ -26,7 +26,7 @@ public class HomeController {
     public String showHome(Model model) {
         Page<News> newsPage = newsService.searchNews(
                 null,
-                "CAU_CHUYEN_HOI_VIEN",
+                "STORY",
                 1,
                 1,
                 3
@@ -43,5 +43,10 @@ public class HomeController {
     @GetMapping("/pages/register")
     public String showTrialRegisterPage() {
         return "pages/register";
+    }
+
+    @GetMapping("/contact")
+    public String showContactPage() {
+        return "pages/contact";
     }
 }

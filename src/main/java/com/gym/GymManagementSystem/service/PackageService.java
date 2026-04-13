@@ -67,6 +67,13 @@ public class PackageService {
                 .toList();
     }
 
+    public List<GymPackage> getAllActive() {
+        return packageRepository.findAll().stream()
+                .filter(pkg -> pkg.getStatus() != null && pkg.getStatus() == 1)
+                .sorted(packageDurationComparator())
+                .toList();
+    }
+
     public GymPackage getPackageById(Integer id) {
         if (id == null) return null;
         return packageRepository.findById(id).orElse(null);
@@ -194,7 +201,6 @@ public class PackageService {
         }
     }
 
-    // ✅ FIX 100% lỗi 500
     private String saveImage(MultipartFile imageFile) {
         String originalFilename = imageFile.getOriginalFilename();
         String extension = "";

@@ -499,7 +499,7 @@ body {
         width: 100%;
         padding: 0 20px;
     }
-    
+
     .consult-form-grid {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
@@ -528,7 +528,7 @@ body {
         width: 100%;
         max-width: 350px;
     }
-    
+
     .consult-form-section {
         height: auto;
         padding: 40px 0;
@@ -686,4 +686,18 @@ body {
 /* Hover đẹp hơn */
 .footer a:hover {
     color: #ff4d4d;
+}
+
+/* Giới hạn nội dung tin tức trang chủ */
+.promo-news-card-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 68px;
 }

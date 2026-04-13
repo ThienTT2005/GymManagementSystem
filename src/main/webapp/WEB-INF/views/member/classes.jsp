@@ -23,19 +23,20 @@
                 </a>
             </div>
 
-            <%-- Thông báo --%>
             <c:if test="${success == 'class_registered'}">
                 <div class="alert alert-success alert-dismissible fade show">
                     <i class="bi bi-check-circle me-2"></i>Đăng ký lớp thành công!
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </c:if>
+
             <c:if test="${error == 'already_registered'}">
                 <div class="alert alert-warning alert-dismissible fade show">
                     Bạn đã đăng ký lớp này rồi.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </c:if>
+
             <c:if test="${error == 'class_full'}">
                 <div class="alert alert-danger alert-dismissible fade show">
                     Lớp đã đầy, vui lòng chọn lớp khác.
@@ -51,50 +52,42 @@
                             Chưa có lớp học nào.
                         </div>
                     </c:when>
+
                     <c:otherwise>
                         <c:forEach var="cls" items="${classes}">
                             <div class="col-md-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-body">
                                         <h5 class="fw-bold">${cls.className}</h5>
+
                                         <p class="text-muted small mb-1">
                                             <i class="bi bi-person me-1"></i>
-                                                ${cls.trainer.staff.fullName}
-                                            <span class="text-muted">(${cls.trainer.specialty})</span>
+                                                ${cls.trainerName}
                                         </p>
+
                                         <p class="text-muted small mb-2">
                                             <i class="bi bi-tag me-1"></i>
-                                                ${cls.service.serviceName}
+                                                ${cls.service != null ? cls.service.serviceName : 'Chưa có dịch vụ'}
                                         </p>
 
-                                            <%-- Lịch học của lớp --%>
-                                        <div class="mb-3">
-                                            <c:forEach var="sch" items="${cls.schedules}">
-                                                <span class="badge bg-light text-dark border me-1 mb-1">
-                                                    <i class="bi bi-clock me-1"></i>
-                                                    ${sch.dayOfWeek} ${sch.startTime}–${sch.endTime}
-                                                </span>
-                                            </c:forEach>
-                                        </div>
-
-                                            <%-- Sĩ số --%>
                                         <div class="d-flex align-items-center gap-2 mb-3">
                                             <i class="bi bi-people"></i>
-                                            <span class="${cls.curentmember >= cls.maxmember
-                                                           ? 'text-danger' : 'text-success'} fw-semibold">
-                                                ${cls.curentmember}/${cls.maxmember} học viên
-                                            </span>
+                                            <span class="${cls.currentMember >= cls.maxMember ? 'text-danger' : 'text-success'} fw-semibold">
+                                            ${cls.currentMember}/${cls.maxMember} học viên
+                                        </span>
                                         </div>
 
                                         <p class="text-muted small">${cls.description}</p>
                                     </div>
+
                                     <div class="card-footer bg-white border-0 pb-3">
                                         <c:choose>
-                                            <c:when test="${cls.curentmember >= cls.maxmember}">
+                                            <c:when test="${cls.currentMember >= cls.maxMember}">
                                                 <button class="btn btn-secondary w-100" disabled>
                                                     Đã đầy lớp
                                                 </button>
                                             </c:when>
+
                                             <c:otherwise>
                                                 <form method="post"
                                                       action="${pageContext.request.contextPath}/member/register-class">

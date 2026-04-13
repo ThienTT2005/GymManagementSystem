@@ -29,22 +29,16 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MembershipRepository membershipRepository;
     private final ClassRegistrationRepository classRegistrationRepository;
-    private final MembershipService membershipService;
-    private final ClassRegistrationService classRegistrationService;
 
     @Value("${app.upload.dir}")
     private String uploadDir;
 
     public PaymentService(PaymentRepository paymentRepository,
                           MembershipRepository membershipRepository,
-                          ClassRegistrationRepository classRegistrationRepository,
-                          MembershipService membershipService,
-                          ClassRegistrationService classRegistrationService) {
+                          ClassRegistrationRepository classRegistrationRepository) {
         this.paymentRepository = paymentRepository;
         this.membershipRepository = membershipRepository;
         this.classRegistrationRepository = classRegistrationRepository;
-        this.membershipService = membershipService;
-        this.classRegistrationService = classRegistrationService;
     }
 
     public Page<Payment> searchPayments(String keyword,
@@ -211,6 +205,13 @@ public class PaymentService {
 
     public List<Payment> findPending() {
         return paymentRepository.findByStatus("PENDING", PageRequest.of(0, 5)).getContent();
+    }
+
+    public List<Payment> getByMember(Integer memberId) {
+        if (memberId == null) {
+            return List.of();
+        }
+        return paymentRepository.findByMemberId(memberId);
     }
 
     private void bindTarget(Payment payment, Integer membershipId, Integer classRegistrationId) {

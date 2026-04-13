@@ -17,78 +17,84 @@
         <jsp:include page="/WEB-INF/views/common/member_sidebar.jsp"/>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
 
-            <nav aria-label="breadcrumb" class="mb-4">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/member/packages">Gói tập</a></li>
-                    <li class="breadcrumb-item active">Xác nhận đăng ký</li>
-                </ol>
+            <nav class="mb-4">
+                <a href="${pageContext.request.contextPath}/member/packages">← Quay lại</a>
             </nav>
 
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card border-0 shadow">
-                        <div class="card-header bg-primary text-white text-center py-3">
-                            <h5 class="mb-0"><i class="bi bi-cart-check me-2"></i>Xác nhận đăng ký gói tập</h5>
+
+                    <div class="card shadow">
+
+                        <div class="card-header bg-primary text-white text-center">
+                            Xác nhận đăng ký
                         </div>
-                        <div class="card-body p-4">
+
+                        <div class="card-body">
+
                             <c:choose>
+
                                 <c:when test="${not empty selectedPackage}">
-                                    <table class="table table-borderless">
+
+                                    <table class="table">
+
                                         <tr>
-                                            <td class="fw-semibold text-muted">Gói tập:</td>
-                                            <td class="fw-bold fs-5">${selectedPackage.packageName}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold text-muted">Thời hạn:</td>
-                                            <td>${selectedPackage.durationMonth} tháng</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-semibold text-muted">Giá:</td>
-                                            <td class="fw-bold text-primary fs-5">
-                                                <fmt:formatNumber value="${selectedPackage.price}" type="number" groupingUsed="true"/>đ
+                                            <td>Gói</td>
+                                            <td class="fw-bold">
+                                                    ${selectedPackage.packageName}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="fw-semibold text-muted">Mô tả:</td>
+                                            <td>Thời hạn</td>
+                                            <td>
+                                                    ${selectedPackage.durationMonths} tháng
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Giá</td>
+                                            <td class="fw-bold text-primary">
+                                                <fmt:formatNumber value="${selectedPackage.price}" groupingUsed="true"/>đ
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Mô tả</td>
                                             <td>${selectedPackage.description}</td>
                                         </tr>
+
                                     </table>
 
-                                    <div class="alert alert-warning small">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Sau khi đăng ký, bạn cần <strong>upload minh chứng thanh toán</strong>
-                                        để Admin duyệt và kích hoạt gói tập.
-                                    </div>
+                                    <form method="post"
+                                          action="${pageContext.request.contextPath}/member/register-package">
 
-                                    <form method="post" action="${pageContext.request.contextPath}/member/register-package">
                                         <input type="hidden" name="packageId" value="${selectedPackage.packageId}">
                                         <input type="hidden" name="action" value="register">
-                                        <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                <i class="bi bi-check-circle me-2"></i>Xác nhận đăng ký
-                                            </button>
-                                            <a href="${pageContext.request.contextPath}/member/packages" class="btn btn-outline-secondary">
-                                                Quay lại
-                                            </a>
-                                        </div>
+
+                                        <button class="btn btn-primary w-100">
+                                            Xác nhận đăng ký
+                                        </button>
                                     </form>
+
                                 </c:when>
+
                                 <c:otherwise>
-                                    <div class="text-center py-4">
-                                        <p class="text-muted">Gói tập không tồn tại.</p>
-                                        <a href="${pageContext.request.contextPath}/member/packages" class="btn btn-primary">
-                                            Xem danh sách gói tập
-                                        </a>
-                                    </div>
+                                    <p>Không tìm thấy gói</p>
                                 </c:otherwise>
+
                             </c:choose>
+
                         </div>
+
                     </div>
+
                 </div>
             </div>
+
         </main>
     </div>
+
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
