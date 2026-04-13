@@ -68,9 +68,15 @@ public class ScheduleService {
 
     public Schedule createSchedule(Schedule schedule, Integer classId) {
         bindClass(schedule, classId);
+
         if (schedule.getStatus() == null) {
             schedule.setStatus(1);
         }
+
+        validateScheduleTime(schedule);
+        validateClassScheduleConflict(schedule, null);
+        validateTrainerScheduleConflict(schedule, null);
+
         return scheduleRepository.save(schedule);
     }
 
@@ -87,6 +93,10 @@ public class ScheduleService {
         existing.setStatus(formSchedule.getStatus());
 
         bindClass(existing, classId);
+        validateScheduleTime(existing);
+        validateClassScheduleConflict(existing, id);
+        validateTrainerScheduleConflict(existing, id);
+
         return scheduleRepository.save(existing);
     }
 
@@ -117,6 +127,122 @@ public class ScheduleService {
                 .stream()
                 .sorted(scheduleComparator())
                 .toList();
+    }
+
+    private void validateScheduleTime(Schedule schedule) {
+        if (schedule.getGymClass() == null || schedule.getGymClass().getClassId() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn lớp học");
+        }
+
+        if (schedule.getDayOfWeek() == null || schedule.getDayOfWeek().trim().isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn thứ trong tuần");
+        }
+
+        if (schedule.getStartTime() == null || schedule.getEndTime() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn đầy đủ giờ bắt đầu và giờ kết thúc");
+        }
+
+        if (!schedule.getEndTime().isAfter(schedule.getStartTime())) {
+            throw new IllegalArgumentException("Giờ kết thúc phải lớn hơn giờ bắt đầu");
+        }
+    }
+
+    private void validateClassScheduleConflict(Schedule schedule, Integer excludeScheduleId) {
+        if (schedule == null || schedule.getGymClass() == null || schedule.getGymClass().getClassId() == null) {
+            return;
+        }
+
+        Integer classId = schedule.getGymClass().getClassId();
+
+        List<Schedule> classSchedules = scheduleRepository.findByGymClass_ClassId(classId);
+
+        for (Schedule existing : classSchedules) {
+            if (excludeScheduleId != null && excludeScheduleId.equals(existing.getScheduleId())) {
+                continue;
+            }
+
+            if (existing.getDayOfWeek() == null || schedule.getDayOfWeek() == null) {
+                continue;
+            }
+
+            if (!existing.getDayOfWeek().trim().equalsIgnoreCase(schedule.getDayOfWeek().trim())) {
+                continue;
+            }
+
+            if (existing.getStartTime() == null || existing.getEndTime() == null) {
+                continue;
+            }
+
+            boolean overlap = schedule.getStartTime().isBefore(existing.getEndTime())
+                    && schedule.getEndTime().isAfter(existing.getStartTime());
+
+            if (overlap) {
+                String className = schedule.getGymClass().getClassName() != null
+                        ? schedule.getGymClass().getClassName()
+                        : "Lớp này";
+
+                throw new IllegalArgumentException(
+                        className + " đã có lịch trùng vào " + existing.getDayOfWeek()
+                                + " (" + existing.getStartTime() + " - " + existing.getEndTime() + ")"
+                );
+            }
+        }
+    }
+
+    private void validateTrainerScheduleConflict(Schedule schedule, Integer excludeScheduleId) {
+        if (schedule == null || schedule.getGymClass() == null || schedule.getGymClass().getTrainer() == null) {
+            return;
+        }
+
+        Integer trainerId = schedule.getGymClass().getTrainer().getTrainerId();
+        if (trainerId == null) {
+            return;
+        }
+
+        List<Schedule> trainerSchedules = scheduleRepository.findByGymClass_Trainer_TrainerIdAndStatus(trainerId, 1);
+
+        for (Schedule existing : trainerSchedules) {
+            if (excludeScheduleId != null && excludeScheduleId.equals(existing.getScheduleId())) {
+                continue;
+            }
+
+            if (existing.getDayOfWeek() == null || schedule.getDayOfWeek() == null) {
+                continue;
+            }
+
+            if (!existing.getDayOfWeek().trim().equalsIgnoreCase(schedule.getDayOfWeek().trim())) {
+                continue;
+            }
+
+            if (existing.getStartTime() == null || existing.getEndTime() == null) {
+                continue;
+            }
+
+            boolean overlap = schedule.getStartTime().isBefore(existing.getEndTime())
+                    && schedule.getEndTime().isAfter(existing.getStartTime());
+
+            if (overlap) {
+                Integer currentClassId = schedule.getGymClass().getClassId();
+                Integer existingClassId = existing.getGymClass() != null ? existing.getGymClass().getClassId() : null;
+
+                if (currentClassId != null && currentClassId.equals(existingClassId)) {
+                    continue;
+                }
+
+                String trainerName = schedule.getGymClass().getTrainer().getStaff() != null
+                        ? schedule.getGymClass().getTrainer().getStaff().getFullName()
+                        : "Huấn luyện viên";
+
+                String className = existing.getGymClass() != null && existing.getGymClass().getClassName() != null
+                        ? existing.getGymClass().getClassName()
+                        : "lớp khác";
+
+                throw new IllegalArgumentException(
+                        trainerName + " đã có lớp trùng lịch vào " + existing.getDayOfWeek()
+                                + " (" + existing.getStartTime() + " - " + existing.getEndTime() + ") ở lớp " + className
+                );
+            }
+        }
     }
 
     private void bindClass(Schedule schedule, Integer classId) {

@@ -54,28 +54,26 @@ public class AdminScheduleController {
     }
 
     @PostMapping("/create")
-    public String create(
-            @Valid @ModelAttribute("schedule") Schedule schedule,
-            BindingResult bindingResult,
-            @RequestParam(required = false) Integer classId,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
-        if (classId == null) {
-            bindingResult.reject("classId", "Vui lòng chọn lớp học");
-        }
+    public String create(@ModelAttribute("schedule") Schedule schedule,
+                         @RequestParam("classId") Integer classId,
+                         RedirectAttributes redirectAttributes,
+                         Model model) {
 
-        if (bindingResult.hasErrors()) {
+        try {
+            scheduleService.createSchedule(schedule, classId);
+            redirectAttributes.addFlashAttribute("success", "Tạo lịch học thành công");
+            return "redirect:/admin/schedules";
+        } catch (IllegalArgumentException e) {
+
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("classes", scheduleService.getAllClasses());
+            model.addAttribute("schedule", schedule);
             model.addAttribute("pageTitle", "Thêm lịch học");
             model.addAttribute("activePage", "schedules");
-            model.addAttribute("classes", scheduleService.getAllClasses());
             model.addAttribute("isEdit", false);
+
             return "admin/schedules/form";
         }
-
-        scheduleService.createSchedule(schedule, classId);
-        redirectAttributes.addFlashAttribute("successMessage", "Thêm lịch học thành công");
-        return "redirect:/admin/schedules";
     }
 
     @GetMapping("/edit/{id}")
@@ -117,14 +115,29 @@ public class AdminScheduleController {
             return "admin/schedules/form";
         }
 
-        Schedule updated = scheduleService.updateSchedule(id, schedule, classId);
-        if (updated == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
-            return "redirect:/admin/schedules";
-        }
+        try {
+            Schedule updated = scheduleService.updateSchedule(id, schedule, classId);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch học thành công");
-        return "redirect:/admin/schedules";
+            if (updated == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lịch học");
+                return "redirect:/admin/schedules";
+            }
+
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật lịch học thành công");
+            return "redirect:/admin/schedules";
+
+        } catch (IllegalArgumentException e) {
+
+            schedule.setScheduleId(id);
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("pageTitle", "Cập nhật lịch học");
+            model.addAttribute("activePage", "schedules");
+            model.addAttribute("classes", scheduleService.getAllClasses());
+            model.addAttribute("schedule", schedule);
+            model.addAttribute("isEdit", true);
+
+            return "admin/schedules/form";
+        }
     }
 
     @PostMapping("/toggle-status/{id}")

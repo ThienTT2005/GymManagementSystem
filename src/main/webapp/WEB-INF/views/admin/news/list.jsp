@@ -113,9 +113,10 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${not empty item.image}">
-                                                    <img class="thumb-image"
+                                                    <img class="thumb-image js-image-preview"
                                                          src="${pageContext.request.contextPath}/uploads/${item.image}"
-                                                         alt="${item.title}">
+                                                         alt="${item.title}"
+                                                         data-preview-label="${item.title}">
                                                 </c:when>
                                                 <c:otherwise>-</c:otherwise>
                                             </c:choose>

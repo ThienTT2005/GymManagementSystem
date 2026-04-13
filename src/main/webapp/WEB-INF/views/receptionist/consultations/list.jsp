@@ -40,19 +40,24 @@
 
                     <div class="filter-group">
                         <select name="status">
-                            <option value="">Tất cả</option>
+                            <option value="">Tất cả trạng thái</option>
                             <option value="NEW" ${status=='NEW'?'selected':''}>Chờ liên hệ</option>
                             <option value="CONTACTED" ${status=='CONTACTED'?'selected':''}>Đã liên hệ</option>
                         </select>
                     </div>
 
-                    <button class="btn-secondary" type="submit">
-                        <i class="fa-solid fa-search"></i>
-                    </button>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-secondary">
+                            <i class="fa-solid fa-search"></i>
+                            <span>Tìm kiếm</span>
+                        </button>
 
-                    <a href="${pageContext.request.contextPath}/receptionist/consultations" class="btn-light">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </a>
+                        <a class="btn-light"
+                           href="${pageContext.request.contextPath}/receptionist/consultations">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Reset</span>
+                        </a>
+                    </div>
                 </form>
 
                 <div class="table-responsive">

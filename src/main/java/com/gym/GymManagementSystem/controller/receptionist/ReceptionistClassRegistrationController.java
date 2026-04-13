@@ -1,6 +1,7 @@
 package com.gym.GymManagementSystem.controller.receptionist;
 
 import com.gym.GymManagementSystem.model.ClassRegistration;
+import com.gym.GymManagementSystem.model.GymClass;
 import com.gym.GymManagementSystem.service.ClassRegistrationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -72,6 +73,13 @@ public class ReceptionistClassRegistrationController {
         }
         if (classId == null) {
             bindingResult.reject("classId", "Vui lòng chọn lớp học");
+        }
+
+        if (classId != null) {
+            GymClass selectedClass = classRegistrationService.getClassById(classId);
+            if (!classRegistrationService.isClassAvailableForRegistration(selectedClass)) {
+                bindingResult.reject("classId", "Lớp học này đã đầy hoặc đang ngừng hoạt động");
+            }
         }
 
         if (bindingResult.hasErrors()) {

@@ -18,11 +18,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final NotificationService notificationService;
 
     public UserService(UserRepository userRepository,
-                       RoleRepository roleRepository) {
+                       RoleRepository roleRepository,
+                       NotificationService notificationService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<User> searchUsers(String keyword, Integer roleId, Integer status, int page, int size) {
@@ -99,7 +102,16 @@ public class UserService {
 
         user.setPassword(PasswordUtil.hash(user.getPassword().trim()));
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Tài khoản mới",
+                "Tài khoản " + savedUser.getUsername() + " vừa được tạo mới",
+                "/admin/users"
+        );
+
+        return savedUser;
     }
 
     public User updateUser(Integer id, User formUser) {

@@ -45,16 +45,16 @@
                       action="${pageContext.request.contextPath}/receptionist/members"
                       class="filter-form">
 
-                    <div class="filter-group filter-group-grow">
+                    <div class="filter-group search-group">
                         <input type="text"
                                name="keyword"
                                value="${keyword}"
-                               placeholder="Tên / SĐT">
+                               placeholder="Tìm theo tên, SĐT">
                     </div>
 
                     <div class="filter-group">
                         <select name="status">
-                            <option value="">Trạng thái</option>
+                            <option value="">Tất cả trạng thái</option>
                             <option value="1" ${status == 1 ? 'selected' : ''}>Hoạt động</option>
                             <option value="0" ${status == 0 ? 'selected' : ''}>Ngừng</option>
                         </select>
@@ -62,12 +62,14 @@
 
                     <div class="filter-actions">
                         <button type="submit" class="btn-secondary">
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i class="fa-solid fa-search"></i>
+                            <span>Tìm kiếm</span>
                         </button>
 
                         <a class="btn-light"
                            href="${pageContext.request.contextPath}/receptionist/members">
                             <i class="fa-solid fa-rotate-right"></i>
+                            <span>Reset</span>
                         </a>
                     </div>
                 </form>

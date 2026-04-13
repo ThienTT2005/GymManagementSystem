@@ -1930,3 +1930,47 @@ img {
     color: #fff;
     font-size: 16px;
 }
+
+.notif-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.notif-mark-all-form {
+    margin: 0;
+}
+
+.notif-mark-all-btn {
+    border: 1px solid #efcfcf;
+    background: #fff;
+    color: var(--primary-red);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.notif-mark-all-btn:hover {
+    background: #fff4f4;
+}
+
+.status-badge.done {
+    background: #e7f7ec;
+    color: #14804a;
+}
+
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: #fff1f1;
+    color: #b30000;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    border: 1px solid #f2c5c5;
+}

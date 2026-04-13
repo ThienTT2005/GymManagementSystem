@@ -31,7 +31,7 @@
             <div class="profile-page-grid">
                 <div class="profile-left-card">
                     <img class="profile-avatar-large"
-                         src="${pageContext.request.contextPath}/uploads/${not empty trainerProfile.photo ? trainerProfile.photo : (trainerProfile != null && trainerProfile.staff != null && not empty trainerProfile.staff.avatar ? trainerProfile.staff.avatar : 'default-avatar.png')}"
+                         src="${pageContext.request.contextPath}/${empty user.avatar ? 'assets/images/default-avatar.png' : user.avatar.startsWith('assets/') ? user.avatar : 'uploads/'.concat(user.avatar)}"
                          alt="${user.username}">
 
                     <h3>

@@ -35,10 +35,10 @@ public class User {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Staff staff;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public Integer getUserId() {
@@ -95,6 +95,21 @@ public class User {
 
     public void setStaff(Staff staff) {
         this.staff = staff;
+    }
+
+
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = now;
+        }
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public LocalDateTime getCreatedAt() {

@@ -46,16 +46,16 @@
                       action="${pageContext.request.contextPath}/receptionist/memberships"
                       class="filter-form">
 
-                    <div class="filter-group filter-group-grow">
+                    <div class="filter-group search-group">
                         <input type="text"
                                name="keyword"
                                value="${keyword}"
-                               placeholder="Tìm hội viên">
+                               placeholder="Tìm theo tên hội viên">
                     </div>
 
                     <div class="filter-group">
                         <select name="status">
-                            <option value="">Trạng thái</option>
+                            <option value="">Tất cả trạng thái</option>
                             <option value="PENDING" ${status=='PENDING'?'selected':''}>Chờ</option>
                             <option value="ACTIVE" ${status=='ACTIVE'?'selected':''}>Hoạt động</option>
                             <option value="REJECTED" ${status=='REJECTED'?'selected':''}>Từ chối</option>
@@ -66,12 +66,14 @@
 
                     <div class="filter-actions">
                         <button type="submit" class="btn-secondary">
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i class="fa-solid fa-search"></i>
+                            <span>Tìm kiếm</span>
                         </button>
 
                         <a class="btn-light"
                            href="${pageContext.request.contextPath}/receptionist/memberships">
                             <i class="fa-solid fa-rotate-right"></i>
+                            <span>Reset</span>
                         </a>
                     </div>
                 </form>

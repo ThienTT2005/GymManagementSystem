@@ -26,7 +26,10 @@
             </div>
 
             <c:if test="${not empty errorMessage}">
-                <div class="alert-error">${errorMessage}</div>
+                <div class="alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>${errorMessage}</span>
+                </div>
             </c:if>
 
             <div class="page-card form-card">
@@ -52,10 +55,19 @@
                             <select name="classId" required>
                                 <option value="">-- Chọn lớp --</option>
                                 <c:forEach var="c" items="${classes}">
+                                    <c:set var="currentMember" value="${c.currentMember != null ? c.currentMember : 0}" />
+                                    <c:set var="maxMember" value="${c.maxMember != null ? c.maxMember : 0}" />
+                                    <c:set var="isFull" value="${maxMember <= 0 || currentMember >= maxMember}" />
+                                    <c:set var="isInactive" value="${c.status == null || c.status != 1}" />
+
                                     <option value="${c.classId}"
-                                        <c:if test="${registration.gymClass != null && registration.gymClass.classId == c.classId}">selected</c:if>>
+                                        <c:if test="${registration.gymClass != null && registration.gymClass.classId == c.classId}">selected</c:if>
+                                        <c:if test="${isFull || isInactive}">disabled</c:if>>
                                             ${c.className}
                                             <c:if test="${c.service != null}"> - ${c.service.serviceName}</c:if>
+                                            (${currentMember}/${maxMember})
+                                            <c:if test="${isFull}"> - Đã đầy</c:if>
+                                            <c:if test="${isInactive}"> - Ngừng hoạt động</c:if>
                                     </option>
                                 </c:forEach>
                             </select>

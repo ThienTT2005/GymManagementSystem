@@ -55,7 +55,7 @@
 
                     <button class="btn-secondary">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        Lọc
+                        Tìm kiếm
                     </button>
 
                     <a href="${pageContext.request.contextPath}/receptionist/trials" class="btn-light">

@@ -46,6 +46,12 @@
                         <form:hidden path="scheduleId"/>
                     </c:if>
 
+                    <c:if test="${error != null}">
+                        <div class="alert-error">
+                            ${error}
+                        </div>
+                    </c:if>
+
                     <div class="form-grid">
 
                         <div class="form-group full-width">

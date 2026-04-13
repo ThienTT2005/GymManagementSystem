@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -17,6 +18,18 @@ public class NotificationController {
 
     public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @PostMapping("/mark-all-read")
+    public RedirectView markAllRead(@RequestParam(required = false) String target, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new RedirectView("/login");
+        }
+
+        notificationService.markAllAsRead(loggedInUser.getUserId());
+        String redirectTarget = (target == null || target.isBlank()) ? resolveDefaultTargetByRole(loggedInUser) : target;
+        return new RedirectView(redirectTarget);
     }
 
     @GetMapping("/go")

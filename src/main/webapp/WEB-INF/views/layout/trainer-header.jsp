@@ -49,9 +49,17 @@
             </button>
 
             <div class="notif-menu" id="trainerNotificationMenu">
-                <div class="notif-title">
-                    <strong>Thông báo</strong>
-                    <span>${unreadNotificationCount} chưa đọc</span>
+                <div class="notif-title notif-title-row">
+                    <div>
+                        <strong>Thông báo</strong>
+                        <span>${unreadNotificationCount} chưa đọc</span>
+                    </div>
+                    <c:if test="${unreadNotificationCount > 0}">
+                        <form method="post" action="${pageContext.request.contextPath}/notifications/mark-all-read" class="notif-mark-all-form">
+                            <input type="hidden" name="target" value="${pageContext.request.contextPath}/trainer/dashboard">
+                            <button type="submit" class="notif-mark-all-btn">Đánh dấu tất cả đã đọc</button>
+                        </form>
+                    </c:if>
                 </div>
 
                 <c:choose>

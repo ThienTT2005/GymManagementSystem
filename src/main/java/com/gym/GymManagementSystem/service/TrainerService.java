@@ -108,13 +108,18 @@ public class TrainerService {
 
         validateTrainer(trainer);
         bindStaff(trainer, staffId, null);
-        trainer.setPhoto(storeImage(photoFile, trainer.getPhoto(), "trainer-"));
+
+        String photo = storeImage(photoFile, trainer.getPhoto(), "trainer-");
+        trainer.setPhoto(photo);
+        syncStaffAvatar(trainer, photo);
 
         if (trainer.getStatus() == null) {
             trainer.setStatus(1);
         }
 
-        return trainerRepository.save(trainer);
+        Trainer saved = trainerRepository.save(trainer);
+        saveStaffIfPresent(saved);
+        return saved;
     }
 
     public Trainer updateOwnPhoto(Integer userId, MultipartFile photoFile) {
@@ -123,9 +128,13 @@ public class TrainerService {
             return null;
         }
 
-        String photo = storeImage(photoFile, trainer.getPhoto(), "trainer-");
+        String photo = storeImage(photoFile, resolveCurrentPhoto(trainer), "trainer-");
         trainer.setPhoto(photo);
-        return trainerRepository.save(trainer);
+        syncStaffAvatar(trainer, photo);
+
+        Trainer saved = trainerRepository.save(trainer);
+        saveStaffIfPresent(saved);
+        return saved;
     }
 
     public boolean softDeleteTrainer(Integer id) {
@@ -154,11 +163,16 @@ public class TrainerService {
         existing.setExperience(formTrainer.getExperience());
         existing.setCertifications(formTrainer.getCertifications());
         existing.setStatus(formTrainer.getStatus());
-        existing.setPhoto(storeImage(photoFile, existing.getPhoto(), "trainer-"));
+
+        String photo = storeImage(photoFile, resolveCurrentPhoto(existing), "trainer-");
+        existing.setPhoto(photo);
 
         bindStaff(existing, staffId, id);
+        syncStaffAvatar(existing, photo);
 
-        return trainerRepository.save(existing);
+        Trainer saved = trainerRepository.save(existing);
+        saveStaffIfPresent(saved);
+        return saved;
     }
 
     private Comparator<Trainer> trainerNameComparator() {
@@ -234,6 +248,31 @@ public class TrainerService {
 
         if (trainer.getStatus() != 0 && trainer.getStatus() != 1) {
             throw new IllegalArgumentException("Trạng thái huấn luyện viên không hợp lệ");
+        }
+    }
+
+    private String resolveCurrentPhoto(Trainer trainer) {
+        if (trainer == null) {
+            return null;
+        }
+
+        if (trainer.getStaff() != null && trainer.getStaff().getAvatar() != null && !trainer.getStaff().getAvatar().isBlank()) {
+            return trainer.getStaff().getAvatar();
+        }
+
+        return trainer.getPhoto();
+    }
+
+    private void syncStaffAvatar(Trainer trainer, String photo) {
+        if (trainer == null || trainer.getStaff() == null || photo == null || photo.isBlank()) {
+            return;
+        }
+        trainer.getStaff().setAvatar(photo);
+    }
+
+    private void saveStaffIfPresent(Trainer trainer) {
+        if (trainer != null && trainer.getStaff() != null) {
+            staffRepository.save(trainer.getStaff());
         }
     }
 

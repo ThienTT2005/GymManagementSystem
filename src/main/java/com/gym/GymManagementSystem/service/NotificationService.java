@@ -99,6 +99,13 @@ public class NotificationService {
                 .forEach(role -> createNotificationForRole(role, title, message, targetUrl));
     }
 
+    public int markAllAsRead(Integer userId) {
+        if (userId == null) {
+            return 0;
+        }
+        return notificationRepository.markAllAsReadByUserId(userId);
+    }
+
     public void markAsRead(Integer notificationId, Integer userId) {
         if (notificationId == null || userId == null) {
             return;

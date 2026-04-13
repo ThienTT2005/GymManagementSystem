@@ -5,6 +5,7 @@ import com.gym.GymManagementSystem.model.Staff;
 import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.service.NotificationService;
 import com.gym.GymManagementSystem.service.StaffService;
+import com.gym.GymManagementSystem.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,11 +18,14 @@ public class ReceptionistGlobalModelAttributeAdvice {
 
     private final NotificationService notificationService;
     private final StaffService staffService;
+    private final UserService userService;
 
     public ReceptionistGlobalModelAttributeAdvice(NotificationService notificationService,
-                                                  StaffService staffService) {
+                                                  StaffService staffService,
+                                                  UserService userService) {
         this.notificationService = notificationService;
         this.staffService = staffService;
+        this.userService = userService;
     }
 
     @ModelAttribute("headerNotifications")
@@ -53,7 +57,17 @@ public class ReceptionistGlobalModelAttributeAdvice {
 
     @ModelAttribute("loggedInUser")
     public User loggedInUser(HttpSession session) {
-        return getLoggedInUser(session);
+        User user = getLoggedInUser(session);
+        if (user == null) {
+            return null;
+        }
+
+        User freshUser = userService.getUserById(user.getUserId());
+        if (freshUser != null) {
+            session.setAttribute("loggedInUser", freshUser);
+            return freshUser;
+        }
+        return user;
     }
 
     private User getLoggedInUser(HttpSession session) {

@@ -147,9 +147,9 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="currentMember">Số lượng hiện tại</label>
-                                    <form:input path="currentMember" id="currentMember" type="number" min="0"/>
-                                    <form:errors path="currentMember" cssClass="error-text"/>
+                                    <label>Số lượng hiện tại</label>
+                                    <input type="number" value="${isEdit ? gymClass.currentMember : 0}" readonly>
+                                    <span class="field-hint">Hệ thống tự động đặt mặc định 0 khi tạo mới và tự đồng bộ khi có học viên.</span>
                                 </div>
 
                                 <div class="form-group full-width">

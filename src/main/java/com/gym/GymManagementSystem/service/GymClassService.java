@@ -93,16 +93,55 @@ public class GymClassService {
         return trainerRepository.findAll(Sort.by(Sort.Direction.ASC, "trainerId"));
     }
 
+    public List<GymClass> getAvailableClassesForRegistration() {
+        return gymClassRepository.findAll(Sort.by(Sort.Direction.ASC, "className"))
+                .stream()
+                .filter(this::isAvailableForRegistration)
+                .toList();
+    }
+
+    public boolean isAvailableForRegistration(GymClass gymClass) {
+        if (gymClass == null) {
+            return false;
+        }
+
+        if (gymClass.getStatus() == null || gymClass.getStatus() != 1) {
+            return false;
+        }
+
+        Integer maxMember = gymClass.getMaxMember();
+        if (maxMember == null || maxMember <= 0) {
+            return false;
+        }
+
+        int currentMember = gymClass.getCurrentMember() != null ? gymClass.getCurrentMember() : 0;
+        return currentMember < maxMember;
+    }
+
+    public boolean isFull(GymClass gymClass) {
+        if (gymClass == null) {
+            return true;
+        }
+
+        Integer maxMember = gymClass.getMaxMember();
+        int currentMember = gymClass.getCurrentMember() != null ? gymClass.getCurrentMember() : 0;
+
+        if (maxMember == null || maxMember <= 0) {
+            return true;
+        }
+
+        return currentMember >= maxMember;
+    }
+
     public GymClass createClass(GymClass gymClass, Integer serviceId, Integer trainerId) {
         bindRelations(gymClass, serviceId, trainerId);
 
         if (gymClass.getStatus() == null) {
             gymClass.setStatus(1);
         }
-        if (gymClass.getCurrentMember() == null) {
-            gymClass.setCurrentMember(0);
-        }
+        gymClass.setCurrentMember(0);
 
+        validateTrainerAvailabilityForClass(gymClass, null);
         GymClass saved = gymClassRepository.save(gymClass);
 
         if (saved.getTrainer() != null
@@ -133,10 +172,11 @@ public class GymClassService {
         existing.setClassName(formClass.getClassName());
         existing.setDescription(formClass.getDescription());
         existing.setMaxMember(formClass.getMaxMember());
-        existing.setCurrentMember(formClass.getCurrentMember());
+        existing.setCurrentMember(existing.getCurrentMember() == null ? 0 : existing.getCurrentMember());
         existing.setStatus(formClass.getStatus());
 
         bindRelations(existing, serviceId, trainerId);
+        validateTrainerAvailabilityForClass(existing, id);
 
         GymClass saved = gymClassRepository.save(existing);
 
@@ -205,6 +245,57 @@ public class GymClassService {
                 .filter(r -> r.getGymClass() != null && classId.equals(r.getGymClass().getClassId()))
                 .filter(r -> r.getStatus() != null && "ACTIVE".equalsIgnoreCase(r.getStatus()))
                 .count();
+    }
+
+    private void validateTrainerAvailabilityForClass(GymClass gymClass, Integer excludeClassId) {
+        if (gymClass == null || gymClass.getTrainer() == null || gymClass.getTrainer().getTrainerId() == null || gymClass.getClassId() == null && excludeClassId == null) {
+            return;
+        }
+
+        Integer classId = gymClass.getClassId() != null ? gymClass.getClassId() : excludeClassId;
+        if (classId == null) {
+            return;
+        }
+
+        List<Schedule> classSchedules = scheduleRepository.findByGymClass_ClassIdAndStatus(classId, 1);
+        if (classSchedules.isEmpty()) {
+            return;
+        }
+
+        Integer trainerId = gymClass.getTrainer().getTrainerId();
+        List<Schedule> trainerSchedules = scheduleRepository.findByGymClass_Trainer_TrainerIdAndStatus(trainerId, 1);
+
+        for (Schedule classSchedule : classSchedules) {
+            if (classSchedule.getDayOfWeek() == null || classSchedule.getStartTime() == null || classSchedule.getEndTime() == null) {
+                continue;
+            }
+            for (Schedule existing : trainerSchedules) {
+                if (existing.getGymClass() == null || existing.getGymClass().getClassId() == null) {
+                    continue;
+                }
+                if (existing.getGymClass().getClassId().equals(classId)) {
+                    continue;
+                }
+                if (existing.getDayOfWeek() == null || existing.getStartTime() == null || existing.getEndTime() == null) {
+                    continue;
+                }
+                if (!existing.getDayOfWeek().trim().equalsIgnoreCase(classSchedule.getDayOfWeek().trim())) {
+                    continue;
+                }
+
+                boolean overlap = classSchedule.getStartTime().isBefore(existing.getEndTime())
+                        && classSchedule.getEndTime().isAfter(existing.getStartTime());
+                if (overlap) {
+                    String trainerName = gymClass.getTrainer().getStaff() != null
+                            ? gymClass.getTrainer().getStaff().getFullName()
+                            : "Huấn luyện viên";
+                    throw new IllegalArgumentException(
+                            trainerName + " đã có lớp trùng lịch vào " + existing.getDayOfWeek()
+                                    + " (" + existing.getStartTime() + " - " + existing.getEndTime() + ")"
+                    );
+                }
+            }
+        }
     }
 
     private Comparator<GymClass> classNameComparator() {

@@ -303,10 +303,12 @@ public class TrainerController {
         }
 
         User freshUser = userService.getUserById(user.getUserId());
+        Trainer trainerProfile = trainerService.getTrainerByUserId(user.getUserId());
 
         model.addAttribute("pageTitle", "Hồ sơ cá nhân");
         model.addAttribute("activePage", "profile");
         model.addAttribute("user", freshUser);
+        model.addAttribute("trainerProfile", trainerProfile);
 
         return "trainer/profile";
     }
@@ -319,10 +321,12 @@ public class TrainerController {
         }
 
         User freshUser = userService.getUserById(user.getUserId());
+        Trainer trainerProfile = trainerService.getTrainerByUserId(user.getUserId());
 
         model.addAttribute("pageTitle", "Cập nhật hồ sơ");
         model.addAttribute("activePage", "profile");
         model.addAttribute("user", freshUser);
+        model.addAttribute("trainerProfile", trainerProfile);
 
         return "trainer/edit-profile";
     }
@@ -338,11 +342,12 @@ public class TrainerController {
         }
 
         try {
-            User updated = userService.updateOwnProfile(user.getUserId(), username);
+            userService.updateOwnProfile(user.getUserId(), username);
             trainerService.updateOwnPhoto(user.getUserId(), avatarFile);
 
-            if (updated != null) {
-                session.setAttribute("loggedInUser", updated);
+            User refreshedUser = userService.getUserById(user.getUserId());
+            if (refreshedUser != null) {
+                session.setAttribute("loggedInUser", refreshedUser);
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hồ sơ thành công");

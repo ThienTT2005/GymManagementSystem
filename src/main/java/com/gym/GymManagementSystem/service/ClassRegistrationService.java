@@ -106,6 +106,49 @@ public class ClassRegistrationService {
         return gymClassRepository.findAll(Sort.by(Sort.Direction.ASC, "className"));
     }
 
+    public List<GymClass> getAvailableClasses() {
+        return gymClassRepository.findAll(Sort.by(Sort.Direction.ASC, "className"))
+                .stream()
+                .filter(this::isClassAvailableForRegistration)
+                .toList();
+    }
+
+    public GymClass getClassById(Integer id) {
+        return gymClassRepository.findById(id).orElse(null);
+    }
+
+    public boolean isClassAvailableForRegistration(GymClass gymClass) {
+        if (gymClass == null) {
+            return false;
+        }
+
+        if (gymClass.getStatus() == null || gymClass.getStatus() != 1) {
+            return false;
+        }
+
+        Integer maxMember = gymClass.getMaxMember();
+        if (maxMember == null || maxMember <= 0) {
+            return false;
+        }
+
+        int currentMember = gymClass.getCurrentMember() != null ? gymClass.getCurrentMember() : 0;
+        return currentMember < maxMember;
+    }
+
+    public boolean isClassFull(GymClass gymClass) {
+        if (gymClass == null) {
+            return true;
+        }
+
+        Integer maxMember = gymClass.getMaxMember();
+        if (maxMember == null || maxMember <= 0) {
+            return true;
+        }
+
+        int currentMember = gymClass.getCurrentMember() != null ? gymClass.getCurrentMember() : 0;
+        return currentMember >= maxMember;
+    }
+
     public List<ServiceGym> getAllServices() {
         return serviceRepository.findAll(Sort.by(Sort.Direction.ASC, "serviceName"));
     }
@@ -117,6 +160,7 @@ public class ClassRegistrationService {
 
         bindRelations(registration, memberId, classId, serviceId);
         validateRelations(registration);
+        validateClassAvailability(registration.getGymClass());
 
         registration.setRegistrationDate(
                 registration.getRegistrationDate() != null ? registration.getRegistrationDate() : LocalDate.now()
@@ -176,6 +220,7 @@ public class ClassRegistrationService {
         ensureNoOpenRegistration(existing.getMember().getMemberId(), existing.getGymClass().getClassId(), existing.getRegistrationId());
 
         if ("ACTIVE".equalsIgnoreCase(existing.getStatus())) {
+            validateClassAvailability(existing.getGymClass());
             if (!hasPaidPayment(existing.getRegistrationId())) {
                 throw new IllegalArgumentException("Không thể kích hoạt đăng ký lớp khi thanh toán chưa được xác nhận");
             }
@@ -286,6 +331,8 @@ public class ClassRegistrationService {
             throw new IllegalArgumentException("Chỉ có thể duyệt đăng ký lớp đang ở trạng thái PENDING");
         }
 
+        validateClassAvailability(registration.getGymClass());
+
         if (!hasPaidPayment(registration.getRegistrationId())) {
             throw new IllegalArgumentException("Không thể duyệt đăng ký lớp khi chưa có thanh toán PAID");
         }
@@ -370,6 +417,26 @@ public class ClassRegistrationService {
                 && registration.getEndDate() != null
                 && registration.getEndDate().isBefore(registration.getStartDate())) {
             throw new IllegalArgumentException("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu");
+        }
+    }
+
+    private void validateClassAvailability(GymClass gymClass) {
+        if (gymClass == null) {
+            throw new IllegalArgumentException("Không tìm thấy lớp học");
+        }
+
+        if (gymClass.getStatus() == null || gymClass.getStatus() != 1) {
+            throw new IllegalArgumentException("Lớp học hiện đang ngừng hoạt động");
+        }
+
+        Integer maxMember = gymClass.getMaxMember();
+        if (maxMember == null || maxMember <= 0) {
+            throw new IllegalArgumentException("Lớp học chưa có sức chứa hợp lệ");
+        }
+
+        int currentMember = gymClass.getCurrentMember() != null ? gymClass.getCurrentMember() : 0;
+        if (currentMember >= maxMember) {
+            throw new IllegalArgumentException("Lớp học này đã đầy");
         }
     }
 

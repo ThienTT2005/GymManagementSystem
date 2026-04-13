@@ -19,4 +19,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     );
 
     List<Schedule> findAll(Sort sort);
+
+    List<Schedule> findByGymClass_Trainer_TrainerIdAndStatus(Integer trainerId, Integer status);
+
+    List<Schedule> findByGymClass_ClassId(Integer classId);
+
+    List<Schedule> findByGymClass_ClassIdAndStatus(Integer classId, Integer status);
 }
