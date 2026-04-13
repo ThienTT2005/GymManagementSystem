@@ -6,10 +6,10 @@
 
         <!-- KHUNG 1: ĐỊA CHỈ + GIỜ HOẠT ĐỘNG -->
         <div class="footer-col">
-            <h3>CODEGYM</h3>
+            <h3>GYM PRO</h3>
 
             <p>
-                📍 CODEGYM Hà Đông<br>
+                📍 GYM PRO Hà Đông<br>
                 Tòa nhà Ellipse, 112 Trần Phú, Hà Đông<br>
                 ☎ 0987 523 311
             </p>
@@ -56,6 +56,6 @@
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026 CODEGYM. All rights reserved.</p>
+        <p>© 2026 GYM PRO. All rights reserved.</p>
     </div>
 </footer>

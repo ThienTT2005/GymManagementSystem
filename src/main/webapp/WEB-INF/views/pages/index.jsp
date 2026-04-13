@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEGYM</title>
+    <title>GYM PRO</title>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=3">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/news.css?v=1">
@@ -51,24 +51,32 @@
 <section class="clubs-section home-intro-section">
     <h2>HOME</h2>
     <p>
-        Chào mừng bạn đến với không gian luyện tập CODEGYM. Khám phá các dịch vụ dưới đây và chọn chương trình
+        Chào mừng bạn đến với không gian luyện tập GYM PRO. Khám phá các dịch vụ dưới đây và chọn chương trình
         phù hợp với mục tiêu sức khỏe của bạn.
     </p>
 
     <div class="grid">
         <c:choose>
             <c:when test="${not empty services}">
-                <c:forEach var="service" items="${services}">
-                    <a href="${pageContext.request.contextPath}/services/${service.serviceId}"
-                       class="grid-item"
-                       style="position: relative; display: block; overflow: hidden;">
-                        <img src="${pageContext.request.contextPath}/uploads/${not empty service.image ? service.image : 'bodycombat.png'}"
-                             alt="<c:out value='${service.serviceName}' />"
-                             style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(40%); transition: filter 0.3s;"
-                             onmouseover="this.style.filter='brightness(60%)'"
-                             onmouseout="this.style.filter='brightness(40%)'">
-                        <div class="overlay"
-                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 28px; font-weight: bold; text-align: center; text-transform: uppercase; pointer-events: none; width: 100%;">
+                <c:forEach var="service" items="${services}" varStatus="status" end="8">
+                    <a href="${pageContext.request.contextPath}/services/${service.serviceId}" class="grid-item" style="position: relative; display: block; overflow: hidden;">
+                        <c:choose>
+                            <c:when test="${not empty service.image}">
+                                <img src="${pageContext.request.contextPath}/uploads/${service.image}"
+                                     alt="<c:out value='${service.serviceName}' />"
+                                     style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(40%); transition: filter 0.3s;"
+                                     onmouseover="this.style.filter='brightness(60%)'"
+                                     onmouseout="this.style.filter='brightness(40%)'">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="${pageContext.request.contextPath}/assets/images/default-service.png"
+                                     alt="<c:out value='${service.serviceName}' />"
+                                     style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(40%); transition: filter 0.3s;"
+                                     onmouseover="this.style.filter='brightness(60%)'"
+                                     onmouseout="this.style.filter='brightness(40%)'">
+                            </c:otherwise>
+                        </c:choose>
+                        <div class="overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 28px; font-weight: bold; text-align: center; text-transform: uppercase; pointer-events: none; width: 100%;">
                             <c:out value="${service.serviceName}" />
                         </div>
                     </a>
@@ -87,7 +95,7 @@
     <div class="member-news-header">
         <h2>CÂU CHUYỆN HỘI VIÊN</h2>
         <p>
-            Trải qua hơn 10 năm với hàng ngàn thế hệ hội viên, CODEGYM đã chứng kiến rất nhiều sự thay đổi ngoạn mục.
+            Trải qua hơn 10 năm với hàng ngàn thế hệ hội viên, GYM PRO đã chứng kiến rất nhiều sự thay đổi ngoạn mục.
             <br>
             Cùng khám phá các câu chuyện "đằng sau phòng tập" của các hội viên nhé!
         </p>
@@ -99,19 +107,28 @@
                 <c:forEach var="item" items="${memberNews}">
                     <article class="promo-news-card">
                         <a href="${pageContext.request.contextPath}/news/${item.postId}">
-                            <img class="promo-news-card-image"
-                                 src="${pageContext.request.contextPath}/uploads/${not empty item.image ? item.image : 'banner-tin-tuc-8.png'}"
-                                 alt="${item.title}">
+                            <c:choose>
+                                <c:when test="${not empty item.image}">
+                                    <img class="promo-news-card-image"
+                                         src="${pageContext.request.contextPath}/uploads/${item.image}"
+                                         alt="${item.title}">
+                                </c:when>
+                                <c:otherwise>
+                                    <img class="promo-news-card-image"
+                                         src="${pageContext.request.contextPath}/assets/images/default-news.png"
+                                         alt="${item.title}">
+                                </c:otherwise>
+                            </c:choose>
                         </a>
 
                         <div class="promo-news-card-body">
                             <div class="promo-news-card-category">
                                 <c:choose>
-                                    <c:when test="${item.type == 'STORY'}">CÂU CHUYỆN HỘI VIÊN</c:when>
-                                    <c:when test="${item.type == 'BLOG'}">BLOG</c:when>
-                                    <c:when test="${item.type == 'PROMOTION'}">KHUYẾN MÃI</c:when>
-                                    <c:when test="${item.type == 'NEWS'}">TIN TỨC</c:when>
-                                    <c:otherwise>${item.type}</c:otherwise>
+                                    <c:when test="${item.category == 'STORY'}">CÂU CHUYỆN HỘI VIÊN</c:when>
+                                    <c:when test="${item.category == 'BLOG'}">BLOG</c:when>
+                                    <c:when test="${item.category == 'PROMOTION'}">KHUYẾN MÃI</c:when>
+                                    <c:when test="${item.category == 'NEWS'}">TIN MỚI</c:when>
+                                    <c:otherwise>${item.category}</c:otherwise>
                                 </c:choose>
                             </div>
 
@@ -208,8 +225,8 @@
                     id="fullname"
                     name="fullname"
                     placeholder="Họ và tên"
-                    pattern="^[A-Za-zÀ-ỹ\\s\\.]+$"
-                    title="Chỉ được nhập chữ cái, dấu cách và dấu chấm (.)"
+                    pattern="^[A-Za-zÀ-ỹ]+(\s[A-Za-zÀ-ỹ]+)*$"
+                    title="Chỉ được nhập chữ cái và khoảng trắng, không chứa số"
                     required
             >
 
@@ -290,7 +307,7 @@
             const height = parseFloat(document.getElementById("height").value);
             const weight = parseFloat(document.getElementById("weight").value);
 
-            const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/;
+            const nameRegex = /^[A-Za-zÀ-ỹ]+(\s[A-Za-zÀ-ỹ]+)*$/;""
 
             if (fullName === "") {
                 alert("Vui lòng nhập họ và tên.");

@@ -54,10 +54,10 @@
             <!-- ĐỊA CHỈ -->
             <div class="branch-info">
                 <h3>CHI NHÁNH TẠI HÀ NỘI</h3>
-                <p class="branch-name">CODEGYM HÀ ĐÔNG</p>
+                <p class="branch-name">GYM PRO HÀ ĐÔNG</p>
                 <p>Tòa nhà Ellipse số 112 Trần Phú, Mộ Lao, Hà Đông</p>
                 <p>0987 523 311</p>
-                <p>codegymhadong20@gmail.com</p>
+                <p>gymprohadong20@gmail.com</p>
             </div>
 
             <!-- ẢNH RUNNER -->

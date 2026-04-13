@@ -1,218 +1,237 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<!DOCTYPE html>
-<html lang="vi">
+        <!DOCTYPE html>
+        <html lang="vi">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PTIT Gym - Chính sách giá</title>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>PTIT Gym - Chính sách giá</title>
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pricing.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pricing.css">
 
-    <style>
-        .pricing-tab { cursor: pointer; }
-        .duration-list li { cursor: pointer; }
-    </style>
-</head>
+            <style>
+                .pricing-tab {
+                    cursor: pointer;
+                }
 
-<body>
-<jsp:include page="/components/header.jsp" />
+                .duration-list li {
+                    cursor: pointer;
+                }
+            </style>
+        </head>
 
-<main class="pricing-page">
+        <body>
+            <jsp:include page="/components/header.jsp" />
 
-    <!-- BANNER -->
-    <section class="pricing-banner">
-        <img src="${pageContext.request.contextPath}/images/banner-pricing.png"
-             alt="Chính sách giá"
-             class="pricing-banner-image">
-        <h1 class="pricing-banner-title">CHÍNH SÁCH GIÁ</h1>
-    </section>
+            <main class="pricing-page">
 
-    <!-- DATA -->
-    <div id="packageData" style="display:none;">
-        <c:forEach var="pkg" items="${packages}">
-            <div class="pkg-data"
-                 data-id="${pkg.packageId}"
-                 data-name="<c:out value='${pkg.packageName}'/>"
-                 data-duration="${pkg.durationMonths}"
-                 data-price="${pkg.price}"
-                 data-image="<c:out value='${pkg.image}'/>"
-                 data-desc="<c:out value='${pkg.description}'/>">
-            </div>
-        </c:forEach>
-    </div>
+                <!-- BANNER -->
+                <section class="pricing-banner">
+                    <img src="${pageContext.request.contextPath}/images/banner-pricing.png" alt="Chính sách giá"
+                        class="pricing-banner-image">
+                    <h1 class="pricing-banner-title">CHÍNH SÁCH GIÁ</h1>
+                </section>
 
-    <!-- MAIN -->
-    <section class="pricing-section">
-        <div class="pricing-content">
-
-            <div class="pricing-tabs" id="pricingTabs"></div>
-
-            <div class="pricing-main" id="pricingMain" style="display: none;">
-                <div class="pricing-duration">
-                    <ul class="duration-list" id="durationList"></ul>
+                <!-- DATA -->
+                <div id="packageData" style="display:none;">
+                    <c:forEach var="pkg" items="${packages}">
+                        <c:set var="pkgImageUrl">
+                            <c:choose>
+                                <c:when test="${not empty pkg.image}">
+                                    ${pageContext.request.contextPath}/uploads/${pkg.image}
+                                </c:when>
+                                <c:otherwise>
+                                    ${pageContext.request.contextPath}/assets/images/default-package.png
+                                </c:otherwise>
+                            </c:choose>
+                        </c:set>
+                        <div class="pkg-data" 
+                            data-id="${pkg.packageId}" 
+                            data-name="<c:out value='${pkg.packageName}'/>"
+                            data-duration="${pkg.durationMonths}" 
+                            data-price="${pkg.price}"
+                            data-image="${pkgImageUrl.trim()}" 
+                            data-desc="<c:out value='${pkg.description}'/>">
+                        </div>
+                    </c:forEach>
                 </div>
 
-                <div class="pricing-divider"></div>
+                <!-- MAIN -->
+                <section class="pricing-section">
+                    <div class="pricing-content">
 
-                <div class="pricing-info">
-                    <ul id="pricingInfo"></ul>
-                </div>
+                        <div class="pricing-tabs-wrapper">
+                            <div class="pricing-tabs" id="pricingTabs"></div>
+                        </div>
 
-                <div class="pricing-figure" id="pricingFigure"></div>
-            </div>
+                        <div class="pricing-main" id="pricingMain" style="display: none;">
+                            <div class="pricing-duration">
+                                <ul class="duration-list" id="durationList"></ul>
+                            </div>
 
-            <div id="noDataMessage"
-                 style="text-align:center; display:none; font-size: 20px; color: #666; padding: 40px;">
-                Hiện tại chưa có gói tập nào.
-            </div>
+                            <div class="pricing-divider"></div>
 
-        </div>
-    </section>
+                            <div class="pricing-info">
+                                <ul id="pricingInfo"></ul>
+                            </div>
 
-    <h2 class="consult-form-title">ĐĂNG KÝ THAM GIA CÙNG CHÚNG TÔI</h2>
-    <jsp:include page="/components/formtapthu.jsp" />
-</main>
+                            <div class="pricing-figure" id="pricingFigure"></div>
+                        </div>
 
-<jsp:include page="/components/footer.jsp" />
+                        <div id="noDataMessage"
+                            style="text-align:center; display:none; font-size: 20px; color: #666; padding: 40px;">
+                            Hiện tại chưa có gói tập nào.
+                        </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+                    </div>
+                </section>
 
-        const contextPath = '${pageContext.request.contextPath}';
-        const packageElements = document.querySelectorAll('.pkg-data');
+                <h2 class="consult-form-title">ĐĂNG KÝ THAM GIA CÙNG CHÚNG TÔI</h2>
+                <jsp:include page="/components/formtapthu.jsp" />
+            </main>
 
-        if (packageElements.length === 0) {
-            document.getElementById('noDataMessage').style.display = 'block';
-            return;
-        } else {
-            document.getElementById('pricingMain').style.display = 'grid';
-        }
+            <jsp:include page="/components/footer.jsp" />
 
-        const packages = Array.from(packageElements).map(function (el) {
-            return {
-                id: el.getAttribute('data-id'),
-                name: el.getAttribute('data-name'),
-                durationMonths: parseInt(el.getAttribute('data-duration')) || 0,
-                price: parseFloat(el.getAttribute('data-price')) || 0,
-                image: el.getAttribute('data-image'),
-                desc: el.getAttribute('data-desc')
-            };
-        });
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
 
-        const packagesByName = {};
+                    const contextPath = '${pageContext.request.contextPath}';
+                    const packageElements = document.querySelectorAll('.pkg-data');
 
-        packages.forEach(function (pkg) {
-            const name = pkg.name.toUpperCase();
-            if (!packagesByName[name]) {
-                packagesByName[name] = [];
-            }
-            packagesByName[name].push(pkg);
-        });
+                    if (packageElements.length === 0) {
+                        document.getElementById('noDataMessage').style.display = 'block';
+                        return;
+                    } else {
+                        document.getElementById('pricingMain').style.display = 'grid';
+                    }
 
-        for (let name in packagesByName) {
-            packagesByName[name].sort(function (a, b) {
-                return b.durationMonths - a.durationMonths;
-            });
-        }
+                    const packages = Array.from(packageElements).map(function (el) {
+                        return {
+                            id: el.getAttribute('data-id'),
+                            name: el.getAttribute('data-name'),
+                            durationMonths: parseInt(el.getAttribute('data-duration')) || 0,
+                            price: parseFloat(el.getAttribute('data-price')) || 0,
+                            image: el.getAttribute('data-image'),
+                            desc: el.getAttribute('data-desc')
+                        };
+                    });
 
-        const tabsContainer = document.getElementById('pricingTabs');
-        const durationListContainer = document.getElementById('durationList');
-        const pricingInfoContainer = document.getElementById('pricingInfo');
-        const pricingFigureContainer = document.getElementById('pricingFigure');
+                    const packagesByName = {};
 
-        let currentName = Object.keys(packagesByName)[0];
-        let currentPackage = null;
+                    packages.forEach(function (pkg) {
+                        const name = pkg.name.toUpperCase();
+                        if (!packagesByName[name]) {
+                            packagesByName[name] = [];
+                        }
+                        packagesByName[name].push(pkg);
+                    });
 
-        function formatCurrency(amount) {
-            return Math.round(amount).toLocaleString('vi-VN') + ' VNĐ';
-        }
+                    for (let name in packagesByName) {
+                        packagesByName[name].sort(function (a, b) {
+                            return b.durationMonths - a.durationMonths;
+                        });
+                    }
 
-        function renderTabs() {
-            tabsContainer.innerHTML = '';
-            Object.keys(packagesByName).forEach(function (name) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'pricing-tab' + (name === currentName ? ' active' : '');
-                btn.textContent = name;
+                    const tabsContainer = document.getElementById('pricingTabs');
+                    const durationListContainer = document.getElementById('durationList');
+                    const pricingInfoContainer = document.getElementById('pricingInfo');
+                    const pricingFigureContainer = document.getElementById('pricingFigure');
 
-                btn.onclick = function () {
-                    currentName = name;
-                    currentPackage = packagesByName[name][0];
+                    let currentName = Object.keys(packagesByName)[0];
+                    let currentPackage = null;
+
+                    function formatCurrency(amount) {
+                        return Math.round(amount).toLocaleString('vi-VN') + ' VNĐ';
+                    }
+
+                    function renderTabs() {
+                        tabsContainer.innerHTML = '';
+                        Object.keys(packagesByName).forEach(function (name) {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'pricing-tab' + (name === currentName ? ' active' : '');
+                            btn.textContent = name;
+
+                            btn.onclick = function () {
+                                currentName = name;
+                                currentPackage = packagesByName[name][0];
+                                renderTabs();
+                                renderDurations();
+                            };
+
+                            tabsContainer.appendChild(btn);
+
+                            // Auto scroll to active tab
+                            if (name === currentName) {
+                                setTimeout(() => {
+                                    btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                                }, 50);
+                            }
+                        });
+                    }
+
+                    function renderDurations() {
+                        durationListContainer.innerHTML = '';
+                        const items = packagesByName[currentName];
+
+                        if (!currentPackage || !items.find(i => i.id === currentPackage.id)) {
+                            currentPackage = items[0];
+                        }
+
+                        items.forEach(function (item) {
+                            const li = document.createElement('li');
+                            li.className = (currentPackage && currentPackage.id === item.id) ? 'active' : '';
+                            li.textContent = item.durationMonths + " THÁNG";
+
+                            li.onclick = function () {
+                                currentPackage = item;
+                                renderDurations();
+                            };
+
+                            durationListContainer.appendChild(li);
+                        });
+
+                        renderInfo();
+                    }
+
+                    function renderInfo() {
+                        if (!currentPackage) return;
+
+                        let durationLabel = currentPackage.durationMonths + " tháng";
+                        let pricePerMonth = currentPackage.durationMonths > 0
+                            ? (currentPackage.price / currentPackage.durationMonths)
+                            : 0;
+
+                        let html = [];
+                        html.push("<li><span>Thời gian tập luyện:</span><strong>" + durationLabel + "</strong></li>");
+                        html.push("<li><span>Tổng chi phí:</span><strong>" + formatCurrency(currentPackage.price) + "</strong></li>");
+                        html.push("<li><span>Chi phí / tháng:</span><strong>" + formatCurrency(pricePerMonth) + "</strong></li>");
+
+                        if (currentPackage.desc && currentPackage.desc.trim() !== '') {
+                            const cleanDesc = currentPackage.desc.trim().replace(/\s+/g, ' ');
+                            const words = cleanDesc.split(' ');
+                            const shortDesc = words.length > 10
+                                ? words.slice(0, 10).join(' ') + '...'
+                                : cleanDesc;
+
+                            html.push("<li><span>Mô tả:</span><strong>" + shortDesc + "</strong></li>");
+                        }
+
+                        pricingInfoContainer.innerHTML = html.join('');
+
+                        const imgUrl = currentPackage.image;
+                        pricingFigureContainer.innerHTML = '<img src="' + imgUrl + '" alt="Gói tập">';
+                    }
+
                     renderTabs();
                     renderDurations();
-                };
 
-                tabsContainer.appendChild(btn);
-            });
-        }
+                });
+            </script>
 
-        function renderDurations() {
-            durationListContainer.innerHTML = '';
-            const items = packagesByName[currentName];
+        </body>
 
-            if (!currentPackage || !items.find(i => i.id === currentPackage.id)) {
-                currentPackage = items[0];
-            }
-
-            items.forEach(function (item) {
-                const li = document.createElement('li');
-                li.className = (currentPackage && currentPackage.id === item.id) ? 'active' : '';
-                li.textContent = item.durationMonths + " THÁNG";
-
-                li.onclick = function () {
-                    currentPackage = item;
-                    renderDurations();
-                };
-
-                durationListContainer.appendChild(li);
-            });
-
-            renderInfo();
-        }
-
-        function renderInfo() {
-            if (!currentPackage) return;
-
-            let durationLabel = currentPackage.durationMonths + " tháng";
-            let pricePerMonth = currentPackage.durationMonths > 0
-                ? (currentPackage.price / currentPackage.durationMonths)
-                : 0;
-
-            let html = [];
-            html.push("<li><span>Thời gian tập luyện:</span><strong>" + durationLabel + "</strong></li>");
-            html.push("<li><span>Tổng chi phí:</span><strong>" + formatCurrency(currentPackage.price) + "</strong></li>");
-            html.push("<li><span>Chi phí / tháng:</span><strong>" + formatCurrency(pricePerMonth) + "</strong></li>");
-
-            if (currentPackage.desc && currentPackage.desc.trim() !== '') {
-                const cleanDesc = currentPackage.desc.trim().replace(/\s+/g, ' ');
-                const words = cleanDesc.split(' ');
-                const shortDesc = words.length > 10
-                    ? words.slice(0, 10).join(' ') + '...'
-                    : cleanDesc;
-
-                html.push("<li><span>Mô tả:</span><strong>" + shortDesc + "</strong></li>");
-            }
-
-            pricingInfoContainer.innerHTML = html.join('');
-
-            let imgUrl = contextPath + '/images/pricing-man.png';
-
-            if (currentPackage.image && currentPackage.image.trim() !== '') {
-                imgUrl = contextPath + '/uploads/' + currentPackage.image.trim();
-            }
-
-            pricingFigureContainer.innerHTML = '<img src="' + imgUrl + '" alt="Huấn luyện">';
-        }
-
-        renderTabs();
-        renderDurations();
-
-    });
-</script>
-
-</body>
-</html>
+        </html>

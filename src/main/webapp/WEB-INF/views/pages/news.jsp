@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEGYM - Tin tức</title>
+    <title>GYM PRO - Tin tức</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -65,9 +65,18 @@
                     <c:forEach var="item" items="${newsList}">
                         <article class="promo-news-card">
                             <a href="${pageContext.request.contextPath}/news/${item.postId}">
-                                <img class="promo-news-card-image"
-                                     src="${pageContext.request.contextPath}/uploads/${not empty item.image ? item.image : 'banner-tin-tuc-8.png'}"
-                                     alt="${item.title}">
+                                <c:choose>
+                                    <c:when test="${not empty item.image}">
+                                        <img class="promo-news-card-image"
+                                             src="${pageContext.request.contextPath}/uploads/${item.image}"
+                                             alt="${item.title}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img class="promo-news-card-image"
+                                             src="${pageContext.request.contextPath}/assets/images/default-news.png"
+                                             alt="${item.title}">
+                                    </c:otherwise>
+                                </c:choose>
                             </a>
 
                             <div class="promo-news-card-body">

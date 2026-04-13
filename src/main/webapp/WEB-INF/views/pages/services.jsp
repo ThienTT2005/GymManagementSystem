@@ -43,7 +43,7 @@
                         <article class="service-card">
                             <c:choose>
                                 <c:when test="${empty service.image}">
-                                    <img src="${pageContext.request.contextPath}/images/bodycombat.png"
+                                    <img src="${pageContext.request.contextPath}/assets/images/default-service.png"
                                          alt="<c:out value='${service.serviceName}'/>"
                                          class="service-card-image">
                                 </c:when>

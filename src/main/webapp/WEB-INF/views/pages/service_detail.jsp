@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><c:out value="${service.serviceName}" /> - CODEGYM</title>
+    <title><c:out value="${service.serviceName}" /> - GYM PRO</title>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/zumba.css">
@@ -63,7 +63,7 @@
                          alt="<c:out value='${service.serviceName}'/>">
                 </c:when>
                 <c:otherwise>
-                    <img src="${pageContext.request.contextPath}/images/run.png"
+                    <img src="${pageContext.request.contextPath}/assets/images/default-service.png"
                          alt="<c:out value='${service.serviceName}'/>">
                 </c:otherwise>
             </c:choose>

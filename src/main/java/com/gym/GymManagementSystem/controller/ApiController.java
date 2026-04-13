@@ -6,6 +6,8 @@ import com.gym.GymManagementSystem.model.Consultation;
 import com.gym.GymManagementSystem.model.TrialRegistration;
 import com.gym.GymManagementSystem.repository.ConsultationRepository;
 import com.gym.GymManagementSystem.repository.TrialRegistrationRepository;
+import com.gym.GymManagementSystem.service.ConsultationService;
+import com.gym.GymManagementSystem.service.TrialRegistrationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +17,17 @@ public class ApiController {
 
     private final ConsultationRepository consultationRepository;
     private final TrialRegistrationRepository trialRegistrationRepository;
+    private final ConsultationService consultationService;
+    private final TrialRegistrationService trialRegistrationService;
 
     public ApiController(ConsultationRepository consultationRepository,
-                         TrialRegistrationRepository trialRegistrationRepository) {
+                         TrialRegistrationRepository trialRegistrationRepository,
+                         ConsultationService consultationService,
+                         TrialRegistrationService trialRegistrationService) {
         this.consultationRepository = consultationRepository;
         this.trialRegistrationRepository = trialRegistrationRepository;
+        this.consultationService = consultationService;
+        this.trialRegistrationService = trialRegistrationService;
     }
 
     @GetMapping("/check-phone")
@@ -75,7 +83,7 @@ public class ApiController {
         }
 
         request.setMessage(message);
-        consultationRepository.save(request);
+        consultationService.createContact(request);
         return ResponseEntity.ok("Success");
     }
 
@@ -95,7 +103,7 @@ public class ApiController {
         request.setPreferredDate(dto.getPreferredDate());
         request.setNote(dto.getNote());
 
-        trialRegistrationRepository.save(request);
+        trialRegistrationService.createTrial(request);
         return ResponseEntity.ok("Success");
     }
 }
