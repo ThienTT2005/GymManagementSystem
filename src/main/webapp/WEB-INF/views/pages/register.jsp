@@ -37,6 +37,11 @@
                             <input type="email" id="email" name="email">
                         </div>
 
+                        <div class="form-group">
+                            <label for="preferredDate">Ngày đăng ký tập thử:</label>
+                            <input type="date" id="preferredDate" name="preferredDate" required>
+                        </div>
+
                         <button type="submit" class="submit-btn" style="display: block; margin: 0 auto; margin-top: 30px;">
                             ĐĂNG KÝ NGAY
                         </button>
@@ -110,6 +115,7 @@
         const nameInput = regForm.querySelector('input[name="name"]');
         const phoneInput = regForm.querySelector('input[name="phone"]');
         const emailInput = regForm.querySelector('input[name="email"]');
+        const preferredDateInput = regForm.querySelector('input[name="preferredDate"]');
 
         function normalizeSpaces(value) {
             return value.trim().replace(/\s+/g, " ");
@@ -189,12 +195,33 @@
             return true;
         }
 
+        function validatePreferredDate() {
+            const value = preferredDateInput.value;
+            if (!value) {
+                showError(preferredDateInput, 'Vui lòng chọn ngày đăng ký tập thử');
+                return false;
+            }
+
+            const selectedDate = new Date(value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                showError(preferredDateInput, 'Ngày đăng ký tập thử phải từ hôm nay trở đi');
+                return false;
+            }
+
+            removeError(preferredDateInput);
+            return true;
+        }
+
         nameInput.addEventListener('input', validateName);
         phoneInput.addEventListener('input', function () {
             this.value = this.value.replace(/[^\d\s]/g, '');
             validatePhone();
         });
         emailInput.addEventListener('input', validateEmail);
+        preferredDateInput.addEventListener('change', validatePreferredDate);
 
         regForm.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -202,13 +229,15 @@
             const valid =
                 validateName() &&
                 validatePhone() &&
-                validateEmail();
+                validateEmail() &&
+                validatePreferredDate();
 
             if (!valid) return;
 
             const fullName = normalizeSpaces(nameInput.value);
             const phone = phoneInput.value.trim().replace(/\s+/g, '');
             const email = emailInput.value.trim();
+            const preferredDate = preferredDateInput.value;
 
             try {
                 const response = await fetch(ctxPath + '/api/trial-requests', {
@@ -221,7 +250,7 @@
                         phone: phone,
                         email: email,
                         note: "Đăng ký từ trang đăng ký tập thử",
-                        preferredDate: null
+                        preferredDate: preferredDate
                     })
                 });
 

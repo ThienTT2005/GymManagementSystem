@@ -53,6 +53,8 @@
                                 <form:option value="NEWS">Tin tức</form:option>
                                 <form:option value="PROMOTION">Khuyến mãi</form:option>
                                 <form:option value="BLOG">Blog</form:option>
+                                <form:option value="STORY">Câu chuyện hội viên</form:option>
+
                             </form:select>
                         </div>
 

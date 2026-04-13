@@ -207,11 +207,14 @@ body {
 
 .promo-news-card-content {
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.6;
     color: #4b5563;
-    min-height: 72px;
-    white-space: pre-line;
+    min-height: 68px;
     overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }
 
 .promo-news-card-date {

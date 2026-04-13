@@ -25,10 +25,11 @@
         <div class="footer-col">
             <h3>Dịch vụ</h3>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/">Huấn luyện viên cá nhân</a></li>
-                <li><a href="${pageContext.request.contextPath}/services">Gói tập Gym</a></li>
+
+                <li><a href="${pageContext.request.contextPath}/services">Dịch vụ</a></li>
                 <li><a href="${pageContext.request.contextPath}/news">Tin tức</a></li>
                 <li><a href="${pageContext.request.contextPath}/pricing">Chính sách giá</a></li>
+                <li><a href="${pageContext.request.contextPath}/contact">Liên hệ</a></li>
             </ul>
         </div>
 

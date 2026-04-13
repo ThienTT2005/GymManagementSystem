@@ -18,14 +18,8 @@
 
 <main class="zumba-page page-transition-main">
     <section class="zumba-banner">
-        <c:choose>
-            <c:when test="${not empty service.image}">
-                <img src="${pageContext.request.contextPath}<c:out value='${service.image}'/>" alt="<c:out value='${service.serviceName}'/> banner" class="zumba-banner-image">
-            </c:when>
-            <c:otherwise>
-                <img src="${pageContext.request.contextPath}/images/zumba-8.png" alt="<c:out value='${service.serviceName}'/> banner" class="zumba-banner-image">
-            </c:otherwise>
-        </c:choose>
+        <img src="${pageContext.request.contextPath}/images/11-gai-xinh-tap-bung.jpg" 
+             alt="banner" class="zumba-banner-image">
         <div class="zumba-banner-overlay"></div>
 
         <div class="zumba-banner-content">
@@ -52,7 +46,7 @@
         <div class="zumba-intro-image">
             <c:choose>
                 <c:when test="${not empty service.image}">
-                    <img src="${pageContext.request.contextPath}<c:out value='${service.image}'/>" alt="<c:out value='${service.serviceName}'/>">
+                    <img src="${pageContext.request.contextPath}/uploads/${service.image}" alt="<c:out value='${service.serviceName}'/>">
                 </c:when>
                 <c:otherwise>
                     <img src="${pageContext.request.contextPath}/images/run.png" alt="<c:out value='${service.serviceName}'/>">

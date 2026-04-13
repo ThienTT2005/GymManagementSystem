@@ -26,7 +26,7 @@
 
 <main class="pricing-page">
     <section class="pricing-banner">
-        <img src="${pageContext.request.contextPath}/images/banner-pricing.png" alt="Chính sách giá"
+        <img src="${pageContext.request.contextPath}/images/360_F_572910874_gjyCeTnHtxFMIuPFcfE0djznBMgsU4Bf.jpg" alt="Chính sách giá"
              class="pricing-banner-image">
         <h1 class="pricing-banner-title">CHÍNH SÁCH GIÁ</h1>
     </section>
@@ -175,17 +175,24 @@
             html.push("<li><span>Tổng chi phí:</span><strong>" + formatCurrency(currentPackage.price) + "</strong></li>");
             html.push("<li><span>Chi phí / tháng:</span><strong>" + formatCurrency(pricePerMonth) + "</strong></li>");
             if (currentPackage.desc && currentPackage.desc.trim() !== '') {
-                html.push("<li><span>Mô tả:</span><strong>" + currentPackage.desc + "</strong></li>");
+                const cleanDesc = currentPackage.desc.trim().replace(/\s+/g, ' ');
+                const words = cleanDesc.split(' ');
+
+                const truncatedDesc = words.length > 10
+                    ? words.slice(0, 10).join(' ') + '...'
+                    : cleanDesc;
+
+                html.push("<li><span>Mô tả:</span><strong>" + truncatedDesc + "</strong></li>");
             }
 
             pricingInfoContainer.innerHTML = html.join('');
 
             let imgUrl = contextPath + '/images/pricing-man.png';
+
             if (currentPackage.image && currentPackage.image.trim() !== '') {
                 let trimImg = currentPackage.image.trim();
-                imgUrl = trimImg.startsWith('/')
-                    ? contextPath + trimImg
-                    : contextPath + '/' + trimImg;
+
+                imgUrl = contextPath + '/uploads/' + trimImg;
             }
             pricingFigureContainer.innerHTML = '<img src="' + imgUrl + '" alt="Huấn luyện">';
         }

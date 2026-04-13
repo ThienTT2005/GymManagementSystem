@@ -29,7 +29,52 @@ public class NewsService {
         this.newsRepository = newsRepository;
     }
 
-    public Page<News> searchNews(String keyword, String type, Integer status, int page, int size) {
+//    public Page<News> searchNews(String keyword, String type, Integer status, int page, int size) {
+//        PageRequest pageable = PageRequest.of(
+//                Math.max(page - 1, 0),
+//                size > 0 ? size : 8,
+//                Sort.by(Sort.Direction.DESC, "createdAt")
+//        );
+//
+//        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+//        boolean hasType = type != null && !type.trim().isEmpty();
+//        boolean hasStatus = status != null;
+//
+//        String kw = hasKeyword ? keyword.trim() : "";
+//        String tp = hasType ? type.trim() : "";
+//
+//        if (hasKeyword && hasType && hasStatus) {
+//            return newsRepository.findByTitleContainingIgnoreCaseAndTypeAndStatus(kw, tp, status, pageable);
+//        }
+//
+//        if (hasKeyword && hasType) {
+//            return newsRepository.findByTitleContainingIgnoreCaseAndType(kw, tp, pageable);
+//        }
+//
+//        if (hasKeyword && hasStatus) {
+//            return newsRepository.findByTitleContainingIgnoreCaseAndStatus(kw, status, pageable);
+//        }
+//
+//        if (hasType && hasStatus) {
+//            return newsRepository.findByTypeAndStatus(tp, status, pageable);
+//        }
+//
+//        if (hasKeyword) {
+//            return newsRepository.findByTitleContainingIgnoreCase(kw, pageable);
+//        }
+//
+//        if (hasType) {
+//            return newsRepository.findByType(tp, pageable);
+//        }
+//
+//        if (hasStatus) {
+//            return newsRepository.findByStatus(status, pageable);
+//        }
+//
+//        return newsRepository.findAll(pageable);
+//    }
+
+    public Page<News> searchNews(String keyword, String category, Integer status, int page, int size) {
         PageRequest pageable = PageRequest.of(
                 Math.max(page - 1, 0),
                 size > 0 ? size : 8,
@@ -37,34 +82,34 @@ public class NewsService {
         );
 
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        boolean hasType = type != null && !type.trim().isEmpty();
+        boolean hasCategory = category != null && !category.trim().isEmpty();
         boolean hasStatus = status != null;
 
         String kw = hasKeyword ? keyword.trim() : "";
-        String tp = hasType ? type.trim() : "";
+        String ct = hasCategory ? category.trim() : "";
 
-        if (hasKeyword && hasType && hasStatus) {
-            return newsRepository.findByTitleContainingIgnoreCaseAndTypeAndStatus(kw, tp, status, pageable);
+        if (hasKeyword && hasCategory && hasStatus) {
+            return newsRepository.findByTitleContainingIgnoreCaseAndTypeAndStatus(kw, ct, status, pageable);
         }
 
-        if (hasKeyword && hasType) {
-            return newsRepository.findByTitleContainingIgnoreCaseAndType(kw, tp, pageable);
+        if (hasKeyword && hasCategory) {
+            return newsRepository.findByTitleContainingIgnoreCaseAndType(kw, ct, pageable);
         }
 
         if (hasKeyword && hasStatus) {
             return newsRepository.findByTitleContainingIgnoreCaseAndStatus(kw, status, pageable);
         }
 
-        if (hasType && hasStatus) {
-            return newsRepository.findByTypeAndStatus(tp, status, pageable);
+        if (hasCategory && hasStatus) {
+            return newsRepository.findByTypeAndStatus(ct, status, pageable);
         }
 
         if (hasKeyword) {
             return newsRepository.findByTitleContainingIgnoreCase(kw, pageable);
         }
 
-        if (hasType) {
-            return newsRepository.findByType(tp, pageable);
+        if (hasCategory) {
+            return newsRepository.findByType(ct, pageable);
         }
 
         if (hasStatus) {
@@ -73,7 +118,6 @@ public class NewsService {
 
         return newsRepository.findAll(pageable);
     }
-
     public News getNewsById(Integer id) {
         return newsRepository.findById(id).orElse(null);
     }

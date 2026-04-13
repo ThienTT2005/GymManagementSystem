@@ -60,7 +60,7 @@
             <c:when test="${not empty services}">
                 <c:forEach var="service" items="${services}">
                     <a href="${pageContext.request.contextPath}/services/${service.serviceId}" class="grid-item" style="position: relative; display: block; overflow: hidden;">
-                        <img src="${pageContext.request.contextPath}${not empty service.image ? service.image : '/images/bodycombat.png'}"
+                        <img src="${pageContext.request.contextPath}/uploads/${not empty service.image ? service.image : 'bodycombat.png'}"
                              alt="<c:out value='${service.serviceName}' />"
                              style="width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(40%); transition: filter 0.3s;"
                              onmouseover="this.style.filter='brightness(60%)'"
@@ -97,33 +97,39 @@
                     <article class="promo-news-card">
                         <a href="${pageContext.request.contextPath}/news/${item.postId}">
                             <img class="promo-news-card-image"
-                                 src="${pageContext.request.contextPath}${not empty item.image ? item.image : '/images/banner-tin-tuc-8.png'}"
+                                 src="${pageContext.request.contextPath}/uploads/${not empty item.image ? item.image : 'banner-tin-tuc-8.png'}"
                                  alt="${item.title}">
                         </a>
 
                         <div class="promo-news-card-body">
                             <div class="promo-news-card-category">
                                 <c:choose>
-                                    <c:when test="${item.category == 'CAU_CHUYEN_HOI_VIEN'}">CÂU CHUYỆN HỘI VIÊN</c:when>
+                                    <c:when test="${item.category == 'STORY'}">CÂU CHUYỆN HỘI VIÊN</c:when>
                                     <c:when test="${item.category == 'BLOG'}">BLOG</c:when>
-                                    <c:when test="${item.category == 'KHUYEN_MAI'}">KHUYẾN MÃI</c:when>
+                                    <c:when test="${item.category == 'PROMOTION'}">KHUYẾN MÃI</c:when>
+                                    <c:when test="${item.category == 'NEWS'}">TIN MỚI</c:when>
                                     <c:otherwise>${item.category}</c:otherwise>
                                 </c:choose>
                             </div>
 
                             <div class="promo-news-card-title">
-                                <a href="${pageContext.request.contextPath}/news/${item.postId}" style="text-decoration: none; color: inherit;">
+                                <a href="${pageContext.request.contextPath}/news/${item.postId}"
+                                   style="text-decoration: none; color: inherit;">
                                     <c:out value="${item.title}" />
                                 </a>
                             </div>
 
                             <div class="promo-news-card-content">
+                                <c:set var="words" value="${fn:split(item.content, ' ')}" />
                                 <c:choose>
-                                    <c:when test="${not empty item.content}">
-                                        ${fn:replace(item.content, '. ', '.<br/>')}
+                                    <c:when test="${fn:length(words) > 30}">
+                                        <c:forEach var="w" items="${words}" begin="0" end="29">
+                                            <c:out value="${w}" />&nbsp;
+                                        </c:forEach>
+                                        ...
                                     </c:when>
                                     <c:otherwise>
-                                        Nội dung đang được cập nhật.
+                                        <c:out value="${item.content}" />
                                     </c:otherwise>
                                 </c:choose>
                             </div>

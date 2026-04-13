@@ -58,6 +58,7 @@
                             <option value="NEWS" ${type=='NEWS'?'selected':''}>Tin tức</option>
                             <option value="PROMOTION" ${type=='PROMOTION'?'selected':''}>Khuyến mãi</option>
                             <option value="BLOG" ${type=='BLOG'?'selected':''}>Blog</option>
+                            <option value="STORY" ${type=='STORY'?'selected':''}>Câu chuyện hội viên</option>
                         </select>
                     </div>
 
@@ -129,7 +130,9 @@
                                             <c:choose>
                                                 <c:when test="${item.type=='NEWS'}">Tin tức</c:when>
                                                 <c:when test="${item.type=='PROMOTION'}">Khuyến mãi</c:when>
-                                                <c:otherwise>Blog</c:otherwise>
+                                                <c:when test="${item.type=='BLOG'}">Blog</c:when>
+                                                <c:when test="${item.type=='STORY'}">Câu chuyện hội viên</c:when>
+                                                <c:otherwise>${item.type}</c:otherwise>
                                             </c:choose>
                                         </td>
 

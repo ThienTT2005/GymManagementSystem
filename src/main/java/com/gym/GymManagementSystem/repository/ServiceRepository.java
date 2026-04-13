@@ -20,4 +20,5 @@ public interface ServiceRepository extends JpaRepository<ServiceGym, Integer> {
     boolean existsByServiceNameIgnoreCaseAndServiceIdNot(String serviceName, Integer serviceId);
 
     List<ServiceGym> findByStatus(Integer status);
+
 }

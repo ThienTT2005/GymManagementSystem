@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -40,14 +40,18 @@
                 BLOG
             </a>
 
-            <a href="${pageContext.request.contextPath}/news?page=1&size=9&category=CAU_CHUYEN_HOI_VIEN"
-               class="promo-category-btn ${currentCategory == 'CAU_CHUYEN_HOI_VIEN' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/news?page=1&size=9&category=STORY"
+               class="promo-category-btn ${currentCategory == 'STORY' ? 'active' : ''}">
                 CÂU CHUYỆN HỘI VIÊN
             </a>
 
-            <a href="${pageContext.request.contextPath}/news?page=1&size=9&category=KHUYEN_MAI"
-               class="promo-category-btn ${currentCategory == 'KHUYEN_MAI' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/news?page=1&size=9&category=PROMOTION"
+               class="promo-category-btn ${currentCategory == 'PROMOTION' ? 'active' : ''}">
                 KHUYẾN MÃI
+            </a>
+            <a href="${pageContext.request.contextPath}/news?page=1&size=9&category=NEWS"
+               class="promo-category-btn ${currentCategory == 'NEWS' ? 'active' : ''}">
+                TIN MỚI
             </a>
         </div>
     </section>
@@ -60,28 +64,43 @@
                         <article class="promo-news-card">
                             <a href="${pageContext.request.contextPath}/news/${item.postId}">
                                 <img class="promo-news-card-image"
-                                     src="${pageContext.request.contextPath}${not empty item.image ? item.image : '/images/banner-tin-tuc-8.png'}"
+                                     src="${pageContext.request.contextPath}/uploads/${not empty item.image ? item.image : 'banner-tin-tuc-8.png'}"
                                      alt="${item.title}">
                             </a>
 
                             <div class="promo-news-card-body">
                                 <div class="promo-news-card-category">
                                     <c:choose>
+                                        <c:when test="${item.category == 'NEWS'}">TIN MỚI</c:when>
                                         <c:when test="${item.category == 'BLOG'}">BLOG</c:when>
-                                        <c:when test="${item.category == 'CAU_CHUYEN_HOI_VIEN'}">CÂU CHUYỆN HỘI VIÊN</c:when>
-                                        <c:when test="${item.category == 'KHUYEN_MAI'}">KHUYẾN MÃI</c:when>
+                                        <c:when test="${item.category == 'STORY'}">CÂU CHUYỆN HỘI VIÊN</c:when>
+                                        <c:when test="${item.category == 'PROMOTION'}">KHUYẾN MÃI</c:when>
                                         <c:otherwise>${item.category}</c:otherwise>
                                     </c:choose>
                                 </div>
 
                                 <div class="promo-news-card-title">
-                                    <a href="${pageContext.request.contextPath}/news/${item.postId}" style="text-decoration: none; color: inherit;">
+                                    <a href="${pageContext.request.contextPath}/news/${item.postId}"
+                                       style="text-decoration: none; color: inherit;">
                                         <c:out value="${item.title}" />
                                     </a>
                                 </div>
 
                                 <div class="promo-news-card-content">
-                                    <c:out value="${item.content}" />
+                                    <c:set var="words" value="${fn:split(item.content, ' ')}" />
+
+                                    <c:choose>
+                                        <c:when test="${fn:length(words) > 30}">
+                                            <c:forEach var="w" items="${words}" begin="0" end="29">
+                                                <c:out value="${w}" />&nbsp;
+                                            </c:forEach>
+                                            ...
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <c:out value="${item.content}" />
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
 
                                 <div class="promo-news-card-date">
