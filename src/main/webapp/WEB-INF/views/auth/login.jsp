@@ -137,6 +137,23 @@
                 margin-bottom: 15px;
                 font-size: 14px;
             }
+            .forgot {
+                margin-top: 12px;
+                color: #fff;
+                font-size: 14px;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+
+            .forgot:hover {
+                color: #ffcccc;
+            }
+
+            .hotline-text {
+                margin-top: 10px;
+                color: #ffb3b3;
+                font-size: 14px;
+            }
 
         </style>
     </head>
@@ -157,6 +174,8 @@
                         <input type="text" name="username" placeholder="Username">
                         <input type="password" name="password" placeholder="Password">
                         <button type="submit">Đăng nhập</button>
+                        <p class="forgot" onclick="showHotline()">Quên mật khẩu?</p>
+                        <p id="hotline" class="hotline-text"></p>
                     </form>
 
                     <div class="link">
@@ -168,6 +187,12 @@
                     window.onload = function () {
                         document.querySelectorAll("input").forEach(i => i.value = "");
                     };
+                </script>
+                <script>
+                    function showHotline() {
+                        document.getElementById("hotline").innerText =
+                                "Hãy liên lạc với số hotline 012 để được hỗ trợ!";
+                    }
                 </script>
             </div>
             <!-- RIGHT -->
