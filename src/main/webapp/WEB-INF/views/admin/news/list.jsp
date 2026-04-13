@@ -118,7 +118,11 @@
                                                          alt="${item.title}"
                                                          data-preview-label="${item.title}">
                                                 </c:when>
-                                                <c:otherwise>-</c:otherwise>
+                                                <c:otherwise>
+                                                    <img class="thumb-image"
+                                                         src="${pageContext.request.contextPath}/assets/images/default-news.png"
+                                                         alt="Tin tức">
+                                                </c:otherwise>
                                             </c:choose>
                                         </td>
 

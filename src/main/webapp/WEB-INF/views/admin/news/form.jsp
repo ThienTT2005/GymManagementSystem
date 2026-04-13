@@ -78,14 +78,21 @@
                             <form:errors path="content" cssClass="error-text"/>
                         </div>
 
-                        <c:if test="${isEdit and not empty news.image}">
-                            <div class="form-group full-width">
-                                <label>Ảnh hiện tại</label>
-                                <img class="preview-image"
-                                     src="${pageContext.request.contextPath}/uploads/${news.image}"
-                                     alt="Ảnh bài viết">
-                            </div>
-                        </c:if>
+                        <div class="form-group full-width">
+                            <label>Ảnh hiện tại</label>
+                            <c:choose>
+                                <c:when test="${not empty news.image}">
+                                    <img class="preview-image"
+                                         src="${pageContext.request.contextPath}/uploads/${news.image}"
+                                         alt="Ảnh bài viết">
+                                </c:when>
+                                <c:otherwise>
+                                    <img class="preview-image"
+                                         src="${pageContext.request.contextPath}/assets/images/default-news.png"
+                                         alt="Ảnh mặc định">
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
 
                     </div>
 

@@ -22,13 +22,13 @@
         <div class="news-breadcrumb">
             <a href="${pageContext.request.contextPath}/">TRANG CHỦ</a>
             <span>/</span>
-            <a href="${pageContext.request.contextPath}/news">TIN TỨC CODEGYM</a>
+            <a href="${pageContext.request.contextPath}/news">TIN TỨC GYM PRO</a>
             <span>/</span>
             <span class="current">${news.title}</span>
         </div>
 
         <div class="news-small-title">
-            TIN TỨC CODEGYM
+            TIN TỨC GYM PRO
         </div>
 
         <h1 class="news-main-title">
@@ -51,14 +51,22 @@
             </span>
         </div>
 
-        <c:if test="${not empty news.image}">
-            <div class="news-image-wrap">
-                <img src="${pageContext.request.contextPath}/uploads/${news.image}"
-                     alt="${news.title}"
-                     class="news-image"
-                     style="max-height: 500px; width: 100%; object-fit: contain;">
-            </div>
-        </c:if>
+        <div class="news-image-wrap">
+            <c:choose>
+                <c:when test="${not empty news.image}">
+                    <img src="${pageContext.request.contextPath}/uploads/${news.image}"
+                         alt="${news.title}"
+                         class="news-image"
+                         style="max-height: 500px; width: 100%; object-fit: contain;">
+                </c:when>
+                <c:otherwise>
+                    <img src="${pageContext.request.contextPath}/assets/images/default-news.png"
+                         alt="${news.title}"
+                         class="news-image"
+                         style="max-height: 500px; width: 100%; object-fit: contain;">
+                </c:otherwise>
+            </c:choose>
+        </div>
 
         <div class="news-content">
             ${news.content}

@@ -26,3 +26,24 @@
                 onclick="window.location.href='${pageContext.request.contextPath}/login'">ĐĂNG NHẬP</button>
     </div>
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const contextPath = '${pageContext.request.contextPath}';
+        const navLinks = document.querySelectorAll('.menu a');
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // So sánh đường dẫn hiện tại với href của link
+            // Xử lý các trường hợp có/không có context path và dấu gạch chéo cuối
+            if (currentPath === href || 
+                currentPath === href + '/' || 
+                (href === contextPath + '/' && currentPath === contextPath) ||
+                (currentPath.startsWith(href) && href !== contextPath && href !== contextPath + '/')) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
