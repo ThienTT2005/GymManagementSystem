@@ -3,6 +3,7 @@ package com.gym.GymManagementSystem.dto;
 import java.time.LocalDate;
 
 public class TrialRequestDTO {
+
     private String fullName;
     private String phone;
     private String email;
@@ -10,6 +11,9 @@ public class TrialRequestDTO {
     private String message;
     private LocalDate preferredDate;
     private String note;
+
+    public TrialRequestDTO() {
+    }
 
     public String getFullName() {
         return fullName;
@@ -27,14 +31,6 @@ public class TrialRequestDTO {
         this.phone = phone;
     }
 
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -43,8 +39,20 @@ public class TrialRequestDTO {
         this.email = email;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public String getMessage() {
         return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public LocalDate getPreferredDate() {
@@ -57,10 +65,6 @@ public class TrialRequestDTO {
 
     public String getNote() {
         return note;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public void setNote(String note) {
