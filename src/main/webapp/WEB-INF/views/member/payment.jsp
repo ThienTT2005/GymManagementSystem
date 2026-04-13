@@ -25,7 +25,26 @@
 
             <h2 class="mb-4"><i class="bi bi-credit-card me-2"></i>Thanh toán</h2>
 
-            <!-- THÔNG BÁO -->
+            <c:if test="${not empty success}">
+                <div class="alert alert-success alert-dismissible fade show">
+                    <c:choose>
+                        <c:when test="${success == 'uploaded'}">Upload minh chứng thành công.</c:when>
+                        <c:otherwise>Thao tác thành công.</c:otherwise>
+                    </c:choose>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </c:if>
+
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <c:choose>
+                        <c:when test="${error == 'upload_failed'}">Upload minh chứng thất bại.</c:when>
+                        <c:otherwise>${error}</c:otherwise>
+                    </c:choose>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </c:if>
+
             <c:if test="${not empty membership && membership.status != 'ACTIVE'}">
                 <c:if test="${param.isNew == '1'}">
                     <div class="alert alert-success">
@@ -41,7 +60,6 @@
 
             <div class="row g-4">
 
-                <!-- THÔNG TIN THANH TOÁN -->
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm h-100">
 
@@ -53,13 +71,13 @@
                               payment.status == 'PENDING' ? 'bg-warning text-dark' :
                               'bg-danger'}">
 
-                            <c:choose>
-                                <c:when test="${payment.status == 'PAID'}">Đã thanh toán</c:when>
-                                <c:when test="${payment.status == 'PENDING'}">Chờ duyệt</c:when>
-                                <c:otherwise>Từ chối</c:otherwise>
-                            </c:choose>
+                                <c:choose>
+                                    <c:when test="${payment.status == 'PAID'}">Đã thanh toán</c:when>
+                                    <c:when test="${payment.status == 'PENDING'}">Chờ duyệt</c:when>
+                                    <c:otherwise>Từ chối</c:otherwise>
+                                </c:choose>
 
-                        </span>
+                            </span>
                         </div>
 
                         <div class="card-body">
@@ -84,7 +102,6 @@
 
                             <table class="table small">
 
-                                <!-- GÓI -->
                                 <c:if test="${not empty membership}">
                                     <tr>
                                         <td>Gói tập</td>
@@ -101,7 +118,6 @@
                                     </tr>
                                 </c:if>
 
-                                <!-- LỚP -->
                                 <c:if test="${not empty classRegistration}">
                                     <tr>
                                         <td>Lớp</td>
@@ -116,7 +132,6 @@
                                     </tr>
                                 </c:if>
 
-                                <!-- TIỀN -->
                                 <tr>
                                     <td>Số tiền</td>
                                     <td class="fw-bold text-primary fs-5">
@@ -142,7 +157,6 @@
                     </div>
                 </div>
 
-                <!-- UPLOAD -->
                 <c:if test="${payment.status != 'PAID'}">
                     <div class="col-md-7">
 
@@ -161,7 +175,7 @@
                                         <input type="hidden" name="classRegistrationId" value="${classRegistration.registrationId}">
                                     </c:if>
 
-                                    <input type="file" name="proofImage" class="form-control mb-3" required>
+                                    <input type="file" name="proofImage" class="form-control mb-3" accept="image/*" required>
 
                                     <button class="btn btn-primary">
                                         Upload minh chứng
@@ -173,9 +187,10 @@
 
                         <c:if test="${not empty payment.proofImage}">
                             <div class="mt-3">
-                                <img src="<c:url value='${payment.proofImage}'/>"
+                                <img src="${pageContext.request.contextPath}/uploads/${payment.proofImage}"
                                      class="img-thumbnail"
-                                     style="max-height:200px;">
+                                     style="max-height:200px;"
+                                     alt="Minh chứng thanh toán">
                             </div>
                         </c:if>
 
@@ -185,5 +200,7 @@
         </main>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

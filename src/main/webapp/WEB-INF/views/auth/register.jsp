@@ -39,7 +39,7 @@
         }
 
         .left {
-            width: 42%;
+            width: 48%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -47,7 +47,7 @@
         }
 
         .right {
-            width: 58%;
+            width: 52%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,8 +74,8 @@
 
         .box {
             width: 100%;
-            max-width: 410px;
-            padding: 42px 34px;
+            max-width: 520px;
+            padding: 36px 30px;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.16);
             backdrop-filter: blur(14px);
@@ -101,11 +101,32 @@
             text-align: left;
         }
 
-        .form-group {
-            margin-bottom: 14px;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            text-align: left;
         }
 
-        .form-group input {
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 14px 15px;
             border-radius: 10px;
@@ -115,7 +136,14 @@
             font-size: 14px;
         }
 
-        .form-group input:focus {
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             box-shadow: 0 0 0 3px rgba(255, 61, 61, 0.25);
         }
@@ -123,7 +151,7 @@
         .btn-register {
             width: 100%;
             padding: 14px;
-            margin-top: 4px;
+            margin-top: 16px;
             background: linear-gradient(45deg, #ff3d3d, #c62828);
             color: #fff;
             border: none;
@@ -165,16 +193,23 @@
             }
 
             .left {
-                min-height: 60vh;
+                min-height: auto;
+                padding-top: 30px;
             }
 
             .right {
-                min-height: 40vh;
+                min-height: 30vh;
                 padding-top: 0;
             }
 
             .ad-box h1 {
                 font-size: 34px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -185,7 +220,7 @@
             }
 
             .box {
-                padding: 30px 22px;
+                padding: 28px 20px;
             }
 
             .ad-box h1 {
@@ -213,31 +248,92 @@
             <form action="${pageContext.request.contextPath}/register"
                   method="post"
                   onsubmit="return validateRegisterForm()">
-                <div class="form-group">
-                    <input type="text"
-                           name="username"
-                           placeholder="Tên đăng nhập"
-                           value="${username}"
-                           autocomplete="username"
-                           required>
-                </div>
 
-                <div class="form-group">
-                    <input type="password"
-                           id="password"
-                           name="password"
-                           placeholder="Mật khẩu"
-                           autocomplete="new-password"
-                           required>
-                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text"
+                               id="username"
+                               name="username"
+                               placeholder="Tên đăng nhập"
+                               value="${username}"
+                               autocomplete="username"
+                               required>
+                    </div>
 
-                <div class="form-group">
-                    <input type="password"
-                           id="confirmPassword"
-                           name="confirmPassword"
-                           placeholder="Nhập lại mật khẩu"
-                           autocomplete="new-password"
-                           required>
+                    <div class="form-group">
+                        <label for="fullName">Họ và tên</label>
+                        <input type="text"
+                               id="fullName"
+                               name="fullName"
+                               placeholder="Họ và tên"
+                               value="${fullName}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder="Mật khẩu"
+                               autocomplete="new-password"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Nhập lại mật khẩu</label>
+                        <input type="password"
+                               id="confirmPassword"
+                               name="confirmPassword"
+                               placeholder="Nhập lại mật khẩu"
+                               autocomplete="new-password"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="text"
+                               id="phone"
+                               name="phone"
+                               placeholder="Số điện thoại"
+                               value="${phone}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               placeholder="Email"
+                               value="${email}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Giới tính</label>
+                        <select id="gender" name="gender">
+                            <option value="">-- Chọn --</option>
+                            <option value="Male" ${gender == 'Male' ? 'selected' : ''}>Nam</option>
+                            <option value="Female" ${gender == 'Female' ? 'selected' : ''}>Nữ</option>
+                            <option value="Other" ${gender == 'Other' ? 'selected' : ''}>Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dob">Ngày sinh</label>
+                        <input type="date"
+                               id="dob"
+                               name="dob"
+                               value="${dob}">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="address">Địa chỉ</label>
+                        <textarea id="address"
+                                  name="address"
+                                  placeholder="Địa chỉ">${address}</textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-register">Đăng ký</button>
@@ -263,12 +359,27 @@
 
 <script>
     function validateRegisterForm() {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+        const password = document.getElementById("password").value.trim();
+        const confirmPassword = document.getElementById("confirmPassword").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const fullName = document.getElementById("fullName").value.trim();
+        const phone = document.getElementById("phone").value.trim();
         const errorClient = document.getElementById("errorClient");
 
         errorClient.style.display = "none";
         errorClient.innerText = "";
+
+        if (!username || !fullName || !phone || !password || !confirmPassword) {
+            errorClient.innerText = "Vui lòng nhập đầy đủ các trường bắt buộc";
+            errorClient.style.display = "block";
+            return false;
+        }
+
+        if (password.length < 6) {
+            errorClient.innerText = "Mật khẩu phải có ít nhất 6 ký tự";
+            errorClient.style.display = "block";
+            return false;
+        }
 
         if (password !== confirmPassword) {
             errorClient.innerText = "Mật khẩu không khớp";

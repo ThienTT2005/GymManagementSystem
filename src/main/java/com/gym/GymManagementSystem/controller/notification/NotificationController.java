@@ -30,10 +30,34 @@ public class NotificationController {
 
         notificationService.markAsRead(id, loggedInUser.getUserId());
 
-        if (target == null || target.isBlank()) {
-            return new RedirectView("/admin/dashboard");
+        String redirectTarget = target;
+        if (redirectTarget == null || redirectTarget.isBlank()) {
+            redirectTarget = resolveDefaultTargetByRole(loggedInUser);
         }
 
-        return new RedirectView(target);
+        return new RedirectView(redirectTarget);
+    }
+
+    private String resolveDefaultTargetByRole(User user) {
+        if (user == null || user.getRoleName() == null) {
+            return "/login";
+        }
+
+        String roleName = user.getRoleName().trim();
+
+        if ("ADMIN".equalsIgnoreCase(roleName)) {
+            return "/admin/dashboard";
+        }
+        if ("RECEPTIONIST".equalsIgnoreCase(roleName)) {
+            return "/receptionist/dashboard";
+        }
+        if ("TRAINER".equalsIgnoreCase(roleName)) {
+            return "/trainer/dashboard";
+        }
+        if ("MEMBER".equalsIgnoreCase(roleName)) {
+            return "/member/dashboard";
+        }
+
+        return "/login";
     }
 }

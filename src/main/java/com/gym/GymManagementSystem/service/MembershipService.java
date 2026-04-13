@@ -4,6 +4,7 @@ import com.gym.GymManagementSystem.model.GymPackage;
 import com.gym.GymManagementSystem.model.Member;
 import com.gym.GymManagementSystem.model.Membership;
 import com.gym.GymManagementSystem.model.Payment;
+import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.repository.MemberRepository;
 import com.gym.GymManagementSystem.repository.MembershipRepository;
 import com.gym.GymManagementSystem.repository.PackageRepository;
@@ -24,15 +25,18 @@ public class MembershipService {
     private final MemberRepository memberRepository;
     private final PackageRepository packageRepository;
     private final PaymentRepository paymentRepository;
+    private final NotificationService notificationService;
 
     public MembershipService(MembershipRepository membershipRepository,
                              MemberRepository memberRepository,
                              PackageRepository packageRepository,
-                             PaymentRepository paymentRepository) {
+                             PaymentRepository paymentRepository,
+                             NotificationService notificationService) {
         this.membershipRepository = membershipRepository;
         this.memberRepository = memberRepository;
         this.packageRepository = packageRepository;
         this.paymentRepository = paymentRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<Membership> searchMemberships(String keyword, String status, int page, int size) {
@@ -121,6 +125,9 @@ public class MembershipService {
 
         Membership saved = membershipRepository.save(membership);
         attachPaymentStatusDisplay(saved);
+
+        notifyReceptionistForNewMembership(saved);
+
         return saved;
     }
 
@@ -153,6 +160,7 @@ public class MembershipService {
 
         validateDates(existing);
 
+        String oldStatus = existing.getStatus();
         String normalizedStatus = normalizeStatus(formMembership.getStatus());
 
         if ("ACTIVE".equals(normalizedStatus) && !hasPaidPayment(existing.getMembershipId())) {
@@ -163,6 +171,15 @@ public class MembershipService {
 
         Membership saved = membershipRepository.save(existing);
         attachPaymentStatusDisplay(saved);
+
+        if (!equalsIgnoreCase(oldStatus, saved.getStatus())) {
+            if ("ACTIVE".equalsIgnoreCase(saved.getStatus())) {
+                notifyMemberApproved(saved);
+            } else if ("REJECTED".equalsIgnoreCase(saved.getStatus())) {
+                notifyMemberRejected(saved);
+            }
+        }
+
         return saved;
     }
 
@@ -176,6 +193,8 @@ public class MembershipService {
 
         membership.setStatus("ACTIVE");
         membershipRepository.save(membership);
+
+        notifyMemberApproved(membership);
     }
 
     public void reject(Integer id) {
@@ -184,6 +203,8 @@ public class MembershipService {
 
         membership.setStatus("REJECTED");
         membershipRepository.save(membership);
+
+        notifyMemberRejected(membership);
     }
 
     public boolean softDeleteMembership(Integer id) {
@@ -334,5 +355,63 @@ public class MembershipService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private void notifyReceptionistForNewMembership(Membership membership) {
+        if (membership == null) {
+            return;
+        }
+
+        String memberName = membership.getMember() != null ? membership.getMember().getFullname() : "Hội viên";
+        String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Đăng ký gói mới",
+                memberName + " vừa đăng ký " + packageName,
+                "/receptionist/memberships"
+        );
+    }
+
+    private void notifyMemberApproved(Membership membership) {
+        User user = membership != null && membership.getMember() != null ? membership.getMember().getUser() : null;
+        if (user == null) {
+            return;
+        }
+
+        String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
+
+        notificationService.createNotification(
+                user.getUserId(),
+                "Gói tập đã được duyệt",
+                "Gói " + packageName + " của bạn đã được kích hoạt",
+                "/member/my-membership"
+        );
+    }
+
+    private void notifyMemberRejected(Membership membership) {
+        User user = membership != null && membership.getMember() != null ? membership.getMember().getUser() : null;
+        if (user == null) {
+            return;
+        }
+
+        String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
+
+        notificationService.createNotification(
+                user.getUserId(),
+                "Gói tập bị từ chối",
+                "Đăng ký " + packageName + " của bạn đã bị từ chối",
+                "/member/my-membership"
+        );
+    }
+
+    private boolean equalsIgnoreCase(String a, String b) {
+        if (a == null && b == null) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        return a.equalsIgnoreCase(b);
     }
 }

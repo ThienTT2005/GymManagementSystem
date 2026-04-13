@@ -13,9 +13,12 @@ import java.util.List;
 public class ConsultationService {
 
     private final ConsultationRepository consultationRepository;
+    private final NotificationService notificationService;
 
-    public ConsultationService(ConsultationRepository consultationRepository) {
+    public ConsultationService(ConsultationRepository consultationRepository,
+                               NotificationService notificationService) {
         this.consultationRepository = consultationRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<Consultation> searchContacts(String keyword, String status, int page, int size) {
@@ -83,7 +86,16 @@ public class ConsultationService {
             consultation.setStatus(normalizeStatus(consultation.getStatus()));
         }
 
-        return consultationRepository.save(consultation);
+        Consultation saved = consultationRepository.save(consultation);
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Yêu cầu tư vấn mới",
+                (saved.getFullname() != null ? saved.getFullname() : "Khách") + " vừa gửi yêu cầu tư vấn",
+                "/receptionist/contacts"
+        );
+
+        return saved;
     }
 
     public Consultation getContactById(Integer id) {

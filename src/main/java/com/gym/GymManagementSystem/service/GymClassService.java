@@ -29,17 +29,20 @@ public class GymClassService {
     private final TrainerRepository trainerRepository;
     private final ScheduleRepository scheduleRepository;
     private final ClassRegistrationRepository classRegistrationRepository;
+    private final NotificationService notificationService;
 
     public GymClassService(GymClassRepository gymClassRepository,
                            ServiceRepository serviceRepository,
                            TrainerRepository trainerRepository,
                            ScheduleRepository scheduleRepository,
-                           ClassRegistrationRepository classRegistrationRepository) {
+                           ClassRegistrationRepository classRegistrationRepository,
+                           NotificationService notificationService) {
         this.gymClassRepository = gymClassRepository;
         this.serviceRepository = serviceRepository;
         this.trainerRepository = trainerRepository;
         this.scheduleRepository = scheduleRepository;
         this.classRegistrationRepository = classRegistrationRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<GymClass> searchClasses(String keyword, Integer serviceId, Integer trainerId, Integer status, int page, int size) {
@@ -100,7 +103,21 @@ public class GymClassService {
             gymClass.setCurrentMember(0);
         }
 
-        return gymClassRepository.save(gymClass);
+        GymClass saved = gymClassRepository.save(gymClass);
+
+        if (saved.getTrainer() != null
+                && saved.getTrainer().getStaff() != null
+                && saved.getTrainer().getStaff().getUser() != null) {
+
+            notificationService.createNotification(
+                    saved.getTrainer().getStaff().getUser().getUserId(),
+                    "Bạn được gán lớp mới",
+                    "Bạn vừa được phân công lớp " + saved.getClassName(),
+                    "/trainer/classes"
+            );
+        }
+
+        return saved;
     }
 
     public GymClass updateClass(Integer id, GymClass formClass, Integer serviceId, Integer trainerId) {
@@ -110,6 +127,9 @@ public class GymClassService {
         }
 
         GymClass existing = optional.get();
+
+        Trainer oldTrainer = existing.getTrainer();
+
         existing.setClassName(formClass.getClassName());
         existing.setDescription(formClass.getDescription());
         existing.setMaxMember(formClass.getMaxMember());
@@ -117,7 +137,25 @@ public class GymClassService {
         existing.setStatus(formClass.getStatus());
 
         bindRelations(existing, serviceId, trainerId);
-        return gymClassRepository.save(existing);
+
+        GymClass saved = gymClassRepository.save(existing);
+
+        Trainer newTrainer = saved.getTrainer();
+
+        if (newTrainer != null
+                && (oldTrainer == null || !newTrainer.getTrainerId().equals(oldTrainer.getTrainerId()))
+                && newTrainer.getStaff() != null
+                && newTrainer.getStaff().getUser() != null) {
+
+            notificationService.createNotification(
+                    newTrainer.getStaff().getUser().getUserId(),
+                    "Bạn được gán lớp mới",
+                    "Bạn vừa được phân công lớp " + saved.getClassName(),
+                    "/trainer/classes"
+            );
+        }
+
+        return saved;
     }
 
     public boolean deleteClass(Integer id) {

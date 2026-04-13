@@ -30,7 +30,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Value("${file.upload-dir:uploads}")
+    @Value("${app.upload.dir}")
     private String uploadDir;
 
     private Member getMember(HttpSession session) {
@@ -38,7 +38,26 @@ public class MemberController {
         if (user == null) {
             return null;
         }
-        return memberService.getProfile(user.getUserId());
+
+        Member member = memberService.getProfile(user.getUserId());
+        if (member != null) {
+            return member;
+        }
+
+        try {
+            Member newMember = new Member();
+            newMember.setFullname(user.getUsername());
+            newMember.setStatus(1);
+            newMember.setAvatar("assets/images/default-avatar.png");
+            memberService.createMember(newMember, user.getUserId());
+
+            return memberService.getProfile(user.getUserId());
+        } catch (Exception e) {
+            if (session != null) {
+                session.invalidate();
+            }
+            return null;
+        }
     }
 
     @GetMapping("/logout")

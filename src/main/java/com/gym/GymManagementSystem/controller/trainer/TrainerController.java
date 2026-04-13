@@ -59,7 +59,7 @@ public class TrainerController {
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
         List<Schedule> trainerSchedules = getSchedulesOfTrainer(trainer);
-        List<GymClass> trainerClasses = getDistinctClasses(trainerSchedules);
+        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(trainerSchedules));
 
         int activeStudentCount = 0;
         for (GymClass gymClass : trainerClasses) {
@@ -92,7 +92,7 @@ public class TrainerController {
         }
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
-        List<GymClass> trainerClasses = getDistinctClasses(getSchedulesOfTrainer(trainer));
+        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(getSchedulesOfTrainer(trainer)));
 
         if (keyword != null && !keyword.isBlank()) {
             String kw = keyword.trim().toLowerCase();
@@ -165,7 +165,7 @@ public class TrainerController {
         }
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
-        List<GymClass> trainerClasses = getDistinctClasses(getSchedulesOfTrainer(trainer));
+        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(getSchedulesOfTrainer(trainer)));
         Set<Integer> allowedClassIds = trainerClasses.stream()
                 .map(GymClass::getClassId)
                 .collect(Collectors.toSet());
@@ -220,7 +220,7 @@ public class TrainerController {
         }
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
-        List<GymClass> trainerClasses = getDistinctClasses(getSchedulesOfTrainer(trainer));
+        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(getSchedulesOfTrainer(trainer)));
 
         boolean allowedClass = trainerClasses.stream()
                 .anyMatch(c -> c.getClassId().equals(classId));
@@ -275,6 +275,8 @@ public class TrainerController {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy lớp học");
             return "redirect:/trainer/classes";
         }
+
+        refreshCurrentMember(gymClass);
 
         List<Schedule> schedules = trainerSchedules.stream()
                 .filter(s -> s.getGymClass() != null && s.getGymClass().getClassId().equals(id))
@@ -412,6 +414,18 @@ public class TrainerController {
             }
         }
         return new ArrayList<>(map.values());
+    }
+
+    private List<GymClass> refreshCurrentMembers(List<GymClass> classes) {
+        classes.forEach(this::refreshCurrentMember);
+        return classes;
+    }
+
+    private void refreshCurrentMember(GymClass gymClass) {
+        if (gymClass == null || gymClass.getClassId() == null) {
+            return;
+        }
+        gymClass.setCurrentMember(classRegistrationService.findActiveByClassId(gymClass.getClassId()).size());
     }
 
     private Comparator<Schedule> scheduleComparator() {

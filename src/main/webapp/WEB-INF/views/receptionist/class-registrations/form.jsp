@@ -63,18 +63,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Ngày bắt đầu</label>
-                            <form:input path="startDate" type="date"/>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ngày kết thúc</label>
-                            <form:input path="endDate" type="date"/>
-                        </div>
-
-                        <div class="form-group">
                             <label>Ngày đăng ký</label>
                             <form:input path="registrationDate" type="date"/>
+                            <p class="field-hint">Để trống sẽ tự lấy ngày hiện tại.</p>
                         </div>
 
                         <div class="form-group">
@@ -83,6 +74,19 @@
                                 <form:option value="PENDING">Chờ xử lý</form:option>
                                 <form:option value="CANCELLED">Đã hủy</form:option>
                             </form:select>
+                            <p class="field-hint">Không tạo trực tiếp ở trạng thái ACTIVE. Chỉ ACTIVE sau khi thanh toán PAID và được duyệt.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ngày bắt đầu</label>
+                            <form:input path="startDate" type="date"/>
+                            <p class="field-hint">Thường để trống khi đang PENDING. Khi duyệt, hệ thống sẽ tự lấy ngày hiện tại nếu chưa có.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ngày kết thúc</label>
+                            <form:input path="endDate" type="date"/>
+                            <p class="field-hint">Tùy chọn. Nếu có thì phải lớn hơn hoặc bằng ngày bắt đầu.</p>
                         </div>
 
                         <div class="form-group full-width">

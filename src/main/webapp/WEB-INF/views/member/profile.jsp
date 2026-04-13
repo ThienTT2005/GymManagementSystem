@@ -23,33 +23,40 @@
 
             <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i>Thông tin cá nhân</h2>
 
-            <!-- ALERT -->
-            <c:if test="${param.success == true}">
+            <c:if test="${success == true || param.success == true}">
                 <div class="alert alert-success alert-dismissible fade show">
                     Cập nhật thành công!
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </c:if>
 
-            <c:if test="${not empty param.error}">
+            <c:if test="${not empty error || not empty param.error}">
                 <div class="alert alert-danger alert-dismissible fade show">
-                        ${param.error}
+                        ${not empty error ? error : param.error}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </c:if>
 
             <div class="row g-4">
 
-                <!-- PROFILE CARD -->
                 <div class="col-md-4">
                     <div class="card border-0 shadow-sm text-center p-4">
 
                         <div class="avatar-circle mx-auto mb-3">
                             <c:choose>
                                 <c:when test="${not empty member.avatar}">
-                                    <img src="<c:url value='/${member.avatar}'/>"
-                                         class="rounded-circle"
-                                         style="width:90px;height:90px;object-fit:cover;">
+                                    <c:choose>
+                                        <c:when test="${member.avatar.startsWith('memberavt/')}">
+                                            <img src="${pageContext.request.contextPath}/uploads/${member.avatar}"
+                                                 class="rounded-circle"
+                                                 style="width:90px;height:90px;object-fit:cover;">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/${member.avatar}"
+                                                 class="rounded-circle"
+                                                 style="width:90px;height:90px;object-fit:cover;">
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:when>
                                 <c:otherwise>
                                     <div style="width:90px;height:90px;border-radius:50%;background:#667eea;display:flex;align-items:center;justify-content:center;margin:auto;">
@@ -76,7 +83,6 @@
                     </div>
                 </div>
 
-                <!-- FORM -->
                 <div class="col-md-8">
                     <div class="card border-0 shadow-sm">
 
@@ -139,7 +145,8 @@
                                     <div class="col-md-6">
                                         <label>Avatar</label>
                                         <input type="file" name="avatar"
-                                               class="form-control">
+                                               class="form-control"
+                                               accept="image/*">
                                     </div>
 
                                     <div class="col-12">
@@ -155,7 +162,6 @@
                         </div>
                     </div>
 
-                    <!-- ACCOUNT -->
                     <div class="card border-0 shadow-sm mt-3">
                         <div class="card-body">
                             <p><strong>Username:</strong> ${member.user.username}</p>
@@ -171,5 +177,6 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

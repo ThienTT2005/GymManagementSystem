@@ -15,9 +15,12 @@ import java.util.List;
 public class TrialRegistrationService {
 
     private final TrialRegistrationRepository trialRegistrationRepository;
+    private final NotificationService notificationService;
 
-    public TrialRegistrationService(TrialRegistrationRepository trialRegistrationRepository) {
+    public TrialRegistrationService(TrialRegistrationRepository trialRegistrationRepository,
+                                    NotificationService notificationService) {
         this.trialRegistrationRepository = trialRegistrationRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<TrialRegistration> searchTrials(String keyword,
@@ -97,7 +100,16 @@ public class TrialRegistrationService {
             trial.setStatus(normalizeStatus(trial.getStatus()));
         }
 
-        return trialRegistrationRepository.save(trial);
+        TrialRegistration saved = trialRegistrationRepository.save(trial);
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Đăng ký tập thử mới",
+                (saved.getFullname() != null ? saved.getFullname() : "Khách hàng") + " vừa đăng ký tập thử",
+                "/receptionist/trials"
+        );
+
+        return saved;
     }
 
     public TrialRegistration getTrialById(Integer id) {

@@ -5,6 +5,7 @@ import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.repository.NotificationRepository;
 import com.gym.GymManagementSystem.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -62,6 +63,40 @@ public class NotificationService {
         notification.setStatus(1);
 
         return notificationRepository.save(notification);
+    }
+
+    public void createNotificationForRole(String roleName,
+                                          String title,
+                                          String message,
+                                          String targetUrl) {
+        if (roleName == null || roleName.isBlank()) {
+            return;
+        }
+
+        List<User> users = userRepository.findAll(Sort.by(Sort.Direction.ASC, "userId"))
+                .stream()
+                .filter(user -> user.getStatus() != null && user.getStatus() == 1)
+                .filter(user -> user.getRoleName() != null)
+                .filter(user -> roleName.equalsIgnoreCase(user.getRoleName().trim()))
+                .toList();
+
+        for (User user : users) {
+            createNotification(user.getUserId(), title, message, targetUrl);
+        }
+    }
+
+    public void createNotificationForRoles(List<String> roleNames,
+                                           String title,
+                                           String message,
+                                           String targetUrl) {
+        if (roleNames == null || roleNames.isEmpty()) {
+            return;
+        }
+
+        roleNames.stream()
+                .filter(role -> role != null && !role.isBlank())
+                .distinct()
+                .forEach(role -> createNotificationForRole(role, title, message, targetUrl));
     }
 
     public void markAsRead(Integer notificationId, Integer userId) {

@@ -15,6 +15,21 @@ public class AuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
+        String uri = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        String path = uri.substring(contextPath.length());
+
+        // 🔥 QUAN TRỌNG: cho phép truy cập các route public
+        if (path.equals("/login") ||
+                path.equals("/register") ||
+                path.equals("/") ||
+                path.startsWith("/assets/") ||
+                path.startsWith("/uploads/") ||
+                path.startsWith("/error") ||
+                path.equals("/403")) {
+            return true;
+        }
+
         HttpSession session = request.getSession(false);
         User loggedInUser = session != null ? (User) session.getAttribute("loggedInUser") : null;
 

@@ -21,7 +21,6 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <h2 class="mb-4"><i class="bi bi-award me-2"></i>Gói hội viên của tôi</h2>
 
-            <!-- ALERT -->
             <c:if test="${success == 'membership_cancelled'}">
                 <div class="alert alert-info alert-dismissible fade show">
                     Đã huỷ gói tập thành công.
@@ -36,7 +35,6 @@
                 </div>
             </c:if>
 
-            <!-- ACTIVE -->
             <c:if test="${not empty membership}">
                 <div class="mb-4">
                     <h5 class="fw-bold text-success">
@@ -83,7 +81,6 @@
                 </div>
             </c:if>
 
-            <!-- PENDING -->
             <c:if test="${not empty pendingMembership}">
                 <div class="row g-4">
 
@@ -139,7 +136,6 @@
                         </div>
                     </div>
 
-                    <!-- PAYMENT -->
                     <div class="col-md-7">
                         <div class="card shadow-sm border-0">
                             <div class="card-header bg-white border-0">
@@ -156,9 +152,10 @@
                                     <p><strong>Trạng thái:</strong> ${payment.status}</p>
 
                                     <c:if test="${not empty payment.proofImage}">
-                                        <img src="<c:url value='${payment.proofImage}'/>"
+                                        <img src="${pageContext.request.contextPath}/uploads/${payment.proofImage}"
                                              class="img-thumbnail"
-                                             style="max-height:200px;">
+                                             style="max-height:200px;"
+                                             alt="Minh chứng thanh toán">
                                     </c:if>
                                 </c:if>
 
@@ -176,7 +173,6 @@
                 </div>
             </c:if>
 
-            <!-- EMPTY -->
             <c:if test="${empty membership and empty pendingMembership}">
                 <div class="text-center py-5">
                     <h5 class="text-muted">Bạn chưa có gói tập</h5>
@@ -189,8 +185,8 @@
 
         </main>
     </div>
-
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

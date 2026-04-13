@@ -1,5 +1,6 @@
 package com.gym.GymManagementSystem.service;
 
+import com.gym.GymManagementSystem.config.UploadConfig;
 import com.gym.GymManagementSystem.model.ClassRegistration;
 import com.gym.GymManagementSystem.model.GymClass;
 import com.gym.GymManagementSystem.model.GymPackage;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,6 +53,8 @@ public class MemberService {
     private final PaymentRepository paymentRepository;
     private final GymClassRepository gymClassRepository;
     private final PackageRepository packageRepository;
+    private final UploadConfig uploadConfig;
+    private final NotificationService notificationService;
 
     public MemberService(MemberRepository memberRepository,
                          UserRepository userRepository,
@@ -59,7 +63,9 @@ public class MemberService {
                          ClassRegistrationRepository classRegistrationRepository,
                          PaymentRepository paymentRepository,
                          GymClassRepository gymClassRepository,
-                         PackageRepository packageRepository) {
+                         PackageRepository packageRepository,
+                         UploadConfig uploadConfig,
+                         NotificationService notificationService) {
         this.memberRepository = memberRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -68,9 +74,9 @@ public class MemberService {
         this.paymentRepository = paymentRepository;
         this.gymClassRepository = gymClassRepository;
         this.packageRepository = packageRepository;
+        this.uploadConfig = uploadConfig;
+        this.notificationService = notificationService;
     }
-
-    // ADMIN / RECEPTIONIST / TRAINER
 
     public Page<Member> searchMembers(String keyword, Integer status, int page, int size) {
         int safePage = Math.max(page - 1, 0);
@@ -285,8 +291,6 @@ public class MemberService {
         return userRepository.findAll(Sort.by(Sort.Direction.ASC, "username"));
     }
 
-    // MEMBER ACTOR
-
     public Member getProfile(Integer userId) {
         return memberRepository.findByUserUserId(userId).orElse(null);
     }
@@ -326,7 +330,7 @@ public class MemberService {
             }
 
             String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + ext;
-            Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads", "memberavt");
+            Path uploadPath = Paths.get(uploadConfig.getUploadDir(), "memberavt").toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
             Files.copy(avatar.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
@@ -346,13 +350,20 @@ public class MemberService {
     }
 
     public List<GymClass> getAllActiveClasses() {
-        return gymClassRepository.findAll().stream()
+        List<GymClass> classes = gymClassRepository.findAll().stream()
                 .filter(c -> c.getStatus() != null && c.getStatus() == 1)
                 .toList();
+
+        classes.forEach(this::syncClassCurrentMember);
+        return classes;
     }
 
     public GymClass getClassesById(Integer id) {
-        return gymClassRepository.findById(id).orElse(null);
+        GymClass gymClass = gymClassRepository.findById(id).orElse(null);
+        if (gymClass != null) {
+            syncClassCurrentMember(gymClass);
+        }
+        return gymClass;
     }
 
     public List<ClassRegistration> getMyActivePendingClasses(Integer memberId) {
@@ -406,7 +417,16 @@ public class MemberService {
         m.setEndDate(LocalDate.now().plusMonths(pkg.getDurationMonths()));
         m.setStatus("PENDING");
 
-        return membershipRepository.save(m).getMembershipId();
+        Membership saved = membershipRepository.save(m);
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Đăng ký gói mới",
+                member.getFullname() + " vừa đăng ký gói " + pkg.getPackageName(),
+                "/receptionist/memberships"
+        );
+
+        return saved.getMembershipId();
     }
 
     @Transactional
@@ -436,29 +456,49 @@ public class MemberService {
 
     @Transactional
     public int registerClass(Integer memberId, Integer classId) {
-        boolean existed = classRegistrationRepository
-                .existsByMemberMemberIdAndGymClassClassIdAndStatusNot(memberId, classId, "CANCELLED");
-
-        if (existed) return -2;
-
         Member member = memberRepository.findById(memberId).orElse(null);
         GymClass gymClass = gymClassRepository.findById(classId).orElse(null);
 
         if (member == null || gymClass == null) return -1;
-        if (gymClass.getCurrentMember() >= gymClass.getMaxMember()) return -3;
+
+        boolean existed = classRegistrationRepository.findByMemberMemberIdOrderByRegistrationDateDesc(memberId)
+                .stream()
+                .anyMatch(registration ->
+                        registration.getGymClass() != null
+                                && registration.getGymClass().getClassId() != null
+                                && registration.getGymClass().getClassId().equals(classId)
+                                && ("PENDING".equalsIgnoreCase(registration.getStatus())
+                                || "ACTIVE".equalsIgnoreCase(registration.getStatus()))
+                );
+
+        if (existed) return -2;
+
+        int activeCount = classRegistrationRepository.findByGymClass_ClassIdAndStatus(classId, "ACTIVE").size();
+        syncClassCurrentMember(gymClass);
+
+        if (activeCount >= gymClass.getMaxMember()) return -3;
 
         ClassRegistration cr = new ClassRegistration();
         cr.setMember(member);
         cr.setGymClass(gymClass);
         cr.setService(gymClass.getService());
-        cr.setStartDate(LocalDate.now());
         cr.setRegistrationDate(LocalDate.now());
+        cr.setStartDate(null);
+        cr.setEndDate(null);
         cr.setStatus("PENDING");
+        cr.setNote("Đăng ký từ hội viên, chờ xác nhận thanh toán và duyệt lớp.");
 
-        gymClass.setCurrentMember(gymClass.getCurrentMember() + 1);
-        gymClassRepository.save(gymClass);
+        ClassRegistration saved = classRegistrationRepository.save(cr);
 
-        return classRegistrationRepository.save(cr).getRegistrationId();
+        syncClassCurrentMember(gymClass);
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Đăng ký lớp mới",
+                member.getFullname() + " vừa đăng ký lớp " + gymClass.getClassName(),
+                "/receptionist/class-registrations"
+        );
+
+        return saved.getRegistrationId();
     }
 
     public ClassRegistration getClassRegistrationByClassRegistrationId(Integer id) {
@@ -470,7 +510,7 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean createPayment(Integer membershipId, Integer classRegistrationId, java.math.BigDecimal amount) {
+    public boolean createPayment(Integer membershipId, Integer classRegistrationId, BigDecimal amount) {
         Payment p = new Payment();
 
         if (membershipId != null) {
@@ -489,6 +529,13 @@ public class MemberService {
         p.setPaymentDate(LocalDate.now());
 
         paymentRepository.save(p);
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Thanh toán mới",
+                "Có thanh toán mới từ hội viên",
+                "/receptionist/payments"
+        );
+
         return true;
     }
 
@@ -525,7 +572,7 @@ public class MemberService {
 
         if (payment == null || file == null || file.isEmpty()) return false;
 
-        Path dir = Paths.get(uploadDir, "payments");
+        Path dir = Paths.get(uploadDir, "payments").toAbsolutePath().normalize();
         Files.createDirectories(dir);
 
         String originalName = file.getOriginalFilename();
@@ -537,9 +584,15 @@ public class MemberService {
         String fileName = UUID.randomUUID() + ext;
         Files.copy(file.getInputStream(), dir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
-        payment.setProofImage("/uploads/payments/" + fileName);
+        payment.setProofImage("payments/" + fileName);
         paymentRepository.save(payment);
 
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Minh chứng thanh toán",
+                "Hội viên vừa upload minh chứng thanh toán",
+                "/receptionist/payments"
+        );
         return true;
     }
 
@@ -764,5 +817,20 @@ public class MemberService {
 
         membershipRepository.save(membership);
         return true;
+    }
+
+    private void syncClassCurrentMember(GymClass gymClass) {
+        if (gymClass == null || gymClass.getClassId() == null) {
+            return;
+        }
+
+        int activeCount = classRegistrationRepository
+                .findByGymClass_ClassIdAndStatus(gymClass.getClassId(), "ACTIVE")
+                .size();
+
+        if (gymClass.getCurrentMember() == null || gymClass.getCurrentMember() != activeCount) {
+            gymClass.setCurrentMember(activeCount);
+            gymClassRepository.save(gymClass);
+        }
     }
 }

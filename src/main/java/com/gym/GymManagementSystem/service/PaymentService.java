@@ -3,6 +3,7 @@ package com.gym.GymManagementSystem.service;
 import com.gym.GymManagementSystem.model.ClassRegistration;
 import com.gym.GymManagementSystem.model.Membership;
 import com.gym.GymManagementSystem.model.Payment;
+import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
 import com.gym.GymManagementSystem.repository.MembershipRepository;
 import com.gym.GymManagementSystem.repository.PaymentRepository;
@@ -29,16 +30,19 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MembershipRepository membershipRepository;
     private final ClassRegistrationRepository classRegistrationRepository;
+    private final NotificationService notificationService;
 
     @Value("${app.upload.dir}")
     private String uploadDir;
 
     public PaymentService(PaymentRepository paymentRepository,
                           MembershipRepository membershipRepository,
-                          ClassRegistrationRepository classRegistrationRepository) {
+                          ClassRegistrationRepository classRegistrationRepository,
+                          NotificationService notificationService) {
         this.paymentRepository = paymentRepository;
         this.membershipRepository = membershipRepository;
         this.classRegistrationRepository = classRegistrationRepository;
+        this.notificationService = notificationService;
     }
 
     public Page<Payment> searchPayments(String keyword,
@@ -116,7 +120,11 @@ public class PaymentService {
         payment.setNote(trimToNull(payment.getNote()));
         payment.setProofImage(storeImage(proofFile, payment.getProofImage(), "payment-"));
 
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+
+        notifyReceptionistForPendingPayment(saved);
+
+        return saved;
     }
 
     public Payment updatePayment(Integer id,
@@ -145,7 +153,8 @@ public class PaymentService {
         existing.setNote(trimToNull(formPayment.getNote()));
         existing.setProofImage(storeImage(proofFile, existing.getProofImage(), "payment-"));
 
-        return paymentRepository.save(existing);
+        Payment saved = paymentRepository.save(existing);
+        return saved;
     }
 
     public Payment updatePaymentAdmin(Integer id, Payment formPayment, MultipartFile proofFile) {
@@ -155,12 +164,23 @@ public class PaymentService {
         }
 
         Payment existing = optional.get();
+        String oldStatus = existing.getStatus();
 
         existing.setStatus(normalizeStatus(formPayment.getStatus(), existing.getStatus()));
         existing.setNote(trimToNull(formPayment.getNote()));
         existing.setProofImage(storeImage(proofFile, existing.getProofImage(), "payment-"));
 
-        return paymentRepository.save(existing);
+        Payment saved = paymentRepository.save(existing);
+
+        if (!equalsIgnoreCase(oldStatus, saved.getStatus())) {
+            if ("PAID".equalsIgnoreCase(saved.getStatus())) {
+                notifyOwnerPaymentApproved(saved);
+            } else if ("REJECTED".equalsIgnoreCase(saved.getStatus())) {
+                notifyOwnerPaymentRejected(saved);
+            }
+        }
+
+        return saved;
     }
 
     public void approvePayment(Integer id) {
@@ -169,6 +189,8 @@ public class PaymentService {
 
         payment.setStatus("PAID");
         paymentRepository.save(payment);
+
+        notifyOwnerPaymentApproved(payment);
     }
 
     public void rejectPayment(Integer id) {
@@ -177,6 +199,8 @@ public class PaymentService {
 
         payment.setStatus("REJECTED");
         paymentRepository.save(payment);
+
+        notifyOwnerPaymentRejected(payment);
     }
 
     public boolean deletePayment(Integer id) {
@@ -336,5 +360,86 @@ public class PaymentService {
         if ("CASH".equalsIgnoreCase(normalized)) return "CASH";
 
         throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ");
+    }
+
+    private void notifyReceptionistForPendingPayment(Payment payment) {
+        if (payment == null) {
+            return;
+        }
+
+        notificationService.createNotificationForRoles(
+                List.of("RECEPTIONIST", "ADMIN"),
+                "Thanh toán mới cần xử lý",
+                "Có một thanh toán mới đang chờ xác nhận",
+                "/receptionist/payments"
+        );
+    }
+
+    private void notifyOwnerPaymentApproved(Payment payment) {
+        User owner = resolveOwner(payment);
+        if (owner == null) {
+            return;
+        }
+
+        notificationService.createNotification(
+                owner.getUserId(),
+                "Thanh toán đã được duyệt",
+                "Thanh toán của bạn đã được xác nhận thành công",
+                resolveOwnerTargetUrl(payment)
+        );
+    }
+
+    private void notifyOwnerPaymentRejected(Payment payment) {
+        User owner = resolveOwner(payment);
+        if (owner == null) {
+            return;
+        }
+
+        notificationService.createNotification(
+                owner.getUserId(),
+                "Thanh toán bị từ chối",
+                "Thanh toán của bạn đã bị từ chối, vui lòng kiểm tra lại minh chứng",
+                resolveOwnerTargetUrl(payment)
+        );
+    }
+
+    private User resolveOwner(Payment payment) {
+        if (payment == null) {
+            return null;
+        }
+
+        if (payment.getMembership() != null
+                && payment.getMembership().getMember() != null
+                && payment.getMembership().getMember().getUser() != null) {
+            return payment.getMembership().getMember().getUser();
+        }
+
+        if (payment.getClassRegistration() != null
+                && payment.getClassRegistration().getMember() != null
+                && payment.getClassRegistration().getMember().getUser() != null) {
+            return payment.getClassRegistration().getMember().getUser();
+        }
+
+        return null;
+    }
+
+    private String resolveOwnerTargetUrl(Payment payment) {
+        if (payment != null && payment.getMembership() != null) {
+            return "/member/my-membership";
+        }
+        if (payment != null && payment.getClassRegistration() != null) {
+            return "/member/schedules";
+        }
+        return "/member/history";
+    }
+
+    private boolean equalsIgnoreCase(String a, String b) {
+        if (a == null && b == null) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        return a.equalsIgnoreCase(b);
     }
 }
