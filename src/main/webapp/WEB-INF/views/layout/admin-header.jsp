@@ -57,7 +57,7 @@
                     </div>
                     <c:if test="${unreadNotificationCount > 0}">
                         <form method="post" action="${pageContext.request.contextPath}/notifications/mark-all-read" class="notif-mark-all-form">
-                            <input type="hidden" name="target" value="${pageContext.request.contextPath}/admin/dashboard">
+                            <input type="hidden" name="target" value="/admin/dashboard">
                             <button type="submit" class="notif-mark-all-btn">Đánh dấu tất cả đã đọc</button>
                         </form>
                     </c:if>
@@ -67,7 +67,7 @@
                     <c:when test="${not empty headerNotifications}">
                         <c:forEach var="n" items="${headerNotifications}">
                             <a class="notif-item ${n.isRead ? 'notif-item-read' : 'notif-item-unread'}"
-                               href="${pageContext.request.contextPath}/notifications/go?id=${n.notificationId}&target=${n.targetUrl}">
+                               href="${pageContext.request.contextPath}/notifications/go?id=${n.notificationId}">
                                 <div class="notif-item-icon">
                                     <i class="fa-solid ${n.isRead ? 'fa-bell' : 'fa-bell-ring'}"></i>
                                 </div>
@@ -168,7 +168,7 @@
             {keys: ['tin tuc', 'news'], path: '/admin/news'},
             {keys: ['bao cao', 'report', 'reports'], path: '/admin/reports'},
             {keys: ['ho so', 'profile'], path: '/admin/profile'},
-            {keys: ['doi mat khau', 'mat khau', 'change password'], path: '/admin/change-password'}
+            {keys: ['doi mat khau', 'mat khau', 'change password'], path: '/admin/profile/change-password'}
         ];
 
         for (let i = 0; i < mappings.length; i++) {
@@ -340,7 +340,6 @@
         });
     })();
 
-
     function initSharedUiEnhancements() {
         document.querySelectorAll('.alert-success, .alert-error').forEach(function (alertBox) {
             if (alertBox.dataset.enhanced === 'true') {
@@ -405,5 +404,4 @@
     }
 
     document.addEventListener('DOMContentLoaded', initSharedUiEnhancements);
-
 </script>

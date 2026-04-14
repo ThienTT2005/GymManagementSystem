@@ -6,8 +6,8 @@ import com.gym.GymManagementSystem.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -29,7 +29,12 @@ public class NotificationController {
         }
 
         notificationService.markAllAsRead(loggedInUser.getUserId());
-        String redirectTarget = (target == null || target.isBlank()) ? resolveDefaultTargetByRole(loggedInUser) : target;
+
+        String redirectTarget = normalizeTarget(target);
+        if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
+            redirectTarget = resolveDefaultTargetByRole(loggedInUser);
+        }
+
         return new RedirectView(redirectTarget);
     }
 
@@ -49,13 +54,17 @@ public class NotificationController {
 
         notificationService.markAsRead(id, loggedInUser.getUserId());
 
-        String redirectTarget = notification.getTargetUrl();
+        String redirectTarget = normalizeTarget(notification.getTargetUrl());
+
         if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
-            redirectTarget = resolveDefaultTargetByRole(loggedInUser);
+            redirectTarget = remapLegacyTargetForRole(redirectTarget, loggedInUser, notification);
         }
 
-        if (redirectTarget == null || redirectTarget.isBlank()) {
-            redirectTarget = target;
+        if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
+            String fallbackTarget = normalizeTarget(target);
+            if (isAllowedTargetForRole(fallbackTarget, loggedInUser)) {
+                redirectTarget = fallbackTarget;
+            }
         }
 
         if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
@@ -63,6 +72,76 @@ public class NotificationController {
         }
 
         return new RedirectView(redirectTarget);
+    }
+
+    private String normalizeTarget(String targetUrl) {
+        if (targetUrl == null) {
+            return null;
+        }
+
+        String url = targetUrl.trim();
+        if (url.isBlank()) {
+            return null;
+        }
+
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return null;
+        }
+
+        int schemeIndex = url.indexOf("://");
+        if (schemeIndex >= 0) {
+            return null;
+        }
+
+        if (url.startsWith("/notifications/go")) {
+            return null;
+        }
+
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+
+        return url;
+    }
+
+    private String remapLegacyTargetForRole(String targetUrl, User user, Notification notification) {
+        if (targetUrl == null || user == null || user.getRoleName() == null) {
+            return targetUrl;
+        }
+
+        String roleName = user.getRoleName().trim().toUpperCase();
+        String url = targetUrl.trim();
+        String title = notification != null && notification.getTitle() != null
+                ? notification.getTitle().trim().toLowerCase()
+                : "";
+        String message = notification != null && notification.getMessage() != null
+                ? notification.getMessage().trim().toLowerCase()
+                : "";
+
+        if ("ADMIN".equals(roleName)) {
+            if (url.startsWith("/receptionist/trial-requests")) {
+                return "/admin/trials";
+            }
+            if (url.startsWith("/receptionist/consultations")) {
+                return "/admin/contacts";
+            }
+            if (url.startsWith("/receptionist/trials")) {
+                return "/admin/trials";
+            }
+            if (url.startsWith("/receptionist/contacts")) {
+                return "/admin/contacts";
+            }
+
+            if (title.contains("tập thử") || message.contains("tập thử")) {
+                return "/admin/trials";
+            }
+            if (title.contains("tư vấn") || message.contains("tư vấn")
+                    || title.contains("liên hệ") || message.contains("liên hệ")) {
+                return "/admin/contacts";
+            }
+        }
+
+        return targetUrl;
     }
 
     private boolean isAllowedTargetForRole(String targetUrl, User user) {

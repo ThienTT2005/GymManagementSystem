@@ -1,32 +1,16 @@
 package com.gym.GymManagementSystem.controller.trainer;
 
-import com.gym.GymManagementSystem.model.ClassRegistration;
-import com.gym.GymManagementSystem.model.GymClass;
-import com.gym.GymManagementSystem.model.Member;
-import com.gym.GymManagementSystem.model.Schedule;
-import com.gym.GymManagementSystem.model.Trainer;
-import com.gym.GymManagementSystem.model.User;
-import com.gym.GymManagementSystem.service.ClassRegistrationService;
-import com.gym.GymManagementSystem.service.MemberService;
-import com.gym.GymManagementSystem.service.ScheduleService;
-import com.gym.GymManagementSystem.service.TrainerService;
-import com.gym.GymManagementSystem.service.UserService;
+import com.gym.GymManagementSystem.model.*;
+import com.gym.GymManagementSystem.repository.GymClassRepository;
+import com.gym.GymManagementSystem.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,33 +21,44 @@ public class TrainerController {
     private final MemberService memberService;
     private final UserService userService;
     private final TrainerService trainerService;
+    private final GymClassRepository gymClassRepository;
 
     public TrainerController(ScheduleService scheduleService,
                              ClassRegistrationService classRegistrationService,
                              MemberService memberService,
                              UserService userService,
-                             TrainerService trainerService) {
+                             TrainerService trainerService,
+                             GymClassRepository gymClassRepository) {
         this.scheduleService = scheduleService;
         this.classRegistrationService = classRegistrationService;
         this.memberService = memberService;
         this.userService = userService;
         this.trainerService = trainerService;
+        this.gymClassRepository = gymClassRepository;
     }
 
+    // ================= DASHBOARD =================
     @GetMapping("/trainer/dashboard")
     public String dashboard(HttpSession session, Model model) {
         User user = getLoggedInUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
+
+        // 🔥 FIX CHÍNH Ở ĐÂY
+        List<GymClass> trainerClasses = gymClassRepository
+                .findByTrainer_TrainerId(trainer.getTrainerId(),
+                        org.springframework.data.domain.PageRequest.of(0, 100))
+                .getContent();
+
+        refreshCurrentMembers(trainerClasses);
+
         List<Schedule> trainerSchedules = getSchedulesOfTrainer(trainer);
-        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(trainerSchedules));
 
         int activeStudentCount = 0;
         for (GymClass gymClass : trainerClasses) {
-            activeStudentCount += classRegistrationService.findActiveByClassId(gymClass.getClassId()).size();
+            activeStudentCount += classRegistrationService
+                    .findActiveByClassId(gymClass.getClassId()).size();
         }
 
         List<Schedule> upcomingSchedules = trainerSchedules.stream()
@@ -82,17 +77,24 @@ public class TrainerController {
         return "trainer/dashboard";
     }
 
+    // ================= CLASSES =================
     @GetMapping("/trainer/classes")
     public String classes(@RequestParam(required = false) String keyword,
                           HttpSession session,
                           Model model) {
+
         User user = getLoggedInUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
+        if (user == null) return "redirect:/login";
 
         Trainer trainer = trainerService.getTrainerByUserId(user.getUserId());
-        List<GymClass> trainerClasses = refreshCurrentMembers(getDistinctClasses(getSchedulesOfTrainer(trainer)));
+
+        // 🔥 FIX CHÍNH Ở ĐÂY
+        List<GymClass> trainerClasses = gymClassRepository
+                .findByTrainer_TrainerId(trainer.getTrainerId(),
+                        org.springframework.data.domain.PageRequest.of(0, 100))
+                .getContent();
+
+        refreshCurrentMembers(trainerClasses);
 
         if (keyword != null && !keyword.isBlank()) {
             String kw = keyword.trim().toLowerCase();

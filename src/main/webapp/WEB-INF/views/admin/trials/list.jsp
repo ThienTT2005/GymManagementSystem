@@ -92,7 +92,6 @@
                             <th>Ngày tập</th>
                             <th>Trạng thái</th>
                             <th>Ghi chú</th>
-                            <th>Ngày tạo</th>
                         </tr>
                         </thead>
 
@@ -134,8 +133,6 @@
                                         </td>
 
                                         <td>${not empty item.note ? item.note : '-'}</td>
-
-                                        <td>${item.createdAt}</td>
 
                                     </tr>
 
