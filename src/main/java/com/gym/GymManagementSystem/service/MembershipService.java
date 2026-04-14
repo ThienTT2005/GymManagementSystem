@@ -127,6 +127,7 @@ public class MembershipService {
         attachPaymentStatusDisplay(saved);
 
         notifyReceptionistForNewMembership(saved);
+        notifyAdminForNewMembership(saved);
 
         return saved;
     }
@@ -208,14 +209,39 @@ public class MembershipService {
     }
 
     public boolean softDeleteMembership(Integer id) {
+        return softDeleteMembership(id, null);
+    }
+
+    public boolean softDeleteMembership(Integer id, String cancelledByRole) {
         Optional<Membership> optional = membershipRepository.findById(id);
         if (optional.isEmpty()) {
             return false;
         }
 
         Membership membership = optional.get();
+        String oldStatus = membership.getStatus();
+
+        if ("CANCELLED".equalsIgnoreCase(oldStatus)) {
+            return true;
+        }
+
         membership.setStatus("CANCELLED");
         membershipRepository.save(membership);
+
+        Payment payment = paymentRepository.findAll(Sort.by(Sort.Direction.DESC, "paymentId"))
+                .stream()
+                .filter(p -> p.getMembership() != null
+                        && p.getMembership().getMembershipId() != null
+                        && membership.getMembershipId().equals(p.getMembership().getMembershipId()))
+                .findFirst()
+                .orElse(null);
+
+        if (payment != null && !"PAID".equalsIgnoreCase(payment.getStatus())) {
+            payment.setStatus("CANCELLED");
+            paymentRepository.save(payment);
+        }
+
+        notifyCancelMembership(membership, oldStatus, cancelledByRole);
         return true;
     }
 
@@ -365,11 +391,27 @@ public class MembershipService {
         String memberName = membership.getMember() != null ? membership.getMember().getFullname() : "Hội viên";
         String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Đăng ký gói mới",
                 memberName + " vừa đăng ký " + packageName,
                 "/receptionist/memberships"
+        );
+    }
+
+    private void notifyAdminForNewMembership(Membership membership) {
+        if (membership == null) {
+            return;
+        }
+
+        String memberName = membership.getMember() != null ? membership.getMember().getFullname() : "Hội viên";
+        String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
+
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Đăng ký gói mới",
+                memberName + " vừa đăng ký " + packageName,
+                "/admin/memberships"
         );
     }
 
@@ -403,6 +445,70 @@ public class MembershipService {
                 "Đăng ký " + packageName + " của bạn đã bị từ chối",
                 "/member/my-membership"
         );
+    }
+
+    private void notifyCancelMembership(Membership membership, String oldStatus, String cancelledByRole) {
+        if (membership == null) {
+            return;
+        }
+
+        String actorRole = cancelledByRole != null ? cancelledByRole.trim().toUpperCase() : "";
+        String memberName = membership.getMember() != null ? membership.getMember().getFullname() : "Hội viên";
+        String packageName = membership.getGymPackage() != null ? membership.getGymPackage().getPackageName() : "gói tập";
+        User memberUser = membership.getMember() != null ? membership.getMember().getUser() : null;
+
+        if ("MEMBER".equals(actorRole)) {
+            notificationService.createNotificationForRole(
+                    "RECEPTIONIST",
+                    "Hội viên hủy đăng ký gói",
+                    memberName + " đã hủy đăng ký " + packageName,
+                    "/receptionist/memberships"
+            );
+            notificationService.createNotificationForRole(
+                    "ADMIN",
+                    "Hội viên hủy đăng ký gói",
+                    memberName + " đã hủy đăng ký " + packageName,
+                    "/admin/memberships"
+            );
+            return;
+        }
+
+        if ("ADMIN".equals(actorRole) || "RECEPTIONIST".equals(actorRole)) {
+            if (memberUser != null) {
+                notificationService.createNotification(
+                        memberUser.getUserId(),
+                        "Gói tập bị hủy",
+                        "Đăng ký " + packageName + " của bạn đã bị hủy",
+                        "/member/my-membership"
+                );
+            }
+            return;
+        }
+
+        if ("PENDING".equalsIgnoreCase(oldStatus)) {
+            notificationService.createNotificationForRole(
+                    "RECEPTIONIST",
+                    "Hội viên hủy đăng ký gói",
+                    memberName + " đã hủy đăng ký " + packageName,
+                    "/receptionist/memberships"
+            );
+            notificationService.createNotificationForRole(
+                    "ADMIN",
+                    "Hội viên hủy đăng ký gói",
+                    memberName + " đã hủy đăng ký " + packageName,
+                    "/admin/memberships"
+            );
+            return;
+        }
+
+        if ("ACTIVE".equalsIgnoreCase(oldStatus) && memberUser != null) {
+            notificationService.createNotification(
+                    memberUser.getUserId(),
+                    "Gói tập bị hủy",
+                    "Đăng ký " + packageName + " của bạn đã bị hủy",
+                    "/member/my-membership"
+            );
+        }
     }
 
     private boolean equalsIgnoreCase(String a, String b) {

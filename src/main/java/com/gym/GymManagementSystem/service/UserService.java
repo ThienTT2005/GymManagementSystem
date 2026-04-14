@@ -104,8 +104,14 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
+                "Tài khoản mới",
+                "Tài khoản " + savedUser.getUsername() + " vừa được tạo mới",
+                "/receptionist/dashboard"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
                 "Tài khoản mới",
                 "Tài khoản " + savedUser.getUsername() + " vừa được tạo mới",
                 "/admin/users"

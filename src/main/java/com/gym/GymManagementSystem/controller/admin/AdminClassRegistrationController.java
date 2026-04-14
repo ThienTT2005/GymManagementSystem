@@ -105,7 +105,7 @@ public class AdminClassRegistrationController {
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = classRegistrationService.cancelRegistration(id);
+        boolean deleted = classRegistrationService.cancelRegistration(id, "ADMIN");
 
         if (deleted) {
             redirectAttributes.addFlashAttribute("successMessage", "Hủy đăng ký lớp thành công");

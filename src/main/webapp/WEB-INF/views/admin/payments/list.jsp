@@ -24,6 +24,7 @@
                 </div>
             </div>
 
+            <!-- ALERT -->
             <c:if test="${not empty successMessage}">
                 <div class="alert-success">${successMessage}</div>
             </c:if>
@@ -32,6 +33,7 @@
                 <div class="alert-error">${errorMessage}</div>
             </c:if>
 
+            <!-- FILTER -->
             <div class="page-card">
                 <form method="get"
                       action="${pageContext.request.contextPath}/admin/payments"
@@ -77,6 +79,7 @@
                 </form>
             </div>
 
+            <!-- TABLE -->
             <div class="page-card">
                 <div class="table-responsive">
                     <table class="dashboard-table admin-table">
@@ -96,9 +99,11 @@
 
                         <tbody>
                         <c:choose>
+
                             <c:when test="${not empty payments}">
                                 <c:forEach var="p" items="${payments}" varStatus="loop">
                                     <tr>
+
                                         <td>${paymentPage.number * paymentPage.size + loop.index + 1}</td>
 
                                         <td><strong>${p.displayMemberName}</strong></td>
@@ -112,6 +117,7 @@
                                         <td>${p.paymentMethod}</td>
                                         <td>${p.paymentDate}</td>
 
+                                        <!-- IMAGE -->
                                         <td>
                                             <c:choose>
                                                 <c:when test="${not empty p.proofImage}">
@@ -126,8 +132,13 @@
                                             </c:choose>
                                         </td>
 
+                                        <!-- STATUS -->
                                         <td>
-                                            <span class="status-badge ${p.status == 'PAID' ? 'active' : p.status == 'PENDING' ? 'pending' : p.status == 'REJECTED' ? 'rejected' : 'inactive'}">
+                                            <span class="status-badge
+                                                ${p.status == 'PAID' ? 'active' :
+                                                  p.status == 'PENDING' ? 'pending' :
+                                                  p.status == 'REJECTED' ? 'rejected' : 'inactive'}">
+
                                                 <c:choose>
                                                     <c:when test="${p.status == 'PAID'}">Đã thanh toán</c:when>
                                                     <c:when test="${p.status == 'PENDING'}">Chờ duyệt</c:when>
@@ -137,40 +148,55 @@
                                             </span>
                                         </td>
 
+                                        <!-- ACTION -->
                                         <td>
                                             <div class="table-actions">
-                                                <a class="btn-sm btn-edit"
-                                                   href="${pageContext.request.contextPath}/admin/payments/edit/${p.paymentId}"
-                                                   title="Chỉnh sửa">
-                                                    <i class="fa-solid fa-pen"></i>
-                                                </a>
 
+                                                <!-- APPROVE -->
                                                 <c:if test="${p.status == 'PENDING'}">
                                                     <form method="post"
                                                           action="${pageContext.request.contextPath}/admin/payments/approve/${p.paymentId}"
                                                           class="inline-form"
                                                           onsubmit="return confirm('Xác nhận duyệt thanh toán này?');">
+
                                                         <button class="btn-sm btn-approve" type="submit" title="Duyệt">
                                                             <i class="fa-solid fa-check"></i>
                                                         </button>
                                                     </form>
+
+                                                    <!-- REJECT -->
+                                                    <form method="post"
+                                                          action="${pageContext.request.contextPath}/admin/payments/reject/${p.paymentId}"
+                                                          class="inline-form"
+                                                          onsubmit="return confirm('Từ chối thanh toán này?');">
+
+                                                        <button class="btn-sm btn-delete" type="submit" title="Từ chối">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    </form>
                                                 </c:if>
+
                                             </div>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </c:when>
 
                             <c:otherwise>
                                 <tr>
-                                    <td colspan="9" class="empty-cell">Không có dữ liệu thanh toán phù hợp</td>
+                                    <td colspan="9" class="empty-cell">
+                                        Không có dữ liệu thanh toán phù hợp
+                                    </td>
                                 </tr>
                             </c:otherwise>
+
                         </c:choose>
                         </tbody>
                     </table>
                 </div>
 
+                <!-- PAGINATION -->
                 <c:if test="${paymentPage.totalPages > 1}">
                     <div class="pagination">
                         <c:forEach begin="0" end="${paymentPage.totalPages - 1}" var="p">
@@ -181,6 +207,7 @@
                         </c:forEach>
                     </div>
                 </c:if>
+
             </div>
         </main>
     </div>

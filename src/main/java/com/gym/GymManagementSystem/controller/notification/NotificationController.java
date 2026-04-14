@@ -1,5 +1,6 @@
 package com.gym.GymManagementSystem.controller.notification;
 
+import com.gym.GymManagementSystem.model.Notification;
 import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
@@ -41,14 +42,51 @@ public class NotificationController {
             return new RedirectView("/login");
         }
 
+        Notification notification = notificationService.getNotificationByIdForUser(id, loggedInUser.getUserId());
+        if (notification == null) {
+            return new RedirectView(resolveDefaultTargetByRole(loggedInUser));
+        }
+
         notificationService.markAsRead(id, loggedInUser.getUserId());
 
-        String redirectTarget = target;
+        String redirectTarget = notification.getTargetUrl();
+        if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
+            redirectTarget = resolveDefaultTargetByRole(loggedInUser);
+        }
+
         if (redirectTarget == null || redirectTarget.isBlank()) {
+            redirectTarget = target;
+        }
+
+        if (!isAllowedTargetForRole(redirectTarget, loggedInUser)) {
             redirectTarget = resolveDefaultTargetByRole(loggedInUser);
         }
 
         return new RedirectView(redirectTarget);
+    }
+
+    private boolean isAllowedTargetForRole(String targetUrl, User user) {
+        if (targetUrl == null || targetUrl.isBlank() || user == null || user.getRoleName() == null) {
+            return false;
+        }
+
+        String roleName = user.getRoleName().trim().toUpperCase();
+        String url = targetUrl.trim();
+
+        if ("ADMIN".equals(roleName)) {
+            return url.startsWith("/admin/");
+        }
+        if ("RECEPTIONIST".equals(roleName)) {
+            return url.startsWith("/receptionist/");
+        }
+        if ("TRAINER".equals(roleName)) {
+            return url.startsWith("/trainer/");
+        }
+        if ("MEMBER".equals(roleName)) {
+            return url.startsWith("/member/");
+        }
+
+        return false;
     }
 
     private String resolveDefaultTargetByRole(User user) {

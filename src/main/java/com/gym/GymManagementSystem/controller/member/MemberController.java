@@ -188,6 +188,26 @@ public class MemberController {
         return "member/schedules";
     }
 
+    @PostMapping("/cancel-class")
+    public String cancelClass(@RequestParam Integer classRegistrationId,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        Member member = getMember(session);
+        if (member == null) {
+            return "redirect:/login";
+        }
+
+        boolean cancelled = memberService.cancelClassRegistration(classRegistrationId, member.getMemberId());
+
+        if (cancelled) {
+            redirectAttributes.addFlashAttribute("success", "class_cancelled");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "cannot_cancel");
+        }
+
+        return "redirect:/member/schedules";
+    }
+
     @GetMapping("/packages")
     public String packages(HttpSession session, Model model) {
         Member member = getMember(session);

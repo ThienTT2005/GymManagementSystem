@@ -119,4 +119,13 @@ public class NotificationService {
                     }
                 });
     }
+
+    public Notification getNotificationByIdForUser(Integer notificationId, Integer userId) {
+        if (notificationId == null || userId == null) {
+            return null;
+        }
+
+        return notificationRepository.findByNotificationIdAndUser_UserIdAndStatus(notificationId, userId, 1)
+                .orElse(null);
+    }
 }

@@ -101,10 +101,10 @@ public class AdminMembershipController {
 
     @PostMapping("/delete/{id}")
     public String deleteMembership(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        boolean deleted = membershipService.softDeleteMembership(id);
+        boolean deleted = membershipService.softDeleteMembership(id, "ADMIN");
 
         if (deleted) {
-            redirectAttributes.addFlashAttribute("successMessage", "Xóa đăng ký gói tập thành công");
+            redirectAttributes.addFlashAttribute("successMessage", "Hủy đăng ký gói tập thành công");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đăng ký gói tập");
         }

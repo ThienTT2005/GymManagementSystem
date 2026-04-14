@@ -122,7 +122,7 @@ public class PaymentService {
 
         Payment saved = paymentRepository.save(payment);
 
-        notifyReceptionistForPendingPayment(saved);
+        notifyPendingPayment(saved);
 
         return saved;
     }
@@ -153,8 +153,7 @@ public class PaymentService {
         existing.setNote(trimToNull(formPayment.getNote()));
         existing.setProofImage(storeImage(proofFile, existing.getProofImage(), "payment-"));
 
-        Payment saved = paymentRepository.save(existing);
-        return saved;
+        return paymentRepository.save(existing);
     }
 
     public Payment updatePaymentAdmin(Integer id, Payment formPayment, MultipartFile proofFile) {
@@ -362,16 +361,22 @@ public class PaymentService {
         throw new IllegalArgumentException("Phương thức thanh toán không hợp lệ");
     }
 
-    private void notifyReceptionistForPendingPayment(Payment payment) {
+    private void notifyPendingPayment(Payment payment) {
         if (payment == null) {
             return;
         }
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Thanh toán mới cần xử lý",
                 "Có một thanh toán mới đang chờ xác nhận",
                 "/receptionist/payments"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Thanh toán mới cần xử lý",
+                "Có một thanh toán mới đang chờ xác nhận",
+                "/admin/payments"
         );
     }
 

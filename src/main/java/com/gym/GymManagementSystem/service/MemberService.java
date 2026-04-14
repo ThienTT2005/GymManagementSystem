@@ -8,6 +8,7 @@ import com.gym.GymManagementSystem.model.Member;
 import com.gym.GymManagementSystem.model.Membership;
 import com.gym.GymManagementSystem.model.Payment;
 import com.gym.GymManagementSystem.model.Role;
+import com.gym.GymManagementSystem.model.Trainer;
 import com.gym.GymManagementSystem.model.User;
 import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
 import com.gym.GymManagementSystem.repository.GymClassRepository;
@@ -419,11 +420,17 @@ public class MemberService {
 
         Membership saved = membershipRepository.save(m);
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Đăng ký gói mới",
                 member.getFullname() + " vừa đăng ký gói " + pkg.getPackageName(),
                 "/receptionist/memberships"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Đăng ký gói mới",
+                member.getFullname() + " vừa đăng ký gói " + pkg.getPackageName(),
+                "/admin/memberships"
         );
 
         return saved.getMembershipId();
@@ -451,7 +458,22 @@ public class MemberService {
         m.setEndDate(start.plusMonths(pkg.getDurationMonths()));
         m.setStatus("PENDING");
 
-        return membershipRepository.save(m).getMembershipId();
+        Membership saved = membershipRepository.save(m);
+
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
+                "Đăng ký gia hạn gói",
+                member.getFullname() + " vừa đăng ký gia hạn gói " + pkg.getPackageName(),
+                "/receptionist/memberships"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Đăng ký gia hạn gói",
+                member.getFullname() + " vừa đăng ký gia hạn gói " + pkg.getPackageName(),
+                "/admin/memberships"
+        );
+
+        return saved.getMembershipId();
     }
 
     @Transactional
@@ -491,11 +513,17 @@ public class MemberService {
         ClassRegistration saved = classRegistrationRepository.save(cr);
 
         syncClassCurrentMember(gymClass);
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Đăng ký lớp mới",
                 member.getFullname() + " vừa đăng ký lớp " + gymClass.getClassName(),
                 "/receptionist/class-registrations"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Đăng ký lớp mới",
+                member.getFullname() + " vừa đăng ký lớp " + gymClass.getClassName(),
+                "/admin/class-registrations"
         );
 
         return saved.getRegistrationId();
@@ -529,11 +557,18 @@ public class MemberService {
         p.setPaymentDate(LocalDate.now());
 
         paymentRepository.save(p);
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Thanh toán mới",
                 "Có thanh toán mới từ hội viên",
                 "/receptionist/payments"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Thanh toán mới",
+                "Có thanh toán mới từ hội viên",
+                "/admin/payments"
         );
 
         return true;
@@ -587,11 +622,17 @@ public class MemberService {
         payment.setProofImage("payments/" + fileName);
         paymentRepository.save(payment);
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Minh chứng thanh toán",
                 "Hội viên vừa upload minh chứng thanh toán",
                 "/receptionist/payments"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Minh chứng thanh toán",
+                "Hội viên vừa upload minh chứng thanh toán",
+                "/admin/payments"
         );
         return true;
     }
@@ -816,6 +857,8 @@ public class MemberService {
         }
 
         membershipRepository.save(membership);
+        notifyMemberCancelledMembership(membership);
+
         return true;
     }
 
@@ -831,6 +874,121 @@ public class MemberService {
         if (gymClass.getCurrentMember() == null || gymClass.getCurrentMember() != activeCount) {
             gymClass.setCurrentMember(activeCount);
             gymClassRepository.save(gymClass);
+        }
+    }
+
+    @Transactional
+    public boolean cancelClassRegistration(Integer classRegistrationId, Integer memberId) {
+
+        ClassRegistration cr = classRegistrationRepository
+                .findById(classRegistrationId)
+                .orElse(null);
+
+        if (cr == null || cr.getMember() == null) {
+            return false;
+        }
+
+        if (!cr.getMember().getMemberId().equals(memberId)) {
+            return false;
+        }
+
+        if (!"PENDING".equalsIgnoreCase(cr.getStatus())
+                && !"ACTIVE".equalsIgnoreCase(cr.getStatus())) {
+            return false;
+        }
+
+        String oldStatus = cr.getStatus();
+
+        cr.setStatus("CANCELLED");
+        classRegistrationRepository.save(cr);
+
+        Payment payment = paymentRepository
+                .findTopByClassRegistrationRegistrationIdOrderByCreatedAtDesc(classRegistrationId)
+                .orElse(null);
+
+        if (payment != null) {
+            payment.setStatus("CANCELLED");
+            paymentRepository.save(payment);
+        }
+
+        if (cr.getGymClass() != null) {
+            syncClassCurrentMember(cr.getGymClass());
+        }
+
+        notifyMemberCancelledClassRegistration(cr, oldStatus);
+        return true;
+    }
+
+    private void notifyMemberCancelledMembership(Membership membership) {
+        if (membership == null) {
+            return;
+        }
+
+        String memberName = membership.getMember() != null
+                ? membership.getMember().getFullname()
+                : "Hội viên";
+
+        String packageName = membership.getGymPackage() != null
+                ? membership.getGymPackage().getPackageName()
+                : "gói tập";
+
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
+                "Hội viên hủy đăng ký gói",
+                memberName + " đã hủy đăng ký " + packageName,
+                "/receptionist/memberships"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Hội viên hủy đăng ký gói",
+                memberName + " đã hủy đăng ký " + packageName,
+                "/admin/memberships"
+        );
+    }
+
+    private void notifyMemberCancelledClassRegistration(ClassRegistration registration, String oldStatus) {
+        if (registration == null || registration.getGymClass() == null) {
+            return;
+        }
+
+        String memberName = registration.getMember() != null
+                ? registration.getMember().getFullname()
+                : "Hội viên";
+
+        String className = registration.getGymClass().getClassName() != null
+                ? registration.getGymClass().getClassName()
+                : "lớp học";
+
+        Integer classId = registration.getGymClass().getClassId();
+
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
+                "Hội viên hủy đăng ký lớp",
+                memberName + " đã hủy đăng ký lớp " + className,
+                "/receptionist/class-registrations"
+        );
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Hội viên hủy đăng ký lớp",
+                memberName + " đã hủy đăng ký lớp " + className,
+                "/admin/class-registrations"
+        );
+
+        if (!"ACTIVE".equalsIgnoreCase(oldStatus)) {
+            return;
+        }
+
+        Trainer trainer = registration.getGymClass().getTrainer();
+        if (trainer != null && trainer.getStaff() != null && trainer.getStaff().getUser() != null) {
+            User trainerUser = trainer.getStaff().getUser();
+            notificationService.createNotification(
+                    trainerUser.getUserId(),
+                    "Cập nhật học viên lớp học",
+                    memberName + " đã hủy đăng ký lớp " + className,
+                    classId != null
+                            ? "/trainer/class-members?classId=" + classId
+                            : "/trainer/class-members"
+            );
         }
     }
 }

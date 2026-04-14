@@ -116,4 +116,17 @@ public class ReceptionistMembershipController {
         }
         return "redirect:/receptionist/memberships";
     }
+
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        boolean deleted = membershipService.softDeleteMembership(id, "RECEPTIONIST");
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "Hủy đăng ký gói tập thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đăng ký gói tập");
+        }
+
+        return "redirect:/receptionist/memberships";
+    }
 }

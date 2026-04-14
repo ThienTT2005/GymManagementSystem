@@ -188,6 +188,7 @@ public class ClassRegistrationService {
         syncClassCurrentMember(saved.getGymClass());
 
         notifyReceptionistForNewRegistration(saved);
+        notifyAdminForNewRegistration(saved);
 
         return saved;
     }
@@ -249,12 +250,22 @@ public class ClassRegistrationService {
     }
 
     public boolean cancelRegistration(Integer id) {
+        return cancelRegistration(id, null);
+    }
+
+    public boolean cancelRegistration(Integer id, String cancelledByRole) {
         Optional<ClassRegistration> optional = repository.findById(id);
         if (optional.isEmpty()) {
             return false;
         }
 
         ClassRegistration registration = optional.get();
+        String oldStatus = registration.getStatus();
+
+        if ("CANCELLED".equalsIgnoreCase(oldStatus)) {
+            return true;
+        }
+
         registration.setStatus("CANCELLED");
         repository.save(registration);
 
@@ -272,6 +283,8 @@ public class ClassRegistrationService {
         }
 
         syncClassCurrentMember(registration.getGymClass());
+        notifyCancelRegistration(registration, oldStatus, cancelledByRole);
+
         return true;
     }
 
@@ -520,11 +533,27 @@ public class ClassRegistrationService {
         String memberName = registration.getMember() != null ? registration.getMember().getFullname() : "Hội viên";
         String className = registration.getGymClass().getClassName();
 
-        notificationService.createNotificationForRoles(
-                List.of("RECEPTIONIST", "ADMIN"),
+        notificationService.createNotificationForRole(
+                "RECEPTIONIST",
                 "Đăng ký lớp mới",
                 memberName + " vừa đăng ký lớp " + className,
                 "/receptionist/class-registrations"
+        );
+    }
+
+    private void notifyAdminForNewRegistration(ClassRegistration registration) {
+        if (registration == null || registration.getGymClass() == null) {
+            return;
+        }
+
+        String memberName = registration.getMember() != null ? registration.getMember().getFullname() : "Hội viên";
+        String className = registration.getGymClass().getClassName();
+
+        notificationService.createNotificationForRole(
+                "ADMIN",
+                "Đăng ký lớp mới",
+                memberName + " vừa đăng ký lớp " + className,
+                "/admin/class-registrations"
         );
     }
 
@@ -573,6 +602,104 @@ public class ClassRegistrationService {
                 trainerUser.getUserId(),
                 "Có học viên mới trong lớp",
                 memberName + " đã được duyệt vào lớp " + getClassName(registration),
+                "/trainer/class-members?classId=" + registration.getGymClass().getClassId()
+        );
+    }
+
+    private void notifyCancelRegistration(ClassRegistration registration, String oldStatus, String cancelledByRole) {
+        if (registration == null || registration.getGymClass() == null) {
+            return;
+        }
+
+        String actorRole = cancelledByRole != null ? cancelledByRole.trim().toUpperCase() : "";
+        String memberName = registration.getMember() != null ? registration.getMember().getFullname() : "Hội viên";
+        String className = getClassName(registration);
+
+        if ("MEMBER".equals(actorRole)) {
+            notificationService.createNotificationForRole(
+                    "RECEPTIONIST",
+                    "Hội viên hủy đăng ký lớp",
+                    memberName + " đã hủy đăng ký lớp " + className,
+                    "/receptionist/class-registrations"
+            );
+            notificationService.createNotificationForRole(
+                    "ADMIN",
+                    "Hội viên hủy đăng ký lớp",
+                    memberName + " đã hủy đăng ký lớp " + className,
+                    "/admin/class-registrations"
+            );
+
+            if ("ACTIVE".equalsIgnoreCase(oldStatus)) {
+                notifyTrainerClassCancelled(registration, memberName, className, true);
+            }
+            return;
+        }
+
+        if ("ADMIN".equals(actorRole) || "RECEPTIONIST".equals(actorRole)) {
+            User memberUser = getMemberUser(registration);
+            if (memberUser != null) {
+                notificationService.createNotification(
+                        memberUser.getUserId(),
+                        "Đăng ký lớp bị hủy",
+                        "Đăng ký lớp " + className + " của bạn đã bị hủy",
+                        "/member/schedules"
+                );
+            }
+
+            if ("ACTIVE".equalsIgnoreCase(oldStatus)) {
+                notifyTrainerClassCancelled(registration, memberName, className, false);
+            }
+            return;
+        }
+
+        if ("PENDING".equalsIgnoreCase(oldStatus)) {
+            notificationService.createNotificationForRole(
+                    "RECEPTIONIST",
+                    "Hội viên hủy đăng ký lớp",
+                    memberName + " đã hủy đăng ký lớp " + className,
+                    "/receptionist/class-registrations"
+            );
+            notificationService.createNotificationForRole(
+                    "ADMIN",
+                    "Hội viên hủy đăng ký lớp",
+                    memberName + " đã hủy đăng ký lớp " + className,
+                    "/admin/class-registrations"
+            );
+            return;
+        }
+
+        if ("ACTIVE".equalsIgnoreCase(oldStatus)) {
+            User memberUser = getMemberUser(registration);
+            if (memberUser != null) {
+                notificationService.createNotification(
+                        memberUser.getUserId(),
+                        "Đăng ký lớp bị hủy",
+                        "Đăng ký lớp " + className + " của bạn đã bị hủy",
+                        "/member/schedules"
+                );
+            }
+            notifyTrainerClassCancelled(registration, memberName, className, false);
+        }
+    }
+
+    private void notifyTrainerClassCancelled(ClassRegistration registration, String memberName, String className, boolean byMember) {
+        if (registration == null || registration.getGymClass() == null) {
+            return;
+        }
+
+        Trainer trainer = registration.getGymClass().getTrainer();
+        if (trainer == null || trainer.getStaff() == null || trainer.getStaff().getUser() == null) {
+            return;
+        }
+
+        String message = byMember
+                ? memberName + " đã hủy đăng ký lớp " + className
+                : memberName + " đã bị hủy khỏi lớp " + className;
+
+        notificationService.createNotification(
+                trainer.getStaff().getUser().getUserId(),
+                "Cập nhật học viên lớp học",
+                message,
                 "/trainer/class-members?classId=" + registration.getGymClass().getClassId()
         );
     }
