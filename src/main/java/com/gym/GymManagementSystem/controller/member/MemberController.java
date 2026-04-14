@@ -63,7 +63,7 @@ public class MemberController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login";
+        return "redirect:/";
     }
 
     @GetMapping("/dashboard")
@@ -160,10 +160,10 @@ public class MemberController {
         int registrationId = memberService.registerClass(member.getMemberId(), classId);
 
         switch (registrationId) {
-            case 0 -> redirectAttributes.addFlashAttribute("success", "class_registered");
+            case -1 -> redirectAttributes.addFlashAttribute("error", "failed");
             case -2 -> redirectAttributes.addFlashAttribute("error", "already_registered");
             case -3 -> redirectAttributes.addFlashAttribute("error", "class_full");
-            default -> redirectAttributes.addFlashAttribute("error", "failed");
+            default -> redirectAttributes.addFlashAttribute("success", "class_registered");
         }
 
         if (registrationId < 0) {
@@ -373,5 +373,48 @@ public class MemberController {
         }
 
         return "redirect:/member/my-membership";
+    }
+    @GetMapping("/change-password")
+    public String showChangePassword(HttpSession session) {
+        Member member = getMember(session);
+        if (member == null) return "redirect:/login";
+        return "member/change_password";
+    }
+
+    @PostMapping("/change-password")
+    public String handleChangePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Member member = getMember(session);
+        if (member == null) return "redirect:/login";
+
+        String error = memberService.changePassword(
+                member.getUser().getUserId(),
+                currentPassword,
+                newPassword,
+                confirmPassword);
+
+        if (error != null) {
+            redirectAttributes.addFlashAttribute("error", error);
+        } else {
+            session.invalidate();
+            redirectAttributes.addFlashAttribute("success", "password_changed");
+            return "redirect:/login";
+        }
+        return "redirect:/member/change-password";
+    }
+    @GetMapping("/class-schedule")
+    public String classSchedule(@RequestParam Integer classId,
+                                Model model) {
+        GymClass gymClass = memberService.getClassesById(classId);
+        if (gymClass == null) return "redirect:/member/schedules";
+
+        model.addAttribute("gymClass", gymClass);
+        model.addAttribute("schedules", memberService.getSchedulesByClassId(classId));
+        return "member/class_schedule";
     }
 }

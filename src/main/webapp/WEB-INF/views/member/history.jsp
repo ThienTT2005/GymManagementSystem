@@ -143,10 +143,12 @@
                                 <td>${cr.endDate}</td>
 
                                 <td>
-                                <span class="badge
-                                    ${cr.status == 'ACTIVE' ? 'bg-success' : 'bg-secondary'}">
-                                        ${cr.status}
-                                </span>
+                                    <span class="badge
+                                    ${cr.status == 'ACTIVE' ? 'bg-success' :
+                                      cr.status == 'PENDING' ? 'bg-warning text-dark' :
+                                      'bg-secondary'}">
+                                            ${cr.status}
+                                    </span>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -160,6 +162,6 @@
     </div>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

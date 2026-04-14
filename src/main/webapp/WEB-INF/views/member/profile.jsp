@@ -75,8 +75,8 @@
 
                         <p class="small text-muted mb-0">
                             Tham gia:
-                            <c:if test="${not empty member.createdAt}">
-                                ${member.createdAt}
+                            <c:if test="${not empty member.user.createdAt}">
+                                ${member.user.createdAt}
                             </c:if>
                         </p>
 

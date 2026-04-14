@@ -1,22 +1,8 @@
 package com.gym.GymManagementSystem.service;
 
 import com.gym.GymManagementSystem.config.UploadConfig;
-import com.gym.GymManagementSystem.model.ClassRegistration;
-import com.gym.GymManagementSystem.model.GymClass;
-import com.gym.GymManagementSystem.model.GymPackage;
-import com.gym.GymManagementSystem.model.Member;
-import com.gym.GymManagementSystem.model.Membership;
-import com.gym.GymManagementSystem.model.Payment;
-import com.gym.GymManagementSystem.model.Role;
-import com.gym.GymManagementSystem.model.User;
-import com.gym.GymManagementSystem.repository.ClassRegistrationRepository;
-import com.gym.GymManagementSystem.repository.GymClassRepository;
-import com.gym.GymManagementSystem.repository.MemberRepository;
-import com.gym.GymManagementSystem.repository.MembershipRepository;
-import com.gym.GymManagementSystem.repository.PackageRepository;
-import com.gym.GymManagementSystem.repository.PaymentRepository;
-import com.gym.GymManagementSystem.repository.RoleRepository;
-import com.gym.GymManagementSystem.repository.UserRepository;
+import com.gym.GymManagementSystem.model.*;
+import com.gym.GymManagementSystem.repository.*;
 import com.gym.GymManagementSystem.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -55,6 +41,7 @@ public class MemberService {
     private final PackageRepository packageRepository;
     private final UploadConfig uploadConfig;
     private final NotificationService notificationService;
+    private final ScheduleRepository scheduleRepository;
 
     public MemberService(MemberRepository memberRepository,
                          UserRepository userRepository,
@@ -65,7 +52,7 @@ public class MemberService {
                          GymClassRepository gymClassRepository,
                          PackageRepository packageRepository,
                          UploadConfig uploadConfig,
-                         NotificationService notificationService) {
+                         NotificationService notificationService, ScheduleRepository scheduleRepository) {
         this.memberRepository = memberRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -76,6 +63,7 @@ public class MemberService {
         this.packageRepository = packageRepository;
         this.uploadConfig = uploadConfig;
         this.notificationService = notificationService;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public Page<Member> searchMembers(String keyword, Integer status, int page, int size) {
@@ -375,12 +363,8 @@ public class MemberService {
     }
 
     public Membership getActiveMembership(Integer memberId) {
-        return membershipRepository.findAll().stream()
-                .filter(m -> m.getMember() != null)
-                .filter(m -> m.getMember().getMemberId().equals(memberId))
-                .filter(m -> "ACTIVE".equalsIgnoreCase(m.getStatus()))
-                .findFirst()
-                .orElse(null);
+        return membershipRepository
+                .findTopByMemberMemberIdAndStatusOrderByStartDateDesc(memberId, "ACTIVE");
     }
 
     public Membership getPendingMembership(Integer memberId) {
@@ -818,7 +802,28 @@ public class MemberService {
         membershipRepository.save(membership);
         return true;
     }
+    public String changePassword(Integer userId,
+                                 String currentPassword,
+                                 String newPassword,
+                                 String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            return "Mật khẩu mới và xác nhận không khớp.";
+        }
+        if (newPassword.length() < 6) {
+            return "Mật khẩu mới phải có ít nhất 6 ký tự.";
+        }
 
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return "Không tìm thấy tài khoản.";
+
+        if (!PasswordUtil.verify(currentPassword, user.getPassword())) {
+            return "Mật khẩu hiện tại không đúng.";
+        }
+
+        user.setPassword(PasswordUtil.hash(newPassword));
+        userRepository.save(user);
+        return null;
+    }
     private void syncClassCurrentMember(GymClass gymClass) {
         if (gymClass == null || gymClass.getClassId() == null) {
             return;
@@ -832,5 +837,8 @@ public class MemberService {
             gymClass.setCurrentMember(activeCount);
             gymClassRepository.save(gymClass);
         }
+    }
+    public List<Schedule> getSchedulesByClassId(Integer classId) {
+        return scheduleRepository.findByGymClass_ClassId(classId);
     }
 }

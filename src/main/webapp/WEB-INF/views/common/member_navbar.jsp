@@ -41,7 +41,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-danger sticky-top shadow">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/member/dashboard">
-            <i class="bi bi-lightning-charge-fill text-warning me-1"></i>GYM PRO
+            <img src="${pageContext.request.contextPath}/images/logo.png" alt="Logo"
+                 style="height: 40px; vertical-align: middle;">GYM PRO
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMember">
             <span class="navbar-toggler-icon"></span>
@@ -105,6 +106,9 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/member/profile">
                             <i class="bi bi-person me-2"></i>Thông tin cá nhân</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/member/change-password">
+                            <i class="bi bi-lock me-1"></i>Đổi mật khẩu</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/member/logout">
                             <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>

@@ -58,7 +58,7 @@
                                         <th>Huấn luyện viên</th>
                                         <th>Ngày bắt đầu</th>
                                         <th>Trạng thái</th>
-                                        <th></th>
+                                        <th>Hành động</th>
                                     </tr>
                                     </thead>
 
@@ -101,6 +101,9 @@
 
                                             <!-- ACTION -->
                                             <td>
+                                                <a href="${pageContext.request.contextPath}/member/class-schedule?classId=${cr.gymClass.classId}"
+                                                   class="btn btn-sm btn-outline-primary me-1">Xem
+                                                </a>
                                                 <form method="post"
                                                       action="${pageContext.request.contextPath}/member/cancel-class"
                                                       class="d-inline"
@@ -136,6 +139,6 @@
     </div>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
