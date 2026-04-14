@@ -75,9 +75,14 @@
 
                         <p class="small text-muted mb-0">
                             Tham gia:
-                            <c:if test="${not empty member.user.createdAt}">
-                                ${member.user.createdAt}
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${not empty member.createdAt}">
+                                    ${member.createdAt}
+                                </c:when>
+                                <c:otherwise>
+                                    Chưa có dữ liệu
+                                </c:otherwise>
+                            </c:choose>
                         </p>
 
                     </div>

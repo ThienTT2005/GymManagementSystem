@@ -28,4 +28,8 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     Optional<Member> findByUserUserId(Integer userId);
 
     List<Member> findAll(Sort sort);
+
+    boolean existsByPhone(String phone);
+
+    boolean existsByEmailIgnoreCase(String email);
 }

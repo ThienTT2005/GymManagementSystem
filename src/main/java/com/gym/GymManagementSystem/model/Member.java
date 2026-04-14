@@ -45,10 +45,10 @@ public class Member {
     @Column(name = "status", nullable = false)
     private Integer status = 1;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public Integer getMemberId() {

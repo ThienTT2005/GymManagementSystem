@@ -82,13 +82,24 @@ public class AuthService {
 
         String normalizedUsername = username.trim();
         String normalizedFullName = fullName.trim();
-        String normalizedPhone = phone.trim();
+        String normalizedPhone = phone.replaceAll("[^0-9]", "");
         String normalizedEmail = trimToNull(email);
         String normalizedAddress = trimToNull(address);
         String normalizedGender = normalizeGender(gender);
 
+        // CHECK USERNAME
         if (userRepository.existsByUsername(normalizedUsername)) {
             throw new IllegalArgumentException("Tài khoản đã tồn tại");
+        }
+
+        // CHECK PHONE
+        if (memberRepository.existsByPhone(normalizedPhone)) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng");
+        }
+
+        // CHECK EMAIL
+        if (normalizedEmail != null && memberRepository.existsByEmailIgnoreCase(normalizedEmail)) {
+            throw new IllegalArgumentException("Email đã được sử dụng");
         }
 
         if (password.trim().length() < 6) {
@@ -129,12 +140,9 @@ public class AuthService {
         member.setAvatar("assets/images/default-avatar.png");
         member.setUser(savedUser);
 
-        // ✅ Lưu member trước
         memberRepository.save(member);
 
-        // 🔥 NOTIFICATION CHUẨN NGHIỆP VỤ
-
-        // Receptionist + Admin
+        // NOTIFICATION
         notificationService.createNotificationForRoles(
                 List.of("RECEPTIONIST", "ADMIN"),
                 "Hội viên mới",
@@ -142,7 +150,6 @@ public class AuthService {
                 "/admin/members"
         );
 
-        // Chính member
         notificationService.createNotification(
                 savedUser.getUserId(),
                 "Đăng ký thành công",
