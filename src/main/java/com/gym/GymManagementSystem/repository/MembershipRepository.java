@@ -25,6 +25,8 @@ public interface MembershipRepository extends JpaRepository<Membership, Integer>
 
     List<Membership> findByMemberMemberIdOrderByCreatedAtDesc(Integer memberId);
 
+    Membership findTopByMemberMemberIdAndStatusOrderByStartDateDesc(Integer memberId, String status);
+
     Optional<Membership> findByMembershipId(Integer membershipId);
 
     Optional<Membership> findByMembershipIdAndMemberMemberId(Integer membershipId, Integer memberId);

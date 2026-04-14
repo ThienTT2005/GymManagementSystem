@@ -19,8 +19,11 @@
                     <i class="bi bi-person me-2"></i>Thông tin cá nhân
                 </a>
             </li>
-            <li class="nav-item mt-2">
-                <small class="text-secondary px-3 text-uppercase" style="font-size:.7rem;">LỊCH TẬP</small>
+            <li class="nav-item mt-3 px-3">
+                <small class="text-white fw-bold text-uppercase d-block mb-1" style="font-size:.75rem; letter-spacing:1px;">
+                    LỊCH TẬP
+                </small>
+                <div style="height:1px; background:rgba(255,255,255,.3);"></div>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white <%= currentURI.contains("/schedules") ? "active fw-bold" : "" %>"
@@ -33,8 +36,11 @@
                    href="<%= ctx %>/member/classes">&#128196; Đăng ký lớp học</a>
             </li>
 
-            <li class="nav-item mt-2">
-                <small class="text-secondary px-3 text-uppercase" style="font-size:.7rem;">Hội viên</small>
+            <li class="nav-item mt-3 px-3">
+                <small class="text-white fw-bold text-uppercase d-block mb-1" style="font-size:.75rem; letter-spacing:1px;">
+                    HỘI VIÊN
+                </small>
+                <div style="height:1px; background:rgba(255,255,255,.3);"></div>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white <%= currentURI.contains("/packages") ? "active fw-bold" : "" %>"
@@ -48,8 +54,11 @@
                     <i class="bi bi-award me-2"></i>Gói hội viên của tôi
                 </a>
             </li>
-            <li class="nav-item mt-2">
-                <small class="text-secondary px-3 text-uppercase" style="font-size:.7rem;">Khác</small>
+            <li class="nav-item mt-3 px-3">
+                <small class="text-white fw-bold text-uppercase d-block mb-1" style="font-size:.75rem; letter-spacing:1px;">
+                    KHÁC
+                </small>
+                <div style="height:1px; background:rgba(255,255,255,.3);"></div>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white <%= currentURI.contains("/history") ? "active fw-bold" : "" %>"
@@ -58,7 +67,11 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-danger" href="<%= ctx %>/member/logout">&#128682; Đăng xuất</a>
+                <a class="nav-link text-white" href="<%= ctx %>/member/change-password">
+                    <i class="bi bi-lock me-1"></i>Đổi mật khẩu</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="<%= ctx %>/member/logout">&#128682; Đăng xuất</a>
             </li>
         </ul>
     </div>

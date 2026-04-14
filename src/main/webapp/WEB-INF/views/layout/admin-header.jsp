@@ -10,7 +10,7 @@
             <img src="${pageContext.request.contextPath}/assets/images/logo-gym-transparent.png" alt="Logo">
         </div>
         <div class="header-title">
-            <strong>Nhóm 4</strong>
+            <strong>GYM PRO</strong>
         </div>
     </div>
 
